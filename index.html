@@ -3,10 +3,14 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="theme-color" content="#090f21" />
+<meta name="description" content="Explore 20 historical worlds through immersive scenes, role-play, mysteries, and a peaceful Just Visit mode." />
 <title>Templar's Historical Time Portal</title>
 <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <a class="skip-link" href="#experiencePanel">Skip to active experience</a>
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
   <div class="stars"></div>
   <div class="ambient-glow"></div>
   <header class="topbar">
@@ -31,7 +35,7 @@
         <span class="pill">PORTAL STATUS: READY</span>
         <h2>Your history world is open.</h2>
         <p>Role-play. Free explore. Solve a mystery. Follow a story. Play a game. Spend a quiet day in the past. You choose the mood every time you enter.</p>
-        <div class="quick-actions">
+        <div class="quick-actions" id="quickPortals" aria-label="Quick portals">
           <button data-era="titanic">🚢 Titanic — 1912</button>
           <button data-era="west">🤠 Frontier West</button>
           <button data-era="egypt">🏺 Ancient Egypt</button>
@@ -53,6 +57,7 @@
           <button data-era="silkroad">🐫 Silk Road Oasis</button>
           <button data-era="edwardian">🎠 Edwardian Seaside</button>
         </div>
+        <button type="button" id="morePortalsBtn" class="ghost-btn more-portals" aria-expanded="false" aria-controls="quickPortals">Explore all 20 quick portals ↓</button>
       </div>
     </section>
 
@@ -87,7 +92,11 @@
         <div><span class="eyebrow">OPEN PORTALS</span><h2>Featured Destinations</h2></div>
         <p>Each world supports every experience mode, so the same destination can feel different every visit.</p>
       </div>
-      <div class="destination-grid">
+      <div class="destination-toolbar">
+        <label class="destination-search">🔎 <span class="sr-only">Find a historical destination</span><input id="destinationSearch" type="search" placeholder="Find an era, place, or century..." autocomplete="off" /></label>
+        <span id="destinationCount" class="destination-count" aria-live="polite">20 worlds to discover</span>
+      </div>
+      <div class="destination-grid" id="destinationGrid">
         <article class="destination-card titanic"><div class="card-overlay"><span class="date">APRIL 1912</span><h3>RMS Titanic</h3><p>Board the ship, explore passenger life, follow a mystery, or simply spend time aboard before the disaster unfolds.</p><button data-era="titanic">Open Portal →</button></div></article>
         <article class="destination-card west"><div class="card-overlay"><span class="date">1880s</span><h3>Frontier West</h3><p>A living town with a sheriff, ranches, stagecoach stop, newspaper office, saloon, general store, and changing mysteries.</p><button data-era="west">Open Portal →</button></div></article>
         <article class="destination-card egypt"><div class="card-overlay"><span class="date">ANCIENT WORLD</span><h3>Ancient Egypt</h3><p>Visit markets, workshops, river traffic, scribes, homes, and temples while learning how ordinary people lived.</p><button data-era="egypt">Open Portal →</button></div></article>
@@ -110,6 +119,7 @@
         <article class="destination-card silkroad"><div class="card-overlay"><span class="date">c. 800</span><h3>Silk Road Oasis</h3><p>Caravans, merchants, translators, pack animals, food stalls, guest houses, textiles, stories, and goods moving across regions.</p><button data-era="silkroad">Open Portal →</button></div></article>
         <article class="destination-card edwardian"><div class="card-overlay"><span class="date">1908</span><h3>Edwardian Seaside</h3><p>Pier entertainment, tea rooms, postcards, bathing machines, promenades, holiday crowds, music, and boardwalk amusements.</p><button data-era="edwardian">Open Portal →</button></div></article>
       </div>
+      <p id="destinationEmpty" class="empty-state" hidden>No matching worlds. Try another search.</p>
     </section>
 
     <section class="titanic-feature panel" id="titanicFeature">
@@ -147,12 +157,12 @@
         <div><small>👤 YOUR ROLE</small><strong id="role"></strong></div>
         <div><small>🎒 YOU HAVE</small><strong id="items"></strong></div>
       </div>
-      <div class="scene" id="sceneText"></div>
+      <div class="scene" id="sceneText" role="status" aria-live="polite" aria-atomic="true"></div>
       <div class="choice-box">
         <h3>What do you do?</h3>
         <div id="choices" class="choices"></div>
         <div class="custom-action">
-          <input id="customInput" placeholder="Or type your own action..." />
+          <input id="customInput" aria-label="Describe your next action" placeholder="Or type your own action..." />
           <button id="customBtn">Do It</button>
         </div>
       </div>
@@ -417,6 +427,9 @@
   </main>
 
   <footer><p>Historical Time Portal • immersive learning + entertainment • historical settings with fictional interactive scenes • your progress stays in this browser until you back it up</p><p><a href="#travelDesk">Back up your saved journey</a> · <a href="#destinations">Return to destinations</a></p></footer>
+<button id="backToTop" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+  <div id="a11yAnnouncements" class="sr-only" role="status" aria-live="polite"></div>
 <script src="script.js"></script>
+<script src="enhancements.js" defer></script>
 </body>
 </html>

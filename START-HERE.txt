@@ -8,7 +8,7 @@ START
 4. Choose a historical destination and any activity. There is no required order.
 
 TO PUT IT ON GITHUB / RENDER
-Upload index.html, styles.css, and script.js together into the same repository.
+Upload index.html, styles.css, script.js, and enhancements.js together into the same repository.
 For Render, use a Static Site with the publish directory set to . (a single dot).
 No build command or paid services are required for this all-client-side site.
 
@@ -19,6 +19,13 @@ select Save Progress > Back Up My Portal and keep the downloaded JSON file.
 You can import that file through Save Progress > Restore My Backup.
 Private browsing can erase progress; ordinary downloads of this website do not
 transfer saved progress by themselves.
+
+WHAT CHANGED IN THE UX UPDATE
+Search all 20 destinations by keyword, expand/collapse quick portals, see the
+selected experience more clearly, use the Back to Top button, and navigate
+with the sticky ribbon. The portal now has richer hover and scene transitions,
+improved mobile layouts and touch targets, and reduced-motion support.
+Your existing browser progress remains untouched.
 
 WHAT'S INCLUDED
 20 worlds; role-play; free exploration; stories and chronicles; Titanic six-
