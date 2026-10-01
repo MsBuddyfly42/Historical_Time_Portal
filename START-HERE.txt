@@ -1,0 +1,35 @@
+TEMPLAR'S HISTORICAL TIME PORTAL — COMPLETE WEBSITE
+
+START
+1. Unzip the final package into a folder on your computer.
+2. Open index.html in Chrome, Edge, or another modern browser.
+3. Use the navigation ribbon to jump to Destinations, Active World, Titanic,
+   Explore, Games, Calendar, or Save Progress.
+4. Choose a historical destination and any activity. There is no required order.
+
+TO PUT IT ON GITHUB / RENDER
+Upload index.html, styles.css, and script.js together into the same repository.
+For Render, use a Static Site with the publish directory set to . (a single dot).
+No build command or paid services are required for this all-client-side site.
+
+YOUR SAVED JOURNEY
+Progress is stored locally in the browser/device you use.
+Before changing devices, clearing browser data, or reinstalling a browser,
+select Save Progress > Back Up My Portal and keep the downloaded JSON file.
+You can import that file through Save Progress > Restore My Backup.
+Private browsing can erase progress; ordinary downloads of this website do not
+transfer saved progress by themselves.
+
+WHAT'S INCLUDED
+20 worlds; role-play; free exploration; stories and chronicles; Titanic six-
+chapter experience; mystery casebook; games; characters and saved personas;
+markets, food and local entertainment; living calendar; artifacts; passport;
+journal; saved memories; atmosphere, route and activity randomizers; optional
+quests and achievements; backup and restore.
+
+HISTORY NOTE
+This is an entertainment and introductory educational experience. Characters,
+conversations, shops, mysteries, and many scenes are fictional reconstructions.
+Real historical events are identified in each world. Serious history is treated
+in a separate non-scored Witness & Remembrance section, not as a survival game.
+This version is self-contained, works offline, and does not fetch external content.
