@@ -1,3 +1,5 @@
+/* GAME RESET */
+*,*:before,*:after{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0}button,input,select,textarea{font:inherit}button{touch-action:manipulation}img,svg{max-width:100%;height:auto}
 
 /* === PLAYABLE HISTORICAL WORLD === */
 .playable-mode{margin:0;background:#070b18;color:#f7f1df;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Arial,sans-serif}
