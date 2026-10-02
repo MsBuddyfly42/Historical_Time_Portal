@@ -316,3 +316,10 @@
 @keyframes dialogueLineIn{from{opacity:.2;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:620px){.dialogue-options{grid-template-columns:1fr}.dialogue-options [data-talk-leave]{grid-column:auto}.dialogue-line{max-width:94%}.dialogue-transcript{max-height:38vh}}
 @media(prefers-reduced-motion:reduce){.dialogue-line,.dialogue-options button{animation:none!important;transition:none!important}}
+
+/* === DIRECT DOOR CLICK FIX === */
+.world-object.direct-travel,.world-label.direct-travel-label{cursor:pointer}
+.world-object.direct-travel:hover{filter:drop-shadow(0 0 16px #ffe7a3) drop-shadow(0 8px 8px #0006)!important}
+.world-label.direct-travel-label{appearance:none;font:inherit}
+.world-label.direct-travel-label:not(:disabled):hover{background:#fff0b7;color:#251b29;border-color:#ffe39b;box-shadow:0 0 14px #ffdc7d88}
+.world-label.direct-travel-label:disabled{cursor:not-allowed;opacity:.58}
