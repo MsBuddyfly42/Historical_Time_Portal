@@ -601,7 +601,8 @@ const achievements={
  storyteller:{title:'Story Solver',desc:'Resolve at least 3 multi-step story threads.',test:()=>['westPayrollSolved','victorianMessageSolved','apolloSignalSolved','romeWaterSolved','renPrintSolved'].filter(f=>state.flags[f]).length>=3},
  scholar:{title:'Chronicle Scholar',desc:'Unlock and visit the Chronicle Archive.',test:()=>state.visited.includes('archive')||state.discoveries.some(d=>d.startsWith('archive:'))},
  quester:{title:'Era Specialist',desc:'Complete 10 era objectives.',test:()=>completedQuestCount()>=10},
- master:{title:'Historical Traveler',desc:'Reach 85% overall exploration progress.',test:()=>completionPercent()>=85}
+ master:{title:'Historical Traveler',desc:'Reach 85% overall exploration progress.',test:()=>completionPercent()>=85},
+ completionist:{title:'Keeper of the Twenty Eras',desc:'Reach 100% overall exploration progress.',test:()=>completionPercent()>=100}
 };
 state.achievements=state.achievements||{};
 function totalDiscoverables(){return Object.values(scenes).reduce((n,s)=>n+s.objects.filter(o=>o.action!=='travel').length+s.items.length,0)}
@@ -612,7 +613,7 @@ function completionPercent(){
  return Math.round((visitPart*.35+questPart*.35+discoverPart*.30)*100)
 }
 function checkAchievements(){
- for(const [id,a] of Object.entries(achievements)){if(!state.achievements[id]&&a.test()){state.achievements[id]=true;addJournal('Achievement: '+a.title,a.desc);showToast('Achievement unlocked: '+a.title+' 🏆')}}
+ for(const [id,a] of Object.entries(achievements)){if(!state.achievements[id]&&a.test()){state.achievements[id]=true;addJournal('Achievement: '+a.title,a.desc);if(id==='completionist'){root.classList.add('world-complete');showToast('All twenty eras completed — Keeper of the Twenty Eras 🏆')}else showToast('Achievement unlocked: '+a.title+' 🏆')}}
  save()
 }
 function renderAchievements(){
@@ -729,7 +730,7 @@ function updateQuest(){
  const done=q.targets.filter(targetDone).length,pct=Math.round(done/q.targets.length*100);questTitle.textContent=q.title;questProgress.textContent=done+' of '+q.targets.length+' discoveries complete';questFill.style.width=pct+'%';
  if(done===q.targets.length&&!state.quests[state.scene]){state.quests[state.scene]=true;addJournal('Completed: '+q.title,'Reward earned: '+q.reward+'.');save();showToast('Objective complete — '+q.reward+' ✨')}
 }
-function renderScene(){
+function renderScene(){if(state.achievements?.completionist)root.classList.add('world-complete');
  const s=scenes[state.scene];sceneName.textContent=s.name;backdrop.className='scene-backdrop '+s.class;renderScenery(s.class);renderFx();journeyTitle.textContent=s.title;journeyText.textContent=s.text;objects.innerHTML='';labels.innerHTML='';collectibles.innerHTML='';
  const activeObjects=sceneObjectsForTime(state.scene,s);activeObjects.forEach((obj,index)=>{const unlocked=isUnlocked(obj);const el=document.createElement('div');el.className='world-object '+obj.type+(unlocked?'':' locked');el.dataset.objectId=obj.id;el.style.left=obj.x+'%';el.style.top=obj.y+'%';if(obj.type==='npc'){const fig=makeNpcSprite(obj,index);if(patrolNpcIds.has(obj.id))fig.classList.add('patrolling');el.appendChild(fig)}else if(obj.type==='door'){el.innerHTML='<span class="door-frame"><i class="door-panel"></i><i class="door-knob"></i></span>'}else if(obj.icon)el.textContent=obj.icon;objects.appendChild(el);const lab=document.createElement('div');lab.className='world-label'+(unlocked?'':' locked-label');lab.style.left=obj.x+'%';lab.style.top=(obj.y-(obj.type==='portal'?13:9))+'%';lab.textContent=unlocked?obj.label:(obj.lockedLabel||'🔒 '+obj.label);labels.appendChild(lab)});
  for(let i=0;i<3;i++){const walker=document.createElement('div');walker.className='ambient-walker w'+i;walker.style.top=(46+i*14)+'%';const fig=makeNpcSprite({id:'ambient'+i},i+2);fig.classList.add('walking');walker.appendChild(fig);objects.appendChild(walker)}
