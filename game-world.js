@@ -470,7 +470,7 @@ if(westBoard)westBoard.choices=[
 ];
 
 let state=store.get('htp-playable-v2',null)||store.get('htp-playable-v1',null)||{scene:'hall',x:50,y:90,visited:['hall'],discoveries:[],keepsakes:[],journal:[],quests:{},flags:{},timeIndex:1,events:[]};
-state.dialogues=state.dialogues||{};state.visited=Array.isArray(state.visited)?state.visited:['hall'];state.discoveries=Array.isArray(state.discoveries)?state.discoveries:[];state.keepsakes=Array.isArray(state.keepsakes)?state.keepsakes:[];state.journal=Array.isArray(state.journal)?state.journal:[];state.quests=state.quests||{};state.flags=state.flags||{};state.events=Array.isArray(state.events)?state.events:[];state.timeIndex=Number.isInteger(state.timeIndex)?state.timeIndex:1;
+state.achievements=state.achievements||{};state.dialogues=state.dialogues||{};state.visited=Array.isArray(state.visited)?state.visited:['hall'];state.discoveries=Array.isArray(state.discoveries)?state.discoveries:[];state.keepsakes=Array.isArray(state.keepsakes)?state.keepsakes:[];state.journal=Array.isArray(state.journal)?state.journal:[];state.quests=state.quests||{};state.flags=state.flags||{};state.events=Array.isArray(state.events)?state.events:[];state.timeIndex=Number.isInteger(state.timeIndex)?state.timeIndex:1;
 if(!scenes[state.scene]){state.scene='hall';state.x=50;state.y=90}
 const questCard=document.createElement('div');questCard.className='quest-card';questCard.innerHTML='<p class="mini-kicker">ERA OBJECTIVE</p><h2 id="questTitle">Explore freely</h2><div id="questProgress">No required objective in the Time Hall.</div><div class="quest-meter"><i id="questFill"></i></div>';side.insertBefore(questCard,side.children[1]||null);
 const questTitle=$('#questTitle'),questProgress=$('#questProgress'),questFill=$('#questFill');
@@ -760,7 +760,6 @@ const achievements={
  master:{title:'Historical Traveler',desc:'Reach 85% overall exploration progress.',test:()=>completionPercent()>=85},
  completionist:{title:'Keeper of the Twenty Eras',desc:'Reach 100% overall exploration progress.',test:()=>completionPercent()>=100}
 };
-state.achievements=state.achievements||{};
 function totalDiscoverables(){return Object.values(scenes).reduce((n,s)=>n+s.objects.filter(o=>o.action!=='travel').length+s.items.length,0)}
 function completionPercent(){
  const visitPart=Math.min(1,state.visited.filter(v=>scenes[v]?.passport).length/20);
