@@ -323,3 +323,7 @@
 .world-label.direct-travel-label{appearance:none;font:inherit}
 .world-label.direct-travel-label:not(:disabled):hover{background:#fff0b7;color:#251b29;border-color:#ffe39b;box-shadow:0 0 14px #ffdc7d88}
 .world-label.direct-travel-label:disabled{cursor:not-allowed;opacity:.58}
+
+/* === WALK-TO-DOOR AUTO-ENTRY FIX === */
+.world-object.travel-pending{filter:drop-shadow(0 0 18px #ffe89d) drop-shadow(0 8px 8px #0007)!important}
+.world-object.travel-pending.door .door-frame{box-shadow:0 0 0 3px #ffe59a99,0 0 22px #ffe59aaa,0 8px 14px #0007}
