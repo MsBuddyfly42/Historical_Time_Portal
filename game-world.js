@@ -1,71 +1,172 @@
 (()=>{'use strict';
 const root=document.getElementById('timeWorld'); if(!root)return;
-const stage=document.getElementById('gameStage'), traveler=document.getElementById('traveler'), objects=document.getElementById('worldObjects'), labels=document.getElementById('worldLabels'), collectibles=document.getElementById('collectibles');
-const exploreBtn=document.getElementById('exploreBtn'), nearbyInfo=document.getElementById('nearbyInfo'), sceneName=document.getElementById('gameSceneName'), journeyTitle=document.getElementById('journeyTitle'), journeyText=document.getElementById('journeyText');
-const discoveryCount=document.getElementById('gameDiscoveryCount'), keepsakeCount=document.getElementById('gameKeepsakeCount'), passportList=document.getElementById('passportList'), dialog=document.getElementById('worldDialog'), dialogContent=document.getElementById('worldDialogContent'), mapDialog=document.getElementById('timeMapDialog'), mapGrid=document.getElementById('timeMapGrid'), journalDialog=document.getElementById('gameJournalDialog'), journalEntries=document.getElementById('gameJournalEntries'), hint=document.getElementById('interactionHint'), toast=document.getElementById('sceneToast'), backdrop=document.getElementById('sceneBackdrop');
-const clamp=(n,a,b)=>Math.max(a,Math.min(b,n)); const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
-const safeStore={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
-const state=safeStore.get('htp-playable-v1',{scene:'hall',x:50,y:78,visited:['hall'],discoveries:[],keepsakes:[],journal:[]});
-const scenes={
- hall:{name:'Time Hall',class:'hall',spawn:{x:50,y:78},title:'The Hall Between Centuries',text:'Walk toward a glowing portal. Get close and explore to step into another era.',objects:[
-  {id:'titanicPortal',type:'portal',x:18,y:34,label:'1912 • Titanic',icon:'',action:'travel',to:'titanic',radius:12},
-  {id:'westPortal',type:'portal',x:40,y:32,label:'1880s • Frontier West',action:'travel',to:'west',radius:12},
-  {id:'egyptPortal',type:'portal',x:62,y:32,label:'Ancient Egypt',action:'travel',to:'egypt',radius:12},
-  {id:'medievalPortal',type:'portal',x:84,y:34,label:'Medieval Europe',action:'travel',to:'medieval',radius:12},
-  {id:'keeper',type:'npc',x:50,y:58,label:'Keeper of the Hall',icon:'🧙🏽‍♀️',action:'talk',title:'Keeper of the Hall',body:'Every doorway here leads to a different human story. Walk close to a portal and step through when you are ready.',radius:9}
- ],items:[{id:'hallKey',x:50,y:24,icon:'🗝️',name:'Chronicle Key'}]},
- titanic:{name:'RMS Titanic • 1912',class:'titanic',spawn:{x:50,y:82},title:'Aboard RMS Titanic',text:'Explore the decks before the voyage turns tragic. Meet people, notice details, and learn how the ship worked.',objects:[
-  {id:'ship',type:'building',x:50,y:48,label:'RMS Titanic',icon:'🚢',action:'inspect',title:'RMS Titanic',body:'A vast ocean liner carrying passengers and crew across the North Atlantic in April 1912.',radius:15},
-  {id:'steward',type:'npc',x:25,y:66,label:'Steward',icon:'🧑🏻‍✈️',action:'talk',title:'Ship Steward',body:'The steward points out the promenade, dining rooms, cabins, and the routines that kept a floating city running.',radius:8},
-  {id:'wireless',type:'building',x:78,y:62,label:'Wireless Room',icon:'📡',action:'inspect',title:'Wireless Room',body:'Operators sent passengers’ messages and received navigational traffic through wireless telegraphy.',radius:10},
-  {id:'return',type:'portal',x:91,y:84,label:'Return to Time Hall',action:'travel',to:'hall',radius:10}
- ],items:[{id:'ticket',x:17,y:41,icon:'🎟️',name:'Replica Passage Ticket'},{id:'postcard',x:71,y:31,icon:'💌',name:'Ship Postcard'}]},
- west:{name:'Frontier West • 1880s',class:'west',spawn:{x:50,y:84},title:'Dusty Trail Territory',text:'Walk Main Street, meet townspeople, and explore the everyday life of a fictional frontier settlement based on period patterns.',objects:[
-  {id:'saloon',type:'building',x:20,y:53,label:'Golden Spur Saloon',icon:'🏚️',action:'inspect',title:'Golden Spur Saloon',body:'Music, meals, lodging arrangements, news, and arguments all meet under one roof.',radius:11},
-  {id:'sheriff',type:'building',x:76,y:48,label:'Sheriff’s Office',icon:'⭐',action:'inspect',title:'Sheriff’s Office',body:'A small office where local disputes, warrants, reports, and town concerns are handled.',radius:11},
-  {id:'reporter',type:'npc',x:46,y:59,label:'Town Reporter',icon:'🧑🏽‍📰',action:'talk',title:'Town Reporter',body:'The reporter is chasing three stories today: a missing payroll box, a delayed stagecoach, and a ranch dispute.',radius:8},
-  {id:'return',type:'portal',x:91,y:84,label:'Return to Time Hall',action:'travel',to:'hall',radius:10}
- ],items:[{id:'badge',x:78,y:72,icon:'🌟',name:'Tin Deputy Badge'},{id:'gazette',x:32,y:32,icon:'📰',name:'Frontier Gazette'}]},
- egypt:{name:'Ancient Egypt',class:'egypt',spawn:{x:50,y:83},title:'Along the Nile',text:'Explore a riverside settlement of workshops, scribes, markets, temples, and household life.',objects:[
-  {id:'pyramid',type:'building',x:23,y:43,label:'Monument District',icon:'🔺',action:'inspect',title:'Monument District',body:'Monumental architecture required planning, stone work, transport, skilled labor, food supply, and administration.',radius:12},
-  {id:'market',type:'building',x:68,y:58,label:'Market',icon:'🧺',action:'inspect',title:'Riverside Market',body:'Grain, linen, pottery, produce, tools, and household goods move through a busy market.',radius:11},
-  {id:'scribe',type:'npc',x:48,y:48,label:'Scribe',icon:'🧑🏾‍🏫',action:'talk',title:'A Working Scribe',body:'The scribe explains that writing supported taxation, trade, records, religious life, and administration.',radius:8},
-  {id:'return',type:'portal',x:91,y:84,label:'Return to Time Hall',action:'travel',to:'hall',radius:10}
- ],items:[{id:'scarab',x:81,y:36,icon:'🪲',name:'Blue Scarab Keepsake'},{id:'papyrus',x:36,y:68,icon:'📜',name:'Papyrus Fragment'}]},
- medieval:{name:'Medieval Europe',class:'medieval',spawn:{x:50,y:83},title:'Castle & Village',text:'Walk between the castle gate, workshops, village homes, market stalls, and the people who keep the settlement running.',objects:[
-  {id:'castle',type:'building',x:50,y:34,label:'Castle Gate',icon:'🏰',action:'inspect',title:'Castle Gate',body:'The castle is a fortified residence and administrative center, not simply a fairy-tale palace.',radius:14},
-  {id:'smith',type:'building',x:23,y:62,label:'Smithy',icon:'⚒️',action:'inspect',title:'Village Smithy',body:'Metalworkers repair tools, fittings, household objects, tack, and equipment used throughout the settlement.',radius:10},
-  {id:'herbalist',type:'npc',x:72,y:60,label:'Herbalist',icon:'🧑🏻‍🌾',action:'talk',title:'Village Herbalist',body:'The herbalist keeps a practical garden and shares local knowledge about food, remedies, and seasonal work.',radius:8},
-  {id:'return',type:'portal',x:91,y:84,label:'Return to Time Hall',action:'travel',to:'hall',radius:10}
- ],items:[{id:'coin',x:18,y:37,icon:'🪙',name:'Market Coin'},{id:'ribbon',x:76,y:35,icon:'🎗️',name:'Festival Ribbon'}]}
-};
-function save(){safeStore.set('htp-playable-v1',state)}
-function showToast(msg){toast.textContent=msg;toast.classList.add('show');clearTimeout(showToast.t);showToast.t=setTimeout(()=>toast.classList.remove('show'),1600)}
-function addJournal(title,text){if(!state.journal.some(e=>e.title===title)){state.journal.unshift({title,text,date:new Date().toLocaleDateString()});state.journal=state.journal.slice(0,40);save()}}
-function renderScene(){
- const s=scenes[state.scene]||scenes.hall; sceneName.textContent=s.name; backdrop.className='scene-backdrop '+s.class; journeyTitle.textContent=s.title;journeyText.textContent=s.text;
- objects.innerHTML='';labels.innerHTML='';collectibles.innerHTML='';
- s.objects.forEach(o=>{const el=document.createElement('div');el.className='world-object '+o.type;el.style.left=o.x+'%';el.style.top=o.y+'%';if(o.icon)el.textContent=o.icon;objects.appendChild(el);const lab=document.createElement('div');lab.className='world-label';lab.style.left=o.x+'%';lab.style.top=(o.y-(o.type==='portal'?15:10))+'%';lab.textContent=o.label;labels.appendChild(lab)});
- s.items.forEach(i=>{if(state.keepsakes.includes(i.id))return;const el=document.createElement('div');el.className='collectible';el.style.left=i.x+'%';el.style.top=i.y+'%';el.textContent=i.icon;el.setAttribute('aria-label',i.name);collectibles.appendChild(el)});
- if(!state.visited.includes(state.scene)){state.visited.push(state.scene);addJournal('Arrived: '+s.name,'You entered '+s.name+'.');save()}
- renderStatus();moveTo(state.x??s.spawn.x,state.y??s.spawn.y,false);showToast('Entered '+s.name);
+const $=s=>root.querySelector(s);
+const stage=$('#gameStage'), traveler=$('#traveler'), objects=$('#worldObjects'), labels=$('#worldLabels'), collectibles=$('#collectibles');
+const exploreBtn=$('#exploreBtn'), nearbyInfo=$('#nearbyInfo'), sceneName=$('#gameSceneName'), journeyTitle=$('#journeyTitle'), journeyText=$('#journeyText');
+const discoveryCount=$('#gameDiscoveryCount'), keepsakeCount=$('#gameKeepsakeCount'), passportList=$('#passportList');
+const dialog=$('#worldDialog'), dialogContent=$('#worldDialogContent'), mapDialog=$('#timeMapDialog'), mapGrid=$('#timeMapGrid'), journalDialog=$('#gameJournalDialog'), journalEntries=$('#gameJournalEntries');
+const hint=$('#interactionHint'), toast=$('#sceneToast'), backdrop=$('#sceneBackdrop'), side=$('.game-side');
+const clamp=(n,a,b)=>Math.max(a,Math.min(b,n)), distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+const store={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
+const hardScenes={};
+const o=(id,type,x,y,label,icon,action,title,body,extra={})=>({id,type,x,y,label,icon,action,title,body,...extra});
+const item=(id,x,y,icon,name)=>({id,x,y,icon,name});
+const S=(name,cls,spawn,title,text,objects,items=[],meta={})=>({name,class:cls,spawn,title,text,objects,items,passport:meta.passport!==false,quest:meta.quest||null});
+const returnPortal=(x=91,y=86)=>o('return','portal',x,y,'Return to Time Hall','', 'travel','Return to Time Hall','',{to:'hall',radius:10});
+
+hardScenes.hall=S('Time Hall','hall',{x:50,y:90},'The Hall Between Centuries','Walk to any glowing doorway. Every portal leads to a place where you can move, meet people, enter locations, and collect discoveries.',[
+ o('pTitanic','portal',12,26,'1912 • Titanic','', 'travel','','',{to:'titanic',radius:10}),
+ o('pWest','portal',31,26,'1880s • West','', 'travel','','',{to:'west',radius:10}),
+ o('pEgypt','portal',50,26,'Ancient Egypt','', 'travel','','',{to:'egypt',radius:10}),
+ o('pMedieval','portal',69,26,'Medieval Europe','', 'travel','','',{to:'medieval',radius:10}),
+ o('pVictorian','portal',88,26,'1890s • Victorian','', 'travel','','',{to:'victorian',radius:10}),
+ o('pFifties','portal',18,56,'1950s • Main Street','', 'travel','','',{to:'fifties',radius:10}),
+ o('pRoaring','portal',38,56,'1920s • Jazz Age','', 'travel','','',{to:'roaring',radius:10}),
+ o('pApollo','portal',59,56,'1969 • Apollo','', 'travel','','',{to:'apollo',radius:10}),
+ o('pRome','portal',79,56,'Ancient Rome','', 'travel','','',{to:'rome',radius:10}),
+ o('pRenaissance','portal',25,79,'1500s • Renaissance','', 'travel','','',{to:'renaissance',radius:10}),
+ o('pRevolution','portal',50,79,'1776 • Revolution','', 'travel','','',{to:'revolution',radius:10}),
+ o('keeper','npc',77,79,'Keeper of the Hall','🧙🏽‍♀️','talk','Keeper of the Hall','Every era has ordinary people as well as famous events. Walk slowly, talk to people, enter buildings, and notice the details.',{radius:8})
+],[item('chronicleKey',63,88,'🗝️','Chronicle Key')],{passport:false});
+
+hardScenes.titanic=S('RMS Titanic • 1912','titanic',{x:50,y:84},'Aboard RMS Titanic','Explore the exterior decks, speak with crew, then enter the ship to continue your journey.',[
+ o('ship','building',50,45,'RMS Titanic','🚢','inspect','RMS Titanic','A vast ocean liner carrying passengers and crew across the North Atlantic in April 1912.',{radius:14}),
+ o('steward','npc',24,66,'Deck Steward','🧑🏻‍✈️','talk','Deck Steward','The steward points toward passenger spaces, lifeboats, promenades, and the routines that kept the ship operating.',{radius:8}),
+ o('wireless','building',77,60,'Wireless Room','📡','inspect','Wireless Telegraphy','Wireless operators handled passenger messages and navigational traffic, sometimes for very long hours.',{radius:10}),
+ o('inside','door',54,61,'Enter the Ship','🚪','travel','Enter Titanic','',{to:'titanicInterior',radius:9}),
+ returnPortal()
+],[item('ticket',15,39,'🎟️','Replica Passage Ticket'),item('postcard',72,31,'💌','Ship Postcard')],{quest:{title:'Life Aboard',targets:['steward','wireless','ticket'],reward:'Passenger Journal Stamp'}});
+
+hardScenes.titanicInterior=S('Titanic • Interior','titanicInterior',{x:50,y:84},'Inside the Ship','Walk through an interpretation of passenger spaces. This is a respectful educational setting, not a disaster game.',[
+ o('stairs','building',50,35,'Grand Staircase','🪜','inspect','Grand Staircase','The famous first-class staircase was one of several vertical circulation spaces aboard the ship.',{radius:13}),
+ o('library','building',22,58,'Second-Class Library','📚','inspect','Second-Class Library','A quieter passenger room for reading, writing, and conversation.',{radius:10}),
+ o('musician','npc',75,57,'Ship Musician','🎻','talk','Ship Musician','Music was part of passenger life aboard ocean liners, including ensembles that played in public rooms.',{radius:8}),
+ o('backDeck','door',90,84,'Return to Deck','🚪','travel','Back to Deck','',{to:'titanic',radius:9})
+],[item('menu',36,70,'📜','Dining Menu Keepsake')],{passport:false,quest:{title:'Inside the Ship',targets:['stairs','library','musician'],reward:'Interior Explorer Stamp'}});
+
+hardScenes.west=S('Frontier West • 1880s','west',{x:50,y:84},'Dusty Trail Territory','Walk Main Street, enter the saloon, meet townspeople, and explore a fictional frontier settlement based on period patterns.',[
+ o('saloon','building',20,49,'Golden Spur Saloon','🏚️','travel','Enter the Saloon','',{to:'westSaloon',radius:11}),
+ o('sheriff','building',76,47,'Sheriff’s Office','⭐','inspect','Sheriff’s Office','A small office where reports, warrants, disputes, and town concerns are handled.',{radius:11}),
+ o('reporter','npc',46,62,'Town Reporter','🧑🏽‍📰','talk','Town Reporter','The reporter is chasing three stories today: a delayed stagecoach, a missing payroll box, and a ranch dispute.',{radius:8}),
+ returnPortal()
+],[item('badge',79,71,'🌟','Tin Deputy Badge'),item('gazette',31,34,'📰','Frontier Gazette')],{quest:{title:'Front Page Story',targets:['reporter','sheriff','gazette'],reward:'Reporter Stamp'}});
+
+hardScenes.westSaloon=S('Golden Spur Saloon','westInterior',{x:50,y:84},'Inside the Golden Spur','Talk to the pianist and barkeep, then look around the room for clues about local life.',[
+ o('piano','building',24,42,'Upright Piano','🎹','inspect','Saloon Piano','Music, dancing, meals, lodging, and social gatherings could all be part of saloon life, depending on the place.',{radius:10}),
+ o('barkeep','npc',70,43,'Barkeep','🧔🏽','talk','Barkeep','Travelers bring news from distant towns. The barkeep knows which stagecoaches arrived and which ones did not.',{radius:8}),
+ o('board','building',48,64,'Notice Board','📌','inspect','Town Notice Board','Job notices, lost-property messages, public announcements, and advertisements share wall space.',{radius:9}),
+ o('backStreet','door',91,84,'Back to Main Street','🚪','travel','','',{to:'west',radius:9})
+],[item('pokerChip',37,70,'🔴','Wooden Gaming Token')],{passport:false,quest:{title:'Saloon Stories',targets:['piano','barkeep','board'],reward:'Golden Spur Stamp'}});
+
+hardScenes.egypt=S('Ancient Egypt','egypt',{x:50,y:83},'Along the Nile','Explore a riverside settlement of workshops, scribes, markets, temples, and household life.',[
+ o('monuments','building',22,42,'Monument District','🔺','inspect','Monument District','Monumental building required planning, skilled labor, food supply, tools, transport, and administration.',{radius:12}),
+ o('market','building',70,58,'Riverside Market','🧺','inspect','Riverside Market','Grain, linen, pottery, produce, tools, and household goods move through a busy market.',{radius:11}),
+ o('scribe','npc',47,48,'Working Scribe','🧑🏾‍🏫','talk','A Working Scribe','Writing supported taxation, trade, legal records, religion, administration, and private communication.',{radius:8}),
+ returnPortal()
+],[item('scarab',81,35,'🪲','Blue Scarab Keepsake'),item('papyrus',34,69,'📜','Papyrus Fragment')],{quest:{title:'River Settlement',targets:['market','scribe','papyrus'],reward:'Nile Visitor Stamp'}});
+
+hardScenes.medieval=S('Medieval Europe','medieval',{x:50,y:83},'Castle & Village','Walk between workshops, village homes, the castle gate, and people who keep the settlement running.',[
+ o('castle','building',50,34,'Castle Gate','🏰','travel','Enter the Castle','',{to:'medievalCastle',radius:13}),
+ o('smith','building',22,61,'Smithy','⚒️','inspect','Village Smithy','Metalworkers repair tools, fittings, household objects, tack, and equipment used throughout the settlement.',{radius:10}),
+ o('herbalist','npc',72,60,'Herbalist','🧑🏻‍🌾','talk','Village Herbalist','The herbalist keeps a practical garden and shares local knowledge about food, remedies, and seasonal work.',{radius:8}),
+ returnPortal()
+],[item('coin',17,37,'🪙','Market Coin'),item('ribbon',77,36,'🎗️','Festival Ribbon')],{quest:{title:'Village Day',targets:['smith','herbalist','coin'],reward:'Village Life Stamp'}});
+
+hardScenes.medievalCastle=S('Medieval Castle','castleInterior',{x:50,y:84},'Inside the Castle','Explore working castle spaces rather than only royal rooms.',[
+ o('greatHall','building',50,34,'Great Hall','🕯️','inspect','Great Hall','A large multipurpose room for dining, administration, hospitality, ceremonies, and household activity.',{radius:12}),
+ o('kitchen','building',22,59,'Castle Kitchen','🍲','inspect','Castle Kitchen','Large households required cooks, fuel, storage, water, food preparation, and careful coordination.',{radius:10}),
+ o('steward','npc',74,58,'Household Steward','🧑🏼‍💼','talk','Household Steward','The steward tracks supplies, workers, visitors, expenses, and the many practical needs of the household.',{radius:8}),
+ o('backVillage','door',91,84,'Back to Village','🚪','travel','','',{to:'medieval',radius:9})
+],[item('seal',37,70,'🕯️','Wax Seal')],{passport:false,quest:{title:'Castle Household',targets:['greatHall','kitchen','steward'],reward:'Castle Household Stamp'}});
+
+hardScenes.victorian=S('Victorian City • 1890s','victorian',{x:50,y:84},'Gaslight & Newspapers','Walk a busy late-19th-century city street of shops, newspapers, transit, parlors, and public life.',[
+ o('newspaper','building',19,47,'Newspaper Office','📰','inspect','Newspaper Office','Editors, typesetters, reporters, printers, delivery workers, and advertisers keep a city paper moving.',{radius:11}),
+ o('theatre','building',73,43,'Theatre','🎭','inspect','City Theatre','Theatres offered drama, music, comedy, variety performances, and public spectacle.',{radius:11}),
+ o('newsboy','npc',47,61,'News Seller','🧑🏻','talk','News Seller','Headlines travel quickly through the street as sellers call out the latest edition.',{radius:8}),
+ returnPortal()
+],[item('penny',80,68,'🪙','Victorian Penny'),item('playbill',30,34,'📃','Theatre Playbill')],{quest:{title:'City Edition',targets:['newspaper','theatre','newsboy'],reward:'Gaslight City Stamp'}});
+
+hardScenes.fifties=S('1950s Main Street','fifties',{x:50,y:84},'Mid-Century Main Street','Explore a stylized American Main Street with a diner, record shop, cinema, and neighborhood life.',[
+ o('diner','building',21,48,'Corner Diner','🍔','inspect','Corner Diner','Diners and lunch counters could be social gathering places, though access and treatment varied greatly by location and segregation laws.',{radius:11}),
+ o('records','building',73,46,'Record Shop','🎵','inspect','Record Shop','Popular music formats, radio, jukeboxes, and record stores helped shape youth culture and entertainment.',{radius:11}),
+ o('student','npc',46,62,'High-School Student','🧑🏽‍🎓','talk','A Local Student','The student is saving for a new record and talking about the Saturday movie matinee.',{radius:8}),
+ returnPortal()
+],[item('nickel',78,70,'🪙','Jukebox Nickel'),item('ticket50',30,34,'🎫','Movie Ticket Stub')],{quest:{title:'Saturday on Main Street',targets:['diner','records','ticket50'],reward:'Main Street Stamp'}});
+
+hardScenes.roaring=S('Roaring Twenties','roaring',{x:50,y:84},'Jazz-Age City','Explore newspapers, radio, nightlife, fashion, and rapid technological and cultural change.',[
+ o('jazz','building',20,47,'Jazz Club','🎷','inspect','Jazz Club','Jazz flourished through Black musical innovation and spread through clubs, recordings, radio, touring musicians, and dance culture.',{radius:11}),
+ o('radio','building',72,44,'Radio Studio','📻','inspect','Radio Studio','Commercial radio expanded quickly in the 1920s, changing entertainment, advertising, politics, and shared public culture.',{radius:11}),
+ o('photographer','npc',48,61,'Street Photographer','📷','talk','Street Photographer','The photographer watches changing clothes, cars, advertisements, and crowds rush through the city.',{radius:8}),
+ returnPortal()
+],[item('record',78,69,'💿','Shellac Record'),item('pressCard',31,34,'🪪','Press Card')],{quest:{title:'City in Motion',targets:['jazz','radio','photographer'],reward:'Jazz Age Stamp'}});
+
+hardScenes.apollo=S('Apollo Era • 1969','apollo',{x:50,y:84},'Moonshot Summer','Explore mission-control culture, engineering work, television, and the public excitement surrounding Apollo 11.',[
+ o('control','building',22,44,'Mission Control','🖥️','inspect','Mission Control','Teams of flight controllers monitored systems, trajectories, communications, procedures, and rapidly changing conditions.',{radius:12}),
+ o('tv','building',73,48,'Watch Party','📺','inspect','Television Watch Party','Millions followed the mission through television and radio, experiencing the moon landing as a shared public event.',{radius:10}),
+ o('engineer','npc',47,62,'Engineer','🧑🏾‍🔧','talk','Systems Engineer','Spaceflight depended on large teams across engineering, manufacturing, mathematics, computing, logistics, training, and operations.',{radius:8}),
+ returnPortal()
+],[item('missionPatch',80,69,'🚀','Mission Patch'),item('slideRule',30,35,'📏','Slide Rule')],{quest:{title:'Mission Ready',targets:['control','engineer','missionPatch'],reward:'Apollo Visitor Stamp'}});
+
+hardScenes.rome=S('Ancient Rome','rome',{x:50,y:84},'Roman City','Explore a forum, food stall, bath complex, apartments, and the movement of people through a dense ancient city.',[
+ o('forum','building',22,43,'Forum','🏛️','inspect','Forum','Public squares could host commerce, administration, law, religious activity, monuments, and political communication.',{radius:12}),
+ o('thermae','building',73,46,'Public Baths','♨️','inspect','Public Baths','Bath complexes could include bathing rooms, exercise spaces, social activity, services, and elaborate water systems.',{radius:11}),
+ o('vendor','npc',47,62,'Food Vendor','🧑🏽‍🍳','talk','Street Food Vendor','Not every urban resident cooked every meal at home; food shops and prepared foods were part of city life.',{radius:8}),
+ returnPortal()
+],[item('romanCoin',80,69,'🪙','Roman Coin Keepsake'),item('oilLamp',31,34,'🪔','Small Oil Lamp')],{quest:{title:'A Day in the City',targets:['forum','thermae','vendor'],reward:'Roman City Stamp'}});
+
+hardScenes.renaissance=S('Renaissance City • 1500s','renaissance',{x:50,y:84},'Workshop & Piazza','Explore printing, art workshops, markets, music, craft, and urban life in a Renaissance-inspired city.',[
+ o('printer','building',21,45,'Print Shop','🖨️','inspect','Print Shop','Movable-type printing transformed the production and circulation of books, pamphlets, images, arguments, and news.',{radius:11}),
+ o('atelier','building',73,44,'Artist Workshop','🎨','inspect','Artist Workshop','Workshops trained apprentices and produced paintings, sculpture, decorative work, designs, and commissions.',{radius:11}),
+ o('merchant','npc',47,62,'Cloth Merchant','🧑🏻‍💼','talk','Cloth Merchant','Trade networks connect local markets with textiles, dyes, luxury goods, raw materials, and distant ports.',{radius:8}),
+ returnPortal()
+],[item('print',80,70,'📜','Printed Broadside'),item('brush',31,34,'🖌️','Workshop Brush')],{quest:{title:'Ideas in the Piazza',targets:['printer','atelier','merchant'],reward:'Renaissance Stamp'}});
+
+hardScenes.revolution=S('Revolution-Era City • 1776','revolution',{x:50,y:84},'Print Shops & Public Debate','Explore a city shaped by war, political argument, trade disruption, newspapers, taverns, households, and messengers.',[
+ o('printshop','building',20,44,'Print Shop','📰','inspect','Print Shop','Printers produced newspapers, pamphlets, notices, political arguments, advertisements, and official information.',{radius:11}),
+ o('tavern','building',73,47,'Tavern','🍺','inspect','Tavern','Taverns could function as places for meals, lodging, business, mail, meetings, political discussion, and news.',{radius:11}),
+ o('messenger','npc',47,61,'Messenger','🏇','talk','City Messenger','News travels by horse, post, print, rumor, and personal networks. Wartime information can be late, incomplete, or contradictory.',{radius:8}),
+ returnPortal()
+],[item('broadside',79,70,'📜','Printed Broadside'),item('quill',30,34,'🪶','Writing Quill')],{quest:{title:'News of 1776',targets:['printshop','messenger','broadside'],reward:'Revolution-Era Stamp'}});
+
+const scenes=hardScenes;
+let state=store.get('htp-playable-v2',null)||store.get('htp-playable-v1',null)||{scene:'hall',x:50,y:90,visited:['hall'],discoveries:[],keepsakes:[],journal:[],quests:{}};
+state.visited=Array.isArray(state.visited)?state.visited:['hall'];state.discoveries=Array.isArray(state.discoveries)?state.discoveries:[];state.keepsakes=Array.isArray(state.keepsakes)?state.keepsakes:[];state.journal=Array.isArray(state.journal)?state.journal:[];state.quests=state.quests||{};
+if(!scenes[state.scene]){state.scene='hall';state.x=50;state.y=90}
+const questCard=document.createElement('div');questCard.className='quest-card';questCard.innerHTML='<p class="mini-kicker">ERA OBJECTIVE</p><h2 id="questTitle">Explore freely</h2><div id="questProgress">No required objective in the Time Hall.</div><div class="quest-meter"><i id="questFill"></i></div>';side.insertBefore(questCard,side.children[1]||null);
+const questTitle=$('#questTitle'),questProgress=$('#questProgress'),questFill=$('#questFill');
+function save(){store.set('htp-playable-v2',state)}
+function showToast(msg){toast.textContent=msg;toast.classList.add('show');clearTimeout(showToast.t);showToast.t=setTimeout(()=>toast.classList.remove('show'),1700)}
+function addJournal(title,text){if(!state.journal.some(e=>e.title===title)){state.journal.unshift({title,text,date:new Date().toLocaleDateString()});state.journal=state.journal.slice(0,60);save()}}
+function targetDone(id){return state.discoveries.includes(id)||state.keepsakes.includes(id)}
+function updateQuest(){
+ const q=scenes[state.scene].quest;if(!q){questTitle.textContent='Explore freely';questProgress.textContent='No required objective here. Wander wherever you like.';questFill.style.width='0%';return}
+ const done=q.targets.filter(targetDone).length,pct=Math.round(done/q.targets.length*100);questTitle.textContent=q.title;questProgress.textContent=done+' of '+q.targets.length+' discoveries complete';questFill.style.width=pct+'%';
+ if(done===q.targets.length&&!state.quests[state.scene]){state.quests[state.scene]=true;addJournal('Completed: '+q.title,'Reward earned: '+q.reward+'.');save();showToast('Objective complete — '+q.reward+' ✨')}
 }
-function renderStatus(){discoveryCount.textContent=state.discoveries.length;keepsakeCount.textContent=state.keepsakes.length;passportList.innerHTML=Object.entries(scenes).map(([k,s])=>'<span class="passport-stamp '+(state.visited.includes(k)?'visited':'')+'">'+(state.visited.includes(k)?'✓ ':'')+s.name.split('•')[0].trim()+'</span>').join('');renderMap()}
-function nearest(){const s=scenes[state.scene];let best=null,bestD=999;for(const o of s.objects){const d=dist({x:state.x,y:state.y},o);if(d<bestD){best=o;bestD=d}}return best&&bestD<=(best.radius||9)?best:null}
-function collectNearby(){const s=scenes[state.scene];for(const i of s.items){if(state.keepsakes.includes(i.id))continue;if(dist({x:state.x,y:state.y},i)<6){state.keepsakes.push(i.id);addJournal('Keepsake: '+i.name,'Found while exploring '+s.name+'.');save();showToast('Collected '+i.name+' ✨');renderScene();return}}}
-function updateNearby(){const n=nearest();if(n){nearbyInfo.innerHTML='<b>'+n.label+'</b><br>Walk a little closer and explore.';exploreBtn.disabled=false;hint.classList.remove('hidden');hint.textContent=n.action==='travel'?'Step through portal':'Press E or tap Explore'}else{nearbyInfo.textContent='Keep walking. Look for people, buildings, glowing portals, and keepsakes.';exploreBtn.disabled=true;hint.classList.add('hidden')}}
-function moveTo(x,y,check=true){state.x=clamp(x,5,95);state.y=clamp(y,15,92);traveler.style.left=state.x+'%';traveler.style.top=state.y+'%';if(check){collectNearby();updateNearby();save()}}
+function renderScene(){
+ const s=scenes[state.scene];sceneName.textContent=s.name;backdrop.className='scene-backdrop '+s.class;journeyTitle.textContent=s.title;journeyText.textContent=s.text;objects.innerHTML='';labels.innerHTML='';collectibles.innerHTML='';
+ s.objects.forEach(obj=>{const el=document.createElement('div');el.className='world-object '+obj.type;el.style.left=obj.x+'%';el.style.top=obj.y+'%';if(obj.icon)el.textContent=obj.icon;objects.appendChild(el);const lab=document.createElement('div');lab.className='world-label';lab.style.left=obj.x+'%';lab.style.top=(obj.y-(obj.type==='portal'?13:9))+'%';lab.textContent=obj.label;labels.appendChild(lab)});
+ s.items.forEach(it=>{if(state.keepsakes.includes(it.id))return;const el=document.createElement('div');el.className='collectible';el.style.left=it.x+'%';el.style.top=it.y+'%';el.textContent=it.icon;el.title=it.name;collectibles.appendChild(el)});
+ if(s.passport&&!state.visited.includes(state.scene)){state.visited.push(state.scene);addJournal('Arrived: '+s.name,'You entered '+s.name+'.');save()}
+ const spawn=s.spawn;moveTo(Number.isFinite(state.x)?state.x:spawn.x,Number.isFinite(state.y)?state.y:spawn.y,false);renderStatus();updateNearby();showToast('Entered '+s.name)
+}
+function renderStatus(){discoveryCount.textContent=state.discoveries.length;keepsakeCount.textContent=state.keepsakes.length;passportList.innerHTML=Object.entries(scenes).filter(([,s])=>s.passport).map(([k,s])=>'<span class="passport-stamp '+(state.visited.includes(k)?'visited':'')+'">'+(state.visited.includes(k)?'✓ ':'')+s.name.split('•')[0].trim()+'</span>').join('');renderMap();updateQuest()}
+function nearest(){const s=scenes[state.scene];let best=null,bestD=999;for(const obj of s.objects){const d=distance({x:state.x,y:state.y},obj);if(d<bestD){best=obj;bestD=d}}return best&&bestD<=(best.radius||9)?best:null}
+function collectNearby(){const s=scenes[state.scene];for(const it of s.items){if(state.keepsakes.includes(it.id))continue;if(distance({x:state.x,y:state.y},it)<6){state.keepsakes.push(it.id);addJournal('Keepsake: '+it.name,'Found while exploring '+s.name+'.');save();showToast('Collected '+it.name+' ✨');renderScene();return true}}return false}
+function updateNearby(){const n=nearest();if(n){nearbyInfo.innerHTML='<b>'+n.label+'</b><br>'+(n.action==='travel'?'A doorway is within reach.':'Move close and explore.');exploreBtn.disabled=false;hint.classList.remove('hidden');hint.textContent=n.action==='travel'?'Step through':'Press E or tap Explore'}else{nearbyInfo.textContent='Keep walking. Look for people, buildings, glowing portals, doors, and keepsakes.';exploreBtn.disabled=true;hint.classList.add('hidden')}}
+function moveTo(x,y,check=true){state.x=clamp(x,4,96);state.y=clamp(y,14,93);traveler.style.left=state.x+'%';traveler.style.top=state.y+'%';if(check){if(!collectNearby()){updateNearby();updateQuest();save()}}}
 function move(dx,dy){moveTo(state.x+dx,state.y+dy)}
-function interact(){const o=nearest();if(!o)return;if(o.action==='travel'){const target=scenes[o.to];state.scene=o.to;state.x=target.spawn.x;state.y=target.spawn.y;save();renderScene();return}
- if(!state.discoveries.includes(o.id)){state.discoveries.push(o.id);addJournal(o.title||o.label,o.body||'Discovered while exploring.');save()}
- dialogContent.innerHTML='<p class="mini-kicker">'+scenes[state.scene].name+'</p><h2>'+o.title+'</h2><p>'+o.body+'</p><div class="dialog-actions"><button type="button" id="rememberBtn">Add to Journal ✓</button></div>';dialog.showModal();dialogContent.querySelector('#rememberBtn').addEventListener('click',()=>{addJournal(o.title,o.body);showToast('Added to journal')});renderStatus()}
-function renderMap(){mapGrid.innerHTML=Object.entries(scenes).map(([k,s])=>'<button type="button" data-scene="'+k+'" '+(!state.visited.includes(k)?'disabled':'')+'>'+(state.visited.includes(k)?'✓ ':'🔒 ')+s.name+'</button>').join('');mapGrid.querySelectorAll('button:not(:disabled)').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.scene;state.scene=k;state.x=scenes[k].spawn.x;state.y=scenes[k].spawn.y;save();mapDialog.close();renderScene()}))}
+function travel(to){const target=scenes[to];if(!target)return;state.scene=to;state.x=target.spawn.x;state.y=target.spawn.y;save();renderScene()}
+function interact(){const obj=nearest();if(!obj)return;if(obj.action==='travel'){travel(obj.to);return}
+ if(!state.discoveries.includes(obj.id)){state.discoveries.push(obj.id);addJournal(obj.title||obj.label,obj.body||'Discovered while exploring.');save();showToast('New discovery added ✨')}
+ dialogContent.innerHTML='<p class="mini-kicker">'+scenes[state.scene].name+'</p><h2>'+obj.title+'</h2><p>'+obj.body+'</p><div class="dialog-actions"><button type="button" id="rememberBtn">Journal this discovery ✓</button></div>';dialog.showModal();const remember=dialogContent.querySelector('#rememberBtn');if(remember)remember.addEventListener('click',()=>{addJournal(obj.title,obj.body);showToast('Added to journal')});renderStatus()
+}
+function renderMap(){mapGrid.innerHTML=Object.entries(scenes).filter(([,s])=>s.passport||s===scenes.hall).map(([k,s])=>'<button type="button" data-scene="'+k+'" '+(k!=='hall'&&!state.visited.includes(k)?'disabled':'')+'>'+(k==='hall'||state.visited.includes(k)?'✓ ':'🔒 ')+s.name+'</button>').join('');mapGrid.querySelectorAll('button:not(:disabled)').forEach(b=>b.addEventListener('click',()=>{mapDialog.close();travel(b.dataset.scene)}))}
 function openJournal(){journalEntries.innerHTML=state.journal.length?state.journal.map(e=>'<div class="journal-entry"><b>'+e.title+'</b><div>'+e.text+'</div><small>'+e.date+'</small></div>').join(''):'<p>Your journal is empty. Walk around and discover something.</p>';journalDialog.showModal()}
-const keys=new Set();let raf=0,last=0;function tick(t){if(!keys.size){raf=0;return}if(t-last>45){let dx=0,dy=0;if(keys.has('arrowleft')||keys.has('a'))dx-=1.8;if(keys.has('arrowright')||keys.has('d'))dx+=1.8;if(keys.has('arrowup')||keys.has('w'))dy-=1.8;if(keys.has('arrowdown')||keys.has('s'))dy+=1.8;if(dx||dy)move(dx,dy);last=t}raf=requestAnimationFrame(tick)}
-root.addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(['arrowleft','arrowright','arrowup','arrowdown','w','a','s','d'].includes(k)){e.preventDefault();keys.add(k);if(!raf)raf=requestAnimationFrame(tick)}else if(k==='e'){e.preventDefault();interact()}else if(k==='m'){e.preventDefault();mapDialog.showModal()}});
+const keys=new Set();let raf=0,last=0;function tick(t){if(!keys.size){raf=0;return}if(t-last>43){let dx=0,dy=0;if(keys.has('arrowleft')||keys.has('a'))dx-=1.65;if(keys.has('arrowright')||keys.has('d'))dx+=1.65;if(keys.has('arrowup')||keys.has('w'))dy-=1.65;if(keys.has('arrowdown')||keys.has('s'))dy+=1.65;if(dx||dy)move(dx,dy);last=t}raf=requestAnimationFrame(tick)}
+root.addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(['arrowleft','arrowright','arrowup','arrowdown','w','a','s','d'].includes(k)){e.preventDefault();keys.add(k);if(!raf)raf=requestAnimationFrame(tick)}else if(k==='e'){e.preventDefault();interact()}else if(k==='m'){e.preventDefault();mapDialog.showModal()}else if(k==='j'){e.preventDefault();openJournal()}});
 root.addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
-root.querySelectorAll('[data-move]').forEach(btn=>{let timer;const run=()=>{const d=btn.dataset.move;move(d==='left'?-2:d==='right'?2:0,d==='up'?-2:d==='down'?2:0)};btn.addEventListener('pointerdown',e=>{e.preventDefault();run();timer=setInterval(run,85)});['pointerup','pointercancel','pointerleave'].forEach(ev=>btn.addEventListener(ev,()=>clearInterval(timer)))});
-exploreBtn.addEventListener('click',interact);document.getElementById('mapBtn').addEventListener('click',()=>mapDialog.showModal());document.getElementById('journalGameBtn').addEventListener('click',openJournal);
-stage.addEventListener('pointerdown',()=>stage.focus());
+root.querySelectorAll('[data-move]').forEach(btn=>{let timer;const run=()=>{const d=btn.dataset.move;move(d==='left'?-2:d==='right'?2:0,d==='up'?-2:d==='down'?2:0)};btn.addEventListener('pointerdown',e=>{e.preventDefault();run();timer=setInterval(run,88)});['pointerup','pointercancel','pointerleave'].forEach(ev=>btn.addEventListener(ev,()=>clearInterval(timer)))});
+exploreBtn.addEventListener('click',interact);$('#mapBtn').addEventListener('click',()=>mapDialog.showModal());$('#journalGameBtn').addEventListener('click',openJournal);stage.addEventListener('pointerdown',()=>stage.focus());
 renderScene();stage.focus({preventScroll:true});
 })();
