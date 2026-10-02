@@ -124,7 +124,7 @@ hardScenes.renaissance=S('Renaissance City • 1500s','renaissance',{x:50,y:84},
 ],[item('print',80,70,'📜','Printed Broadside'),item('brush',31,34,'🖌️','Workshop Brush')],{quest:{title:'Ideas in the Piazza',targets:['printer','atelier','merchant'],reward:'Renaissance Stamp'}});
 
 hardScenes.revolution=S('Revolution-Era City • 1776','revolution',{x:50,y:84},'Print Shops & Public Debate','Explore a city shaped by war, political argument, trade disruption, newspapers, taverns, households, and messengers.',[
- o('printshop','building',20,44,'Print Shop','📰','travel','Enter Print Shop','Printers produced newspapers, pamphlets, notices, political arguments, advertisements, and official information.',{radius:11}),
+ o('printshop','building',20,44,'Print Shop','📰','travel','Enter Print Shop','',{to:'revolutionPrint',radius:11}),
  o('tavern','building',73,47,'Tavern','🍺','travel','Enter Tavern','',{to:'revolutionTavern',radius:11}),
  o('messenger','npc',47,61,'Messenger','🏇','talk','City Messenger','News travels by horse, post, print, rumor, and personal networks. Wartime information can be late, incomplete, or contradictory.',{radius:8}),
  returnPortal()
