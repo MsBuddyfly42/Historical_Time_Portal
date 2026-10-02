@@ -82,7 +82,7 @@ hardScenes.medievalCastle=S('Medieval Castle','castleInterior',{x:50,y:84},'Insi
 ],[item('seal',37,70,'🕯️','Wax Seal')],{passport:false,quest:{title:'Castle Household',targets:['greatHall','kitchen','steward'],reward:'Castle Household Stamp'}});
 
 hardScenes.victorian=S('Victorian City • 1890s','victorian',{x:50,y:84},'Gaslight & Newspapers','Walk a busy late-19th-century city street of shops, newspapers, transit, parlors, and public life.',[
- o('newspaper','building',19,47,'Newspaper Office','📰','travel','Enter Newspaper Office','Editors, typesetters, reporters, printers, delivery workers, and advertisers keep a city paper moving.',{radius:11}),
+ o('newspaper','building',19,47,'Newspaper Office','📰','travel','Enter Newspaper Office','',{to:'victorianNews',radius:11}),
  o('theatre','building',73,43,'Theatre','🎭','travel','Enter Theatre','',{to:'victorianTheatre',radius:11}),
  o('newsboy','npc',47,61,'News Seller','🧑🏻','talk','News Seller','Headlines travel quickly through the street as sellers call out the latest edition.',{radius:8}),
  o('stationDoor','door',88,65,'Railway Station','🚉','travel','Enter Railway Station','',{to:'victorianStation',radius:9}),
@@ -90,7 +90,7 @@ hardScenes.victorian=S('Victorian City • 1890s','victorian',{x:50,y:84},'Gasli
 ],[item('penny',80,68,'🪙','Victorian Penny'),item('playbill',30,34,'📃','Theatre Playbill')],{quest:{title:'City Edition',targets:['newspaper','theatre','newsboy'],reward:'Gaslight City Stamp'}});
 
 hardScenes.fifties=S('1950s Main Street','fifties',{x:50,y:84},'Mid-Century Main Street','Explore a stylized American Main Street with a diner, record shop, cinema, and neighborhood life.',[
- o('diner','building',21,48,'Corner Diner','🍔','travel','Enter Corner Diner','Diners and lunch counters could be social gathering places, though access and treatment varied greatly by location and segregation laws.',{radius:11}),
+ o('diner','building',21,48,'Corner Diner','🍔','travel','Enter Corner Diner','',{to:'fiftiesDiner',radius:11}),
  o('records','building',73,46,'Record Shop','🎵','travel','Enter Record Shop','',{to:'fiftiesRecords',radius:11}),
  o('cinemaDoor','door',54,37,'Movie House','🎬','travel','Enter Movie House','',{to:'fiftiesCinema',radius:9}),
  o('student','npc',46,62,'High-School Student','🧑🏽‍🎓','talk','A Local Student','The student is saving for a new record and talking about the Saturday movie matinee.',{radius:8}),
@@ -98,14 +98,14 @@ hardScenes.fifties=S('1950s Main Street','fifties',{x:50,y:84},'Mid-Century Main
 ],[item('nickel',78,70,'🪙','Jukebox Nickel'),item('ticket50',30,34,'🎫','Movie Ticket Stub')],{quest:{title:'Saturday on Main Street',targets:['diner','records','ticket50'],reward:'Main Street Stamp'}});
 
 hardScenes.roaring=S('Roaring Twenties','roaring',{x:50,y:84},'Jazz-Age City','Explore newspapers, radio, nightlife, fashion, and rapid technological and cultural change.',[
- o('jazz','building',20,47,'Jazz Club','🎷','travel','Enter Jazz Club','Jazz flourished through Black musical innovation and spread through clubs, recordings, radio, touring musicians, and dance culture.',{radius:11}),
+ o('jazz','building',20,47,'Jazz Club','🎷','travel','Enter Jazz Club','',{to:'roaringJazz',radius:11}),
  o('radio','building',72,44,'Radio Studio','📻','travel','Enter Radio Studio','',{to:'roaringRadio',radius:11}),
  o('photographer','npc',48,61,'Street Photographer','📷','talk','Street Photographer','The photographer watches changing clothes, cars, advertisements, and crowds rush through the city.',{radius:8}),
  returnPortal()
 ],[item('record',78,69,'💿','Shellac Record'),item('pressCard',31,34,'🪪','Press Card')],{quest:{title:'City in Motion',targets:['jazz','radio','photographer'],reward:'Jazz Age Stamp'}});
 
 hardScenes.apollo=S('Apollo Era • 1969','apollo',{x:50,y:84},'Moonshot Summer','Explore mission-control culture, engineering work, television, and the public excitement surrounding Apollo 11.',[
- o('control','building',22,44,'Mission Control','🖥️','travel','Enter Mission Control','Teams of flight controllers monitored systems, trajectories, communications, procedures, and rapidly changing conditions.',{radius:12}),
+ o('control','building',22,44,'Mission Control','🖥️','travel','Enter Mission Control','',{to:'apolloControl',radius:12}),
  o('tv','building',73,48,'Watch Party','📺','travel','Join Watch Party','',{to:'apolloWatch',radius:10}),
  o('engineer','npc',47,62,'Engineer','🧑🏾‍🔧','talk','Systems Engineer','Spaceflight depended on large teams across engineering, manufacturing, mathematics, computing, logistics, training, and operations.',{radius:8}),
  o('engineeringDoor','door',88,65,'Engineering Annex','🧰','travel','Enter Engineering Annex','',{to:'apolloEngineering',radius:9}),
@@ -113,14 +113,14 @@ hardScenes.apollo=S('Apollo Era • 1969','apollo',{x:50,y:84},'Moonshot Summer'
 ],[item('missionPatch',80,69,'🚀','Mission Patch'),item('slideRule',30,35,'📏','Slide Rule')],{quest:{title:'Mission Ready',targets:['control','engineer','missionPatch'],reward:'Apollo Visitor Stamp'}});
 
 hardScenes.rome=S('Ancient Rome','rome',{x:50,y:84},'Roman City','Explore a forum, food stall, bath complex, apartments, and the movement of people through a dense ancient city.',[
- o('forum','building',22,43,'Forum','🏛️','travel','Enter Forum','Public squares could host commerce, administration, law, religious activity, monuments, and political communication.',{radius:12}),
+ o('forum','building',22,43,'Forum','🏛️','travel','Enter Forum','',{to:'romeForum',radius:12}),
  o('thermae','building',73,46,'Public Baths','♨️','travel','Enter Public Baths','',{to:'romeBaths',radius:11}),
  o('vendor','npc',47,62,'Food Vendor','🧑🏽‍🍳','talk','Street Food Vendor','Not every urban resident cooked every meal at home; food shops and prepared foods were part of city life.',{radius:8}),
  returnPortal()
 ],[item('romanCoin',80,69,'🪙','Roman Coin Keepsake'),item('oilLamp',31,34,'🪔','Small Oil Lamp')],{quest:{title:'A Day in the City',targets:['forum','thermae','vendor'],reward:'Roman City Stamp'}});
 
 hardScenes.renaissance=S('Renaissance City • 1500s','renaissance',{x:50,y:84},'Workshop & Piazza','Explore printing, art workshops, markets, music, craft, and urban life in a Renaissance-inspired city.',[
- o('printer','building',21,45,'Print Shop','🖨️','travel','Enter Print Shop','Movable-type printing transformed the production and circulation of books, pamphlets, images, arguments, and news.',{radius:11}),
+ o('printer','building',21,45,'Print Shop','🖨️','travel','Enter Print Shop','',{to:'renaissancePrint',radius:11}),
  o('atelier','building',73,44,'Artist Workshop','🎨','travel','Enter Artist Workshop','',{to:'renaissanceAtelier',radius:11}),
  o('merchant','npc',47,62,'Cloth Merchant','🧑🏻‍💼','talk','Cloth Merchant','Trade networks connect local markets with textiles, dyes, luxury goods, raw materials, and distant ports.',{radius:8}),
  returnPortal()
