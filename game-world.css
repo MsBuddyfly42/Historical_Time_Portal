@@ -41,3 +41,22 @@
 @media(max-width:900px){.game-header{align-items:flex-start;flex-direction:column}.game-stats{justify-content:flex-start}.game-shell{grid-template-columns:1fr}.game-side{grid-template-columns:repeat(3,minmax(0,1fr))}.game-stage{min-height:0}.mission-card,.nearby-card,.passport-card{padding:13px}}
 @media(max-width:640px){.time-world{padding:14px 10px 26px}.game-stage{border-radius:18px}.game-side{grid-template-columns:1fr}.game-controls{align-items:flex-start}.action-controls{max-width:185px}.game-action{flex:1 1 80px;padding:9px}.dpad{grid-template-columns:46px 46px 46px}.game-header h1{font-size:2.55rem}.game-stats span{font-size:.75rem}.control-note{font-size:.72rem}.world-label{font-size:.58rem}.time-map-grid{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.world-object.portal,.collectible{animation:none!important}.traveler{transition:none}.scene-toast{transition:none}}
+
+/* === PLAYABLE WORLD EXPANSION PASS 2 === */
+.quest-card{background:linear-gradient(145deg,#191e3b,#202b4d);border:1px solid #6f668d;border-radius:18px;padding:16px;box-shadow:0 12px 32px #0005}.quest-card h2{margin:0 0 7px;font:700 1.25rem Georgia,serif;color:#ffe1a1}.quest-card #questProgress{font-size:.86rem;color:#cbd1df;line-height:1.5}.quest-meter{height:8px;border-radius:999px;overflow:hidden;background:#0c1227;margin-top:10px;border:1px solid #404d6d}.quest-meter i{display:block;width:0;height:100%;background:linear-gradient(90deg,#e5ae4d,#ffe59c);transition:width .35s ease}
+.world-object.door{font-size:clamp(2rem,5vw,4rem);filter:drop-shadow(0 7px 8px #0008)}
+.scene-backdrop.titanicInterior{background:linear-gradient(#d9d0c3 0 12%,#7b6b63 12% 15%,#eadfcd 15% 70%,#8a6249 70% 76%,#4c342a 76%);box-shadow:inset 0 0 80px #2a1d1866}
+.scene-backdrop.westInterior{background:linear-gradient(#6f3d2e 0 13%,#b46d46 13% 63%,#6a3f2f 63%);box-shadow:inset 0 0 100px #321c1688}
+.scene-backdrop.castleInterior{background:linear-gradient(#747483 0 12%,#a6a2a0 12% 15%,#777b7f 15% 73%,#4b4039 73%);box-shadow:inset 0 0 85px #171622aa}
+.scene-backdrop.victorian{background:linear-gradient(#53627c 0 45%,#b08972 45% 55%,#4b4544 55%);box-shadow:inset 0 0 100px #1e233288}
+.scene-backdrop.fifties{background:linear-gradient(#78b6d9 0 43%,#f3d1a1 43% 50%,#9bb3aa 50% 58%,#7c7a74 58%)}
+.scene-backdrop.roaring{background:linear-gradient(#34264e 0 43%,#c69461 43% 49%,#4c354b 49% 60%,#1d1727 60%);box-shadow:inset 0 0 100px #120c1aaa}
+.scene-backdrop.apollo{background:linear-gradient(#151b32 0 58%,#53606b 58% 65%,#262d35 65%);box-shadow:inset 0 0 110px #020713aa}
+.scene-backdrop.rome{background:linear-gradient(#83b7d6 0 43%,#e1c08b 43% 52%,#ba9d72 52% 59%,#9e8266 59%)}
+.scene-backdrop.renaissance{background:linear-gradient(#8cb4cf 0 42%,#d9b878 42% 50%,#b47b5a 50% 59%,#80604d 59%)}
+.scene-backdrop.revolution{background:linear-gradient(#778eaa 0 43%,#b69d80 43% 51%,#776052 51% 60%,#4f443e 60%)}
+.world-object.npc{animation:npcIdle 1.8s ease-in-out infinite alternate}.world-object.door{animation:doorGlow 2s ease-in-out infinite alternate}
+@keyframes npcIdle{to{transform:translate(-50%,calc(-50% - 4px))}}@keyframes doorGlow{to{filter:drop-shadow(0 0 16px #ffe3a1)}}
+@media(max-width:900px){.game-side{grid-template-columns:repeat(2,minmax(0,1fr))}.quest-card{grid-column:span 1}}
+@media(max-width:640px){.game-side{grid-template-columns:1fr}.quest-card{grid-column:auto}}
+@media(prefers-reduced-motion:reduce){.world-object.npc,.world-object.door{animation:none!important}.quest-meter i{transition:none}}
