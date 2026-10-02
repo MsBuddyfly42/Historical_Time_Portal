@@ -83,6 +83,7 @@ hardScenes.victorian=S('Victorian City • 1890s','victorian',{x:50,y:84},'Gasli
  o('newspaper','building',19,47,'Newspaper Office','📰','travel','Enter Newspaper Office','Editors, typesetters, reporters, printers, delivery workers, and advertisers keep a city paper moving.',{radius:11}),
  o('theatre','building',73,43,'Theatre','🎭','inspect','City Theatre','Theatres offered drama, music, comedy, variety performances, and public spectacle.',{radius:11}),
  o('newsboy','npc',47,61,'News Seller','🧑🏻','talk','News Seller','Headlines travel quickly through the street as sellers call out the latest edition.',{radius:8}),
+ o('stationDoor','door',88,65,'Railway Station','🚉','travel','Enter Railway Station','',{to:'victorianStation',radius:9}),
  returnPortal()
 ],[item('penny',80,68,'🪙','Victorian Penny'),item('playbill',30,34,'📃','Theatre Playbill')],{quest:{title:'City Edition',targets:['newspaper','theatre','newsboy'],reward:'Gaslight City Stamp'}});
 
@@ -104,6 +105,7 @@ hardScenes.apollo=S('Apollo Era • 1969','apollo',{x:50,y:84},'Moonshot Summer'
  o('control','building',22,44,'Mission Control','🖥️','travel','Enter Mission Control','Teams of flight controllers monitored systems, trajectories, communications, procedures, and rapidly changing conditions.',{radius:12}),
  o('tv','building',73,48,'Watch Party','📺','inspect','Television Watch Party','Millions followed the mission through television and radio, experiencing the moon landing as a shared public event.',{radius:10}),
  o('engineer','npc',47,62,'Engineer','🧑🏾‍🔧','talk','Systems Engineer','Spaceflight depended on large teams across engineering, manufacturing, mathematics, computing, logistics, training, and operations.',{radius:8}),
+ o('engineeringDoor','door',88,65,'Engineering Annex','🧰','travel','Enter Engineering Annex','',{to:'apolloEngineering',radius:9}),
  returnPortal()
 ],[item('missionPatch',80,69,'🚀','Mission Patch'),item('slideRule',30,35,'📏','Slide Rule')],{quest:{title:'Mission Ready',targets:['control','engineer','missionPatch'],reward:'Apollo Visitor Stamp'}});
 
@@ -183,7 +185,8 @@ hardScenes.apolloControl=S('Mission Control','apolloInterior',{x:50,y:84},'Insid
  o('bigBoard','building',70,39,'Status Displays','📊','inspect','Status Displays','Large displays give teams a shared picture of timing, trajectory, communications, and mission status.',{radius:11}),
  o('controller','npc',50,62,'Flight Controller','🧑🏽‍🚀','talk','Flight Controller','The controller explains that success depends on disciplined teamwork, precise communication, and preparation for failures as well as normal operations.',{radius:8,choices:[
    {label:'Ask about teamwork',flag:'apolloTeam',reply:'No single console can understand the entire spacecraft alone. Controllers rely on each other’s expertise.'},
-   {label:'Ask about emergencies',flag:'apolloEmergency',reply:'Teams rehearse abnormal situations so they can respond with procedures instead of panic.'}
+   {label:'Ask about emergencies',flag:'apolloEmergency',reply:'Teams rehearse abnormal situations so they can respond with procedures instead of panic.'},
+   {label:'Ask about the odd telemetry reading',flag:'apolloSignalLead',reply:'A controller points out a small telemetry fluctuation and asks the engineering annex to reproduce the reading on the ground.'}
  ]}),
  o('backApollo','door',91,84,'Back Outside','🚪','travel','','',{to:'apollo',radius:9})
 ],[item('consoleCard',36,70,'🗂️','Controller Reference Card')],{passport:false,quest:{title:'Flight Control',targets:['consoles','bigBoard','controller'],reward:'Mission Control Stamp'}});
@@ -241,6 +244,27 @@ hardScenes.revolutionTavern=S('1776 Tavern','revTavernInterior',{x:50,y:84},'Ins
 ],[item('tavernToken',36,70,'🪙','Tavern Trade Token')],{passport:false,quest:{title:'Rumor & Reliability',targets:['hearth','postTable','traveler1776'],reward:'Tavern Listener Stamp'}});
 
 
+
+hardScenes.victorianStation=S('Victorian Railway Station','stationInterior',{x:50,y:84},'At the Railway Station','Explore platforms, luggage handling, telegraph messages, and the confusion around a delayed arrival.',[
+ o('platformClock','building',22,40,'Platform Clock','🕰️','inspect','Platform Clock','Railway timetables depend on coordinated clocks, schedules, signaling, and communication across the network.',{radius:10}),
+ o('telegraphDesk','building',72,42,'Telegraph Desk','⚡','inspect','Telegraph Desk','Telegraph messages help stations share operational information across distance much faster than physical mail.',{radius:10}),
+ o('stationMaster','npc',47,62,'Station Master','🧑🏻‍✈️','talk','Station Master','The station master is juggling passengers, luggage, messages, platform assignments, and a train that is overdue.',{radius:8,choices:[
+  {label:'Mention the reporter’s delayed-train story',requires:'victorianRail',flag:'victorianStationLead',reply:'The station master says a damaged signal line delayed the train outside the city, but one message never reached the newspaper.'},
+  {label:'Ask where the missing message went',requires:'victorianStationLead',flag:'victorianMessageLead',reply:'A copy was handed to a messenger who left toward the theater district before the train arrived.'}
+ ]}),
+ o('backVictorian','door',91,84,'Back to City Street','🚪','travel','','',{to:'victorian',radius:9})
+],[item('railTicket',35,70,'🎫','Railway Platform Ticket')],{passport:false,quest:{title:'Delayed Arrival',targets:['platformClock','telegraphDesk','stationMaster'],reward:'Railway Station Stamp'}});
+
+hardScenes.apolloEngineering=S('Apollo Engineering Annex','engineeringInterior',{x:50,y:84},'Engineering Annex','Trace spacecraft systems through diagrams, test benches, and troubleshooting discussions.',[
+ o('schematics','building',22,42,'System Schematics','📐','inspect','System Schematics','Detailed diagrams help teams understand how electrical, communications, propulsion, guidance, and life-support systems connect.',{radius:10}),
+ o('testBench','building',71,43,'Test Bench','🔧','inspect','Test Bench','Engineers reproduce faults and test components on the ground so flight teams have better information in real time.',{radius:10}),
+ o('systemsTech','npc',48,62,'Systems Technician','🧑🏽‍🔧','talk','Systems Technician','The technician is investigating a telemetry fluctuation reported by Mission Control.',{radius:8,choices:[
+  {label:'Ask about the telemetry fluctuation',requires:'apolloSignalLead',flag:'apolloBenchLead',reply:'The technician isolated the fluctuation to a sensor circuit and sends a test result back to Mission Control.'},
+  {label:'Ask what the test proves',requires:'apolloBenchLead',flag:'apolloSignalSolved',reply:'The bench test confirms the sensor—not the spacecraft system itself—is producing the odd reading. The team can update its interpretation safely.'}
+ ]}),
+ o('backApolloEngineering','door',91,84,'Back Outside','🚪','travel','','',{to:'apollo',radius:9})
+],[item('wiringTag',35,70,'🏷️','Engineering Wiring Tag')],{passport:false,quest:{title:'Trace the Signal',targets:['schematics','testBench','systemsTech'],reward:'Engineering Annex Stamp'}});
+
 hardScenes.archive=S('Chronicle Archive','archiveInterior',{x:50,y:84},'The Chronicle Archive','A reward space for travelers who have completed multiple era objectives. Examine curated cases and speak with the archivist.',[
  o('caseOne','building',23,42,'Everyday Life Case','🗄️','inspect','Everyday Life Collection','Tickets, tools, menus, advertisements, receipts, letters, and ordinary objects can reveal how people actually lived.',{radius:10}),
  o('caseTwo','building',72,42,'Communication Case','📚','inspect','Communication Collection','From handwritten messages to print, wireless, radio, and television, communication technologies reshape how communities share information.',{radius:10}),
@@ -269,6 +293,34 @@ const westBarkeep=findObj('westSaloon','barkeep');
 if(westBarkeep)westBarkeep.choices=[
  {label:'Ask about the saloon alley',requires:'westSheriffClue',flag:'westSaloonClue',reply:'The barkeep saw a stagehand hide something behind the notice board, then leave before sunset.'}
 ];
+
+/* --- LIVING WORLD ROUTINES + SPECIAL EVENTS --- */
+const npcRoutines={
+ 'victorian:newsboy':[{x:34,y:58},{x:47,y:61},{x:61,y:64},{x:27,y:66}],
+ 'fifties:student':[{x:30,y:60},{x:46,y:62},{x:67,y:60},{x:72,y:70}],
+ 'roaring:photographer':[{x:31,y:60},{x:48,y:61},{x:66,y:58},{x:39,y:68}],
+ 'apollo:engineer':[{x:33,y:61},{x:47,y:62},{x:65,y:59},{x:56,y:67}],
+ 'west:reporter':[{x:30,y:60},{x:46,y:62},{x:61,y:59},{x:70,y:67}],
+ 'rome:vendor':[{x:30,y:62},{x:47,y:62},{x:62,y:60},{x:37,y:69}]
+};
+const timedExtras={
+ 'west:1':[o('stagecoachEvent','prop',60,43,'Stagecoach Arrival','🚌','inspect','Stagecoach Arrival','A late stagecoach rolls into town, bringing passengers, freight, and fresh news from the road.',{radius:8})],
+ 'west:2':[o('saloonMusicEvent','prop',27,34,'Evening Music','🎶','inspect','Evening Music','Music begins drifting onto Main Street as the evening crowd gathers.',{radius:7})],
+ 'victorian:2':[o('gaslampsEvent','prop',61,35,'Gas Lamps Lit','🏮','inspect','Gas Lamps','Lamp lighting changes the street after sunset, extending evening business and entertainment.',{radius:7})],
+ 'victorian:3':[o('nightCabEvent','prop',34,66,'Late Cab','🚕','inspect','Late Cab','A horse-drawn cab waits for theater patrons and late travelers.',{radius:7})],
+ 'roaring:3':[o('nightCrowdEvent','prop',60,67,'Night Crowd','💃🏽','inspect','Night Crowd','The nightlife district grows louder as music, taxis, performers, and patrons converge.',{radius:7})],
+ 'apollo:3':[o('nightShiftEvent','prop',65,38,'Night Shift','🌙','inspect','Night Shift','Mission operations continue through the night; spaceflight does not follow ordinary office hours.',{radius:7})],
+ 'fifties:2':[o('movieCrowdEvent','prop',61,66,'Movie Crowd','🎬','inspect','Evening Movie Crowd','Families and teenagers gather near the cinema before the evening show.',{radius:7})]
+};
+function sceneObjectsForTime(sceneKey,s){
+ const base=s.objects.map(obj=>({...obj}));
+ for(const obj of base){
+   const routine=npcRoutines[sceneKey+':'+obj.id];
+   if(routine&&routine[state.timeIndex]){obj.x=routine[state.timeIndex].x;obj.y=routine[state.timeIndex].y}
+ }
+ return base.concat(timedExtras[sceneKey+':'+state.timeIndex]||[]);
+}
+
 const westBoard=findObj('westSaloon','board');
 if(westBoard)westBoard.choices=[
  {label:'Search behind the notice board',requires:'westSaloonClue',flag:'westPayrollSolved',reply:'Behind the board you find the missing payroll box wrapped in canvas. Mystery solved.'}
@@ -323,6 +375,26 @@ function updateChain(){
   const next=steps.find(([flag])=>!state.flags[flag]);
   if(!next){chainProgress.textContent='Solved ✓ You recovered the missing payroll box.';chainCard.classList.add('complete')}
   else{const done=steps.filter(([flag])=>state.flags[flag]).length;chainProgress.textContent='Step '+(done+1)+' of '+steps.length+': '+next[1];chainCard.classList.remove('complete')}
+ }else if(state.scene==='victorian'||state.scene==='victorianNews'||state.scene==='victorianStation'){
+  chainTitle.textContent='The Missing Railway Message';
+  const steps=[
+   ['victorianRail','Ask the newspaper reporter about the delayed train.'],
+   ['victorianStationLead','Take the story to the station master.'],
+   ['victorianMessageLead','Trace the message that left the station.']
+  ];
+  const next=steps.find(([flag])=>!state.flags[flag]);
+  if(!next){chainProgress.textContent='Thread complete ✓ You traced the missing railway message into the theater district.';chainCard.classList.add('complete')}
+  else{const done=steps.filter(([flag])=>state.flags[flag]).length;chainProgress.textContent='Step '+(done+1)+' of '+steps.length+': '+next[1];chainCard.classList.remove('complete')}
+ }else if(state.scene==='apollo'||state.scene==='apolloControl'||state.scene==='apolloEngineering'){
+  chainTitle.textContent='The Telemetry Question';
+  const steps=[
+   ['apolloSignalLead','Ask Mission Control about the odd telemetry reading.'],
+   ['apolloBenchLead','Take the signal question to the engineering annex.'],
+   ['apolloSignalSolved','Use the bench test to determine what the reading means.']
+  ];
+  const next=steps.find(([flag])=>!state.flags[flag]);
+  if(!next){chainProgress.textContent='Solved ✓ The team traced the unusual reading to a sensor circuit.';chainCard.classList.add('complete')}
+  else{const done=steps.filter(([flag])=>state.flags[flag]).length;chainProgress.textContent='Step '+(done+1)+' of '+steps.length+': '+next[1];chainCard.classList.remove('complete')}
  }else{
   chainTitle.textContent='No active story thread';chainProgress.textContent='Explore and talk to people. Some eras contain longer stories that remember your choices.';chainCard.classList.remove('complete')
  }
@@ -336,13 +408,13 @@ function updateQuest(){
 }
 function renderScene(){
  const s=scenes[state.scene];sceneName.textContent=s.name;backdrop.className='scene-backdrop '+s.class;journeyTitle.textContent=s.title;journeyText.textContent=s.text;objects.innerHTML='';labels.innerHTML='';collectibles.innerHTML='';
- s.objects.forEach(obj=>{const unlocked=isUnlocked(obj);const el=document.createElement('div');el.className='world-object '+obj.type+(unlocked?'':' locked');el.style.left=obj.x+'%';el.style.top=obj.y+'%';if(obj.icon)el.textContent=obj.icon;objects.appendChild(el);const lab=document.createElement('div');lab.className='world-label'+(unlocked?'':' locked-label');lab.style.left=obj.x+'%';lab.style.top=(obj.y-(obj.type==='portal'?13:9))+'%';lab.textContent=unlocked?obj.label:(obj.lockedLabel||'🔒 '+obj.label);labels.appendChild(lab)});
+ const activeObjects=sceneObjectsForTime(state.scene,s);activeObjects.forEach(obj=>{const unlocked=isUnlocked(obj);const el=document.createElement('div');el.className='world-object '+obj.type+(unlocked?'':' locked');el.style.left=obj.x+'%';el.style.top=obj.y+'%';if(obj.icon)el.textContent=obj.icon;objects.appendChild(el);const lab=document.createElement('div');lab.className='world-label'+(unlocked?'':' locked-label');lab.style.left=obj.x+'%';lab.style.top=(obj.y-(obj.type==='portal'?13:9))+'%';lab.textContent=unlocked?obj.label:(obj.lockedLabel||'🔒 '+obj.label);labels.appendChild(lab)});
  for(let i=0;i<3;i++){const walker=document.createElement('div');walker.className='ambient-walker w'+i;walker.textContent=['🚶🏽','🚶🏻','🚶🏿'][i];walker.style.top=(46+i*14)+'%';objects.appendChild(walker)}\n s.items.forEach(it=>{if(state.keepsakes.includes(it.id))return;const el=document.createElement('div');el.className='collectible';el.style.left=it.x+'%';el.style.top=it.y+'%';el.textContent=it.icon;el.title=it.name;collectibles.appendChild(el)});
  if(s.passport&&!state.visited.includes(state.scene)){state.visited.push(state.scene);addJournal('Arrived: '+s.name,'You entered '+s.name+'.');save()}
  const spawn=s.spawn;moveTo(Number.isFinite(state.x)?state.x:spawn.x,Number.isFinite(state.y)?state.y:spawn.y,false);applyTime();renderStatus();updateNearby();updateChain();updateWorldEvent();showToast('Entered '+s.name)
 }
 function renderStatus(){discoveryCount.textContent=state.discoveries.length;keepsakeCount.textContent=state.keepsakes.length;passportList.innerHTML=Object.entries(scenes).filter(([,s])=>s.passport).map(([k,s])=>'<span class="passport-stamp '+(state.visited.includes(k)?'visited':'')+'">'+(state.visited.includes(k)?'✓ ':'')+s.name.split('•')[0].trim()+'</span>').join('');renderMap();updateQuest()}
-function nearest(){const s=scenes[state.scene];let best=null,bestD=999;for(const obj of s.objects){const d=distance({x:state.x,y:state.y},obj);if(d<bestD){best=obj;bestD=d}}return best&&bestD<=(best.radius||9)?best:null}
+function nearest(){const s=scenes[state.scene];let best=null,bestD=999;for(const obj of sceneObjectsForTime(state.scene,s)){const d=distance({x:state.x,y:state.y},obj);if(d<bestD){best=obj;bestD=d}}return best&&bestD<=(best.radius||9)?best:null}
 function collectNearby(){const s=scenes[state.scene];for(const it of s.items){if(state.keepsakes.includes(it.id))continue;if(distance({x:state.x,y:state.y},it)<6){state.keepsakes.push(it.id);addJournal('Keepsake: '+it.name,'Found while exploring '+s.name+'.');save();showToast('Collected '+it.name+' ✨');renderScene();return true}}return false}
 function updateNearby(){const n=nearest();if(n){const unlocked=isUnlocked(n);nearbyInfo.innerHTML='<b>'+(unlocked?n.label:(n.lockedLabel||'🔒 '+n.label))+'</b><br>'+(!unlocked?'Complete '+n.unlockCount+' era objectives to unlock this doorway.':(n.action==='travel'?'A doorway is within reach.':'Move close and explore.'));exploreBtn.disabled=false;hint.classList.remove('hidden');hint.textContent=!unlocked?'Locked — explore more':(n.action==='travel'?'Step through':'Press E or tap Explore')}else{nearbyInfo.textContent='Keep walking. Look for people, buildings, glowing portals, doors, and keepsakes.';exploreBtn.disabled=true;hint.classList.add('hidden')}}
 function moveTo(x,y,check=true){state.x=clamp(x,4,96);state.y=clamp(y,14,93);traveler.style.left=state.x+'%';traveler.style.top=state.y+'%';if(check){if(!collectNearby()){updateNearby();updateQuest();save()}}}
