@@ -539,16 +539,92 @@ function renderFx(){
  for(let i=0;i<count;i++){const p=document.createElement('i');p.className='world-particle p'+(i%4);p.style.left=((i*37+13)%97)+'%';p.style.top=(12+((i*29)%72))+'%';p.style.animationDelay=(-i*.7)+'s';fxLayer.appendChild(p)}
 }
 
-const transitionCurtain=document.createElement('div');transitionCurtain.className='scene-transition';transitionCurtain.setAttribute('aria-hidden','true');stage.appendChild(transitionCurtain);
-let walkRaf=0,walkTarget=null,walkArrival=null;
-function stopAutoWalk(cancelArrival=true){walkTarget=null;if(cancelArrival)walkArrival=null;if(walkRaf){cancelAnimationFrame(walkRaf);walkRaf=0}traveler.classList.remove('walking')}
-function autoWalkTick(){
- if(!walkTarget){walkRaf=0;traveler.classList.remove('walking');return}
- const dx=walkTarget.x-state.x,dy=walkTarget.y-state.y,d=Math.hypot(dx,dy);
- if(d<1.2){moveTo(walkTarget.x,walkTarget.y,false);const done=walkArrival;walkArrival=null;stopAutoWalk(false);if(done)setTimeout(done,70);return}
- const speed=1.15;moveTo(state.x+dx/d*speed,state.y+dy/d*speed,false);traveler.classList.add('walking');walkRaf=requestAnimationFrame(autoWalkTick)
+
+/* --- WALKABLE WORLD / COLLISION + PATHFINDING --- */
+const interiorClasses=new Set(['titanicInterior','titanicDining','westInterior','castleInterior','medievalKitchen','victorianInterior','theatreInterior','stationInterior','dinerInterior','recordInterior','cinemaInterior','jazzInterior','radioInterior','apolloInterior','engineeringInterior','watchInterior','romeForum','romeBaths','printInterior','atelierInterior','revPrintInterior','revTavernInterior','egyptWorkshop','archiveInterior']);
+function navigationProfile(sceneKey=state.scene){
+ const s=scenes[sceneKey],cls=s?.class||sceneKey;
+ return {minX:5,maxX:95,minY:interiorClasses.has(cls)?27:31,maxY:92}
 }
-function walkTo(x,y,onArrival=null){stopAutoWalk();const tx=clamp(x,4,96),ty=clamp(y,14,93);traveler.dataset.dir=Math.abs(tx-state.x)>Math.abs(ty-state.y)?(tx<state.x?'left':'right'):(ty<state.y?'up':'down');walkTarget={x:tx,y:ty};walkArrival=typeof onArrival==='function'?onArrival:null;walkRaf=requestAnimationFrame(autoWalkTick)}
+function activeCollisionObjects(sceneKey=state.scene){
+ const s=scenes[sceneKey];if(!s)return[];
+ return sceneObjectsForTime(sceneKey,s).filter(o=>o.type==='building'||o.type==='prop'||o.type==='npc').map(o=>{
+  const rx=o.type==='building'?5.8:o.type==='prop'?3.6:2.7;
+  const ry=o.type==='building'?5.0:o.type==='prop'?3.2:2.4;
+  return {...o,rx,ry}
+ })
+}
+function pointHitsObstacle(x,y,ignoreId=null){
+ return activeCollisionObjects().some(o=>o.id!==ignoreId&&Math.abs(x-o.x)<o.rx&&Math.abs(y-o.y)<o.ry)
+}
+function clampWalkable(x,y,ignoreId=null){
+ const p=navigationProfile();let nx=clamp(x,p.minX,p.maxX),ny=clamp(y,p.minY,p.maxY);
+ if(!pointHitsObstacle(nx,ny,ignoreId))return{x:nx,y:ny};
+ for(let ring=1;ring<=8;ring++){
+  const step=1.8*ring;
+  const candidates=[[nx+step,ny],[nx-step,ny],[nx,ny+step],[nx,ny-step],[nx+step,ny+step],[nx-step,ny+step],[nx+step,ny-step],[nx-step,ny-step]];
+  for(const [cx,cy] of candidates){
+   const px=clamp(cx,p.minX,p.maxX),py=clamp(cy,p.minY,p.maxY);
+   if(!pointHitsObstacle(px,py,ignoreId))return{x:px,y:py}
+  }
+ }
+ return{x:state.x,y:state.y}
+}
+function canStandAt(x,y,ignoreId=null){
+ const p=navigationProfile();
+ return x>=p.minX&&x<=p.maxX&&y>=p.minY&&y<=p.maxY&&!pointHitsObstacle(x,y,ignoreId)
+}
+function nodeKey(x,y){return x+','+y}
+function buildPath(targetX,targetY,ignoreId=null){
+ const p=navigationProfile(),step=4;
+ const start=clampWalkable(state.x,state.y,ignoreId),goal=clampWalkable(targetX,targetY,ignoreId);
+ const sx=Math.round((start.x-p.minX)/step),sy=Math.round((start.y-p.minY)/step),gx=Math.round((goal.x-p.minX)/step),gy=Math.round((goal.y-p.minY)/step);
+ const maxX=Math.round((p.maxX-p.minX)/step),maxY=Math.round((p.maxY-p.minY)/step);
+ const open=[{x:sx,y:sy,g:0,f:0}],came=new Map(),gScore=new Map([[nodeKey(sx,sy),0]]),closed=new Set();
+ const h=(x,y)=>Math.hypot(gx-x,gy-y);
+ const dirs=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]];
+ let goalNode=null,guard=0;
+ while(open.length&&guard++<1600){
+  open.sort((a,b)=>a.f-b.f);const cur=open.shift(),ck=nodeKey(cur.x,cur.y);
+  if(closed.has(ck))continue;closed.add(ck);
+  if(cur.x===gx&&cur.y===gy){goalNode=cur;break}
+  for(const [dx,dy] of dirs){
+   const nx=cur.x+dx,ny=cur.y+dy;if(nx<0||ny<0||nx>maxX||ny>maxY)continue;
+   const px=p.minX+nx*step,py=p.minY+ny*step;if(!canStandAt(px,py,ignoreId))continue;
+   const nk=nodeKey(nx,ny),cost=cur.g+(dx&&dy?1.414:1);
+   if(cost>=(gScore.get(nk)??Infinity))continue;
+   came.set(nk,ck);gScore.set(nk,cost);open.push({x:nx,y:ny,g:cost,f:cost+h(nx,ny)})
+  }
+ }
+ if(!goalNode)return[goal];
+ const path=[];let k=nodeKey(goalNode.x,goalNode.y);
+ while(k&&k!==nodeKey(sx,sy)){
+  const [nx,ny]=k.split(',').map(Number);path.push({x:p.minX+nx*step,y:p.minY+ny*step});k=came.get(k)
+ }
+ path.reverse();path.push(goal);
+ // collapse nearly straight grid segments
+ const clean=[];for(const pt of path){const a=clean[clean.length-2],b=clean[clean.length-1];if(a&&b){const cross=(b.x-a.x)*(pt.y-b.y)-(b.y-a.y)*(pt.x-b.x);if(Math.abs(cross)<.25){clean[clean.length-1]=pt;continue}}clean.push(pt)}
+ return clean
+}
+
+const transitionCurtain=document.createElement('div');transitionCurtain.className='scene-transition';transitionCurtain.setAttribute('aria-hidden','true');stage.appendChild(transitionCurtain);
+let walkRaf=0,walkTarget=null,walkArrival=null,walkPath=[],walkIgnoreId=null;
+function stopAutoWalk(cancelArrival=true){walkTarget=null;walkPath=[];walkIgnoreId=null;if(cancelArrival)walkArrival=null;if(walkRaf){cancelAnimationFrame(walkRaf);walkRaf=0}traveler.classList.remove('walking')}
+function nextWalkWaypoint(){
+ if(!walkPath.length)return false;walkTarget=walkPath.shift();return true
+}
+function autoWalkTick(){
+ if(!walkTarget&&!nextWalkWaypoint()){walkRaf=0;traveler.classList.remove('walking');const done=walkArrival;walkArrival=null;walkIgnoreId=null;if(done)setTimeout(done,70);return}
+ const dx=walkTarget.x-state.x,dy=walkTarget.y-state.y,d=Math.hypot(dx,dy);
+ if(d<1.15){moveTo(walkTarget.x,walkTarget.y,false,walkIgnoreId);walkTarget=null;walkRaf=requestAnimationFrame(autoWalkTick);return}
+ const speed=1.12,nx=state.x+dx/d*speed,ny=state.y+dy/d*speed;
+ if(!canStandAt(nx,ny,walkIgnoreId)){walkPath=buildPath(walkTarget.x,walkTarget.y,walkIgnoreId);walkTarget=null;walkRaf=requestAnimationFrame(autoWalkTick);return}
+ moveTo(nx,ny,false,walkIgnoreId);traveler.classList.add('walking');walkRaf=requestAnimationFrame(autoWalkTick)
+}
+function walkTo(x,y,onArrival=null,ignoreId=null){
+ stopAutoWalk();const goal=clampWalkable(x,y,ignoreId);traveler.dataset.dir=Math.abs(goal.x-state.x)>Math.abs(goal.y-state.y)?(goal.x<state.x?'left':'right'):(goal.y<state.y?'up':'down');
+ walkIgnoreId=ignoreId;walkPath=buildPath(goal.x,goal.y,ignoreId);walkArrival=typeof onArrival==='function'?onArrival:null;walkTarget=null;walkRaf=requestAnimationFrame(autoWalkTick)
+}
 
 function approachPoint(obj){
  const gap=obj.type==='door'||obj.action==='travel'?7:obj.type==='npc'?6:5;
@@ -569,7 +645,7 @@ function showDestinationMarker(x,y){
 function walkAndTravel(obj){
  if(!isUnlocked(obj)){showToast('This doorway is still locked');return}
  const finish=()=>{const targetEl=objects.querySelector('[data-object-id="'+obj.id+'"]');targetEl?.classList.remove('travel-pending');if(obj.type==='door')animateDoor(obj.id,()=>travel(obj.to));else travel(obj.to)};
- const targetEl=objects.querySelector('[data-object-id="'+obj.id+'"]');targetEl?.classList.add('travel-pending');const pt=approachPoint(obj);showDestinationMarker(pt.x,pt.y);showToast('Walking to '+obj.label+'…');walkTo(pt.x,pt.y,()=>{faceTravelerToward(obj);finish()})
+ const targetEl=objects.querySelector('[data-object-id="'+obj.id+'"]');targetEl?.classList.add('travel-pending');const pt=approachPoint(obj);showDestinationMarker(pt.x,pt.y);showToast('Walking to '+obj.label+'…');walkTo(pt.x,pt.y,()=>{faceTravelerToward(obj);finish()},obj.id)
 }
 function activateObject(obj){
  if(!obj)return;
@@ -592,7 +668,7 @@ function walkAndInteract(obj){
  if(!isUnlocked(obj)){showToast('This interaction is still locked');return}
  const targetEl=objects.querySelector('[data-object-id="'+obj.id+'"]');targetEl?.classList.add('interaction-pending');const pt=approachPoint(obj);showDestinationMarker(pt.x,pt.y);
  showToast('Walking to '+obj.label+'…');
- walkTo(pt.x,pt.y,()=>{faceTravelerToward(obj);targetEl?.classList.remove('interaction-pending');activateObject(obj)})
+ walkTo(pt.x,pt.y,()=>{faceTravelerToward(obj);targetEl?.classList.remove('interaction-pending');activateObject(obj)},obj.id)
 }
 function collectSpecificItem(it){
  if(state.keepsakes.includes(it.id))return;
@@ -976,7 +1052,7 @@ function renderStatus(){discoveryCount.textContent=state.discoveries.length;keep
 function nearest(){const s=scenes[state.scene];let best=null,bestD=999;for(const obj of sceneObjectsForTime(state.scene,s)){const d=distance({x:state.x,y:state.y},obj);if(d<bestD){best=obj;bestD=d}}return best&&bestD<=(best.radius||9)?best:null}
 function collectNearby(){const s=scenes[state.scene];for(const it of s.items){if(state.keepsakes.includes(it.id))continue;if(distance({x:state.x,y:state.y},it)<6){state.keepsakes.push(it.id);addJournal('Keepsake: '+it.name,'Found while exploring '+s.name+'.');save();showToast('Collected '+it.name+' ✨');renderScene();return true}}return false}
 function updateNearby(){objects.querySelectorAll('.world-object.nearby').forEach(el=>el.classList.remove('nearby'));labels.querySelectorAll('.world-label.nearby').forEach(el=>el.classList.remove('nearby'));const n=nearest();if(n){clearNpcBubbles();const objEl=objects.querySelector('[data-object-id="'+n.id+'"]');if(objEl)objEl.classList.add('nearby');if(n.type==='npc'){faceNpcTowardTraveler(n);showNpcBubble(n)}const labEls=[...labels.querySelectorAll('.world-label')];const labEl=labEls.find(el=>el.textContent.includes(n.label));if(labEl)labEl.classList.add('nearby');const unlocked=isUnlocked(n);nearbyInfo.innerHTML='<b>'+(unlocked?n.label:(n.lockedLabel||'🔒 '+n.label))+'</b><br>'+(!unlocked?'Complete '+n.unlockCount+' era objectives to unlock this doorway.':(n.action==='travel'?'A doorway is within reach.':'Move close and explore.'));exploreBtn.disabled=false;hint.classList.remove('hidden');hint.textContent=!unlocked?'Locked — explore more':(n.action==='travel'?'Step through':'Press E or tap Explore')}else{clearNpcBubbles();nearbyInfo.textContent='Keep walking. Look for people, buildings, glowing portals, doors, and keepsakes.';exploreBtn.disabled=true;hint.classList.add('hidden')}}
-function moveTo(x,y,check=true){state.x=clamp(x,4,96);state.y=clamp(y,14,93);traveler.style.left=state.x+'%';traveler.style.top=state.y+'%';stage.style.setProperty('--cam-x',((state.x-50)/50).toFixed(3));stage.style.setProperty('--cam-y',((state.y-54)/46).toFixed(3));if(check){if(!collectNearby()){updateNearby();updateQuest();save()}}}
+function moveTo(x,y,check=true,ignoreId=null){const p=navigationProfile(),nx=clamp(x,p.minX,p.maxX),ny=clamp(y,p.minY,p.maxY);if(!canStandAt(nx,ny,ignoreId))return false;state.x=nx;state.y=ny;traveler.style.left=state.x+'%';traveler.style.top=state.y+'%';stage.style.setProperty('--cam-x',((state.x-50)/50).toFixed(3));stage.style.setProperty('--cam-y',((state.y-54)/46).toFixed(3));if(check){if(!collectNearby()){updateNearby();updateQuest();save()}}return true}
 function move(dx,dy){if(dx<0)traveler.dataset.dir='left';else if(dx>0)traveler.dataset.dir='right';else if(dy<0)traveler.dataset.dir='up';else if(dy>0)traveler.dataset.dir='down';moveTo(state.x+dx,state.y+dy)}
 function travel(to){const target=scenes[to];if(!target)return;stopAutoWalk();playSceneTransition();setTimeout(()=>{state.scene=to;state.x=target.spawn.x;state.y=target.spawn.y;save();renderScene()},180)}
 function interact(){const obj=nearest();if(!obj)return;activateObject(obj)}
@@ -986,6 +1062,6 @@ const keys=new Set();let raf=0,last=0;function tick(t){if(!keys.size){raf=0;retu
 root.addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(['arrowleft','arrowright','arrowup','arrowdown','w','a','s','d'].includes(k)){e.preventDefault();stopAutoWalk();keys.add(k);if(!raf)raf=requestAnimationFrame(tick)}else if(k==='e'){e.preventDefault();interact()}else if(k==='m'){e.preventDefault();mapDialog.showModal()}else if(k==='j'){e.preventDefault();openJournal()}else if(k==='t'){e.preventDefault();cycleTime()}});
 root.addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
 root.querySelectorAll('[data-move]').forEach(btn=>{let timer;const run=()=>{const d=btn.dataset.move;move(d==='left'?-2:d==='right'?2:0,d==='up'?-2:d==='down'?2:0)};btn.addEventListener('pointerdown',e=>{e.preventDefault();run();timer=setInterval(run,88)});['pointerup','pointercancel','pointerleave'].forEach(ev=>btn.addEventListener(ev,()=>clearInterval(timer)))});
-dialog.addEventListener('close',()=>objects.querySelectorAll('.npc-figure').forEach(el=>el.classList.remove('talking','reacting')));exploreBtn.addEventListener('click',interact);$('#mapBtn').addEventListener('click',()=>mapDialog.showModal());$('#journalGameBtn').addEventListener('click',openJournal);if(timeBtn)timeBtn.addEventListener('click',cycleTime);$('#soundBtnGame')?.addEventListener('click',toggleSound);$('#achievementsBtn')?.addEventListener('click',()=>{renderAchievements();achievementDialog.showModal()});$('#backupGameBtn')?.addEventListener('click',exportPlayableBackup);$('#restoreGameBtn')?.addEventListener('click',()=>$('#restoreGameFile')?.click());$('#restoreGameFile')?.addEventListener('change',e=>{importPlayableBackup(e.target.files?.[0]);e.target.value=''});document.addEventListener('visibilitychange',()=>{if(document.hidden){stopAmbience()}else if(soundOn){startAmbience()}});stage.addEventListener('pointerdown',e=>{stage.focus();if(e.button!==undefined&&e.button!==0)return;if(e.target.closest('.interaction-hint,.world-event,.direct-travel,.direct-travel-label,.direct-interact,.direct-interact-label,.click-collectible'))return;const rect=stage.getBoundingClientRect();const x=(e.clientX-rect.left)/rect.width*100,y=(e.clientY-rect.top)/rect.height*100;if(Number.isFinite(x)&&Number.isFinite(y))walkTo(x,y)});
+dialog.addEventListener('close',()=>objects.querySelectorAll('.npc-figure').forEach(el=>el.classList.remove('talking','reacting')));exploreBtn.addEventListener('click',interact);$('#mapBtn').addEventListener('click',()=>mapDialog.showModal());$('#journalGameBtn').addEventListener('click',openJournal);if(timeBtn)timeBtn.addEventListener('click',cycleTime);$('#soundBtnGame')?.addEventListener('click',toggleSound);$('#achievementsBtn')?.addEventListener('click',()=>{renderAchievements();achievementDialog.showModal()});$('#backupGameBtn')?.addEventListener('click',exportPlayableBackup);$('#restoreGameBtn')?.addEventListener('click',()=>$('#restoreGameFile')?.click());$('#restoreGameFile')?.addEventListener('change',e=>{importPlayableBackup(e.target.files?.[0]);e.target.value=''});document.addEventListener('visibilitychange',()=>{if(document.hidden){stopAmbience()}else if(soundOn){startAmbience()}});stage.addEventListener('pointerdown',e=>{stage.focus();if(e.button!==undefined&&e.button!==0)return;if(e.target.closest('.interaction-hint,.world-event,.direct-travel,.direct-travel-label,.direct-interact,.direct-interact-label,.click-collectible'))return;const rect=stage.getBoundingClientRect();const x=(e.clientX-rect.left)/rect.width*100,y=(e.clientY-rect.top)/rect.height*100;if(Number.isFinite(x)&&Number.isFinite(y)){const pt=clampWalkable(x,y);walkTo(pt.x,pt.y)}});
 renderScene();stage.focus({preventScroll:true});
 })();
