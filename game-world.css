@@ -100,3 +100,15 @@
 .scene-backdrop.archiveInterior:before{content:"";position:absolute;inset:12% 8% 21%;background:repeating-linear-gradient(90deg,#6c583d 0 4%,#2b2234 4% 8%,#8a7049 8% 11%,#2b2234 11% 15%);opacity:.38;border:2px solid #b99b60;border-radius:16px}
 @media(max-width:640px){.world-event{top:2%;right:2%;max-width:74%;font-size:.68rem}.chain-card{padding:13px}}
 @media(prefers-reduced-motion:reduce){.world-event.show{animation:none;opacity:1}.scene-backdrop:after{transition:none}}
+
+/* === LIVING WORLD PASS 5 === */
+.scene-backdrop.stationInterior{background:linear-gradient(#8295a8 0 18%,#d3c3aa 18% 59%,#6f6256 59% 66%,#4f443b 66%);box-shadow:inset 0 0 100px #20263188}
+.scene-backdrop.engineeringInterior{background:linear-gradient(#1a2430 0 18%,#66717a 18% 58%,#323940 58%);box-shadow:inset 0 0 110px #070b10bb}
+.world-object.prop{font-size:clamp(1.7rem,4vw,3.4rem);animation:eventObjectPulse 1.8s ease-in-out infinite alternate}
+@keyframes eventObjectPulse{to{transform:translate(-50%,calc(-50% - 5px));filter:drop-shadow(0 0 14px #ffe7a0)}}
+.time-world[data-time="morning"] .game-stage{box-shadow:0 24px 70px #0008,inset 0 0 50px #ffd69a22}
+.time-world[data-time="evening"] .game-stage{box-shadow:0 24px 70px #0009,inset 0 0 70px #e4796d26}
+.time-world[data-time="night"] .game-stage{box-shadow:0 24px 70px #000b,inset 0 0 95px #03071677}
+.world-label{transition:left .55s ease,top .55s ease,opacity .25s ease}.world-object.npc{transition:left .55s ease,top .55s ease}
+.chain-card.complete:after{content:"✓ Story resolved";display:inline-block;margin-top:9px;padding:5px 8px;border-radius:999px;background:#5f542d;color:#ffedb7;font-size:.72rem;font-weight:900;letter-spacing:.04em}
+@media(prefers-reduced-motion:reduce){.world-object.prop{animation:none!important}.world-label,.world-object.npc{transition:none!important}}
