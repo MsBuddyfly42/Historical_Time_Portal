@@ -470,7 +470,7 @@ if(westBoard)westBoard.choices=[
 ];
 
 let state=store.get('htp-playable-v2',null)||store.get('htp-playable-v1',null)||{scene:'hall',x:50,y:90,visited:['hall'],discoveries:[],keepsakes:[],journal:[],quests:{},flags:{},timeIndex:1,events:[]};
-state.visited=Array.isArray(state.visited)?state.visited:['hall'];state.discoveries=Array.isArray(state.discoveries)?state.discoveries:[];state.keepsakes=Array.isArray(state.keepsakes)?state.keepsakes:[];state.journal=Array.isArray(state.journal)?state.journal:[];state.quests=state.quests||{};state.flags=state.flags||{};state.events=Array.isArray(state.events)?state.events:[];state.timeIndex=Number.isInteger(state.timeIndex)?state.timeIndex:1;
+state.dialogues=state.dialogues||{};state.visited=Array.isArray(state.visited)?state.visited:['hall'];state.discoveries=Array.isArray(state.discoveries)?state.discoveries:[];state.keepsakes=Array.isArray(state.keepsakes)?state.keepsakes:[];state.journal=Array.isArray(state.journal)?state.journal:[];state.quests=state.quests||{};state.flags=state.flags||{};state.events=Array.isArray(state.events)?state.events:[];state.timeIndex=Number.isInteger(state.timeIndex)?state.timeIndex:1;
 if(!scenes[state.scene]){state.scene='hall';state.x=50;state.y=90}
 const questCard=document.createElement('div');questCard.className='quest-card';questCard.innerHTML='<p class="mini-kicker">ERA OBJECTIVE</p><h2 id="questTitle">Explore freely</h2><div id="questProgress">No required objective in the Time Hall.</div><div class="quest-meter"><i id="questFill"></i></div>';side.insertBefore(questCard,side.children[1]||null);
 const questTitle=$('#questTitle'),questProgress=$('#questProgress'),questFill=$('#questFill');
@@ -575,6 +575,162 @@ function showNpcBubble(obj){
  const b=document.createElement('span');b.className='npc-speech';b.textContent=greetingFor(obj);host.appendChild(b)
 }
 function clearNpcBubbles(){objects.querySelectorAll('.npc-speech').forEach(el=>el.remove())}
+
+
+const npcConversationProfiles={
+ steward:{
+  intro:{Morning:'Morning. We are already well into the day’s preparations.',Afternoon:'Good afternoon. The deck is busy, but I can spare a moment.',Evening:'Evening. Dinner and passenger service keep everyone moving.',Night:'It is quieter now, though the ship never truly sleeps.'},
+  topics:[
+   {id:'work',label:'What does your job involve?',reply:'More than carrying messages. We help passengers find their way, prepare rooms, answer requests, move luggage, coordinate meals, and keep routines running on time.',
+    follow:[{label:'What is hardest about it?',reply:'The ship is enormous, passengers expect quick answers, and every class of accommodation has its own routines. You learn the corridors very quickly.'},{label:'Do you ever get a quiet moment?',reply:'A few. Usually between rushes, and never for very long.'}]},
+   {id:'shipLife',label:'What is daily life like aboard?',reply:'For passengers it can feel elegant or exciting. For crew it is schedules, service, cleaning, food, watches, messages, maintenance, and thousands of small jobs that must happen whether anyone notices or not.',
+    follow:[{label:'Where should I look next?',reply:'Walk the promenade, look at the lifeboat stations, visit the wireless room, and notice how different spaces serve different groups aboard.'}]}
+  ]
+ },
+ reporter:{
+  intro:{Morning:'You are early. Good. The best stories start before everyone else notices them.',Afternoon:'I have three leads and only one pair of feet.',Evening:'If I do not file something soon, the editor will have my hide.',Night:'The street is quieter, but rumors usually get louder after dark.'},
+  topics:[
+   {id:'reporting',label:'How do you decide what is news?',reply:'I look for what changed, who is affected, whether the story can be checked, and whether anyone is trying too hard to make me believe one version.',
+    follow:[{label:'How do you check a rumor?',reply:'Find another source who did not hear it from the first one. Then look for records, witnesses, times, places, and details that agree.'},{label:'What makes a bad source?',reply:'Someone who cannot say how they know, changes the story when pressed, or benefits from you printing it without checking.'}]},
+   {id:'town',label:'What is happening around town?',reply:'The stagecoach was late, the payroll box is missing, and two ranchers are arguing over a fence line. Any one of those could become tomorrow’s headline.'}
+  ]
+ },
+ herbalist:{
+  intro:{Morning:'Morning is the best time to see what survived the night.',Afternoon:'The garden smells strongest in the sun.',Evening:'I am bringing the tender plants in before the air cools.',Night:'At night I listen more than I harvest.'},
+  topics:[
+   {id:'garden',label:'What do you grow here?',reply:'Kitchen herbs, useful plants, flowers, and whatever the soil agrees to support. Some are for food, some for scent, some for household use.',
+    follow:[{label:'How do you know what is useful?',reply:'Observation, habit, local knowledge, and experience passed from one person to another. That does not mean every old remedy worked.'}]},
+   {id:'village',label:'What does the village need most?',reply:'Reliable food, clean water, fuel, healthy animals, repaired tools, and people willing to help each other when one household has a bad season.'}
+  ]
+ },
+ newsboy:{
+  intro:{Morning:'Morning edition! You are just in time.',Afternoon:'Afternoon extra! New headline!',Evening:'Last crowd before the theater doors open.',Night:'Not many papers left now. Just the late edition.'},
+  topics:[
+   {id:'headlines',label:'Which story is everyone talking about?',reply:'The delayed train. Half the street has a different explanation for why it is late.',
+    follow:[{label:'Which explanation do you believe?',reply:'I sell papers. Believing comes after the reporter checks it.'}]},
+   {id:'job',label:'What is it like selling papers?',reply:'You need a strong voice, quick change, good shoes, and a sense for which corner has the biggest crowd.'}
+  ]
+ },
+ student:{
+  intro:{Morning:'I should probably be in class soon.',Afternoon:'School is out. Now the whole street feels different.',Evening:'We are deciding between the diner and the movie house.',Night:'My family expects me home before too much longer.'},
+  topics:[
+   {id:'music',label:'What music are people your age listening to?',reply:'Whatever the radio plays that our parents complain about—and plenty they like too. The record shop is where everyone argues about favorites.',
+    follow:[{label:'Do records matter that much?',reply:'They are something you can own, replay, trade, lend, and talk about. A song becomes part of your room instead of disappearing after the radio broadcast.'}]},
+   {id:'weekend',label:'What do you do on weekends?',reply:'Movies, records, school events, church, sports, visiting friends, helping at home. Depends on the family and the neighborhood.'}
+  ]
+ },
+ photographer:{
+  intro:{Morning:'The light is soft. Best hour for storefronts.',Afternoon:'The street will not hold still for me today.',Evening:'Electric signs make a different city after sunset.',Night:'Long exposures. Fewer people willing to stand still.'},
+  topics:[
+   {id:'camera',label:'What are you photographing?',reply:'The city changing—cars, clothes, signs, shop windows, crowds. Ordinary scenes become historical evidence before anyone realizes it.',
+    follow:[{label:'What makes a good photograph?',reply:'Timing, light, framing, and knowing what story is hiding inside an ordinary moment.'}]},
+   {id:'change',label:'What has changed fastest?',reply:'The pace. Radio, cars, advertising, recorded music, new buildings—everything seems to be competing to move faster.'}
+  ]
+ },
+ engineer:{
+  intro:{Morning:'We are reviewing the overnight reports.',Afternoon:'The consoles have been busy all day.',Evening:'The public sees a broadcast. We see hundreds of systems that must agree.',Night:'Night shift. Spaceflight does not care what time it is.'},
+  topics:[
+   {id:'systems',label:'How do you keep track of so many systems?',reply:'Specialization and communication. Nobody knows every detail alone. Each team watches its area and reports clearly when something changes.',
+    follow:[{label:'What happens if two readings disagree?',reply:'You compare sensors, trends, procedures, and independent evidence before deciding whether the spacecraft changed or the measurement did.'}]},
+   {id:'pressure',label:'How do people stay calm here?',reply:'Training. Procedures. Rehearsal. Clear roles. You prepare for trouble before trouble arrives.'}
+  ]
+ },
+ controller:{
+  intro:{Morning:'Morning shift. Procedures are already open.',Afternoon:'Keep it concise; several loops are active.',Evening:'We are watching the mission and the clock.',Night:'The room is still bright. Outside barely matters in here.'},
+  topics:[
+   {id:'control',label:'What does a flight controller actually do?',reply:'Monitor one part of the mission, recognize changes, communicate them, recommend action, and coordinate with the rest of the room.',
+    follow:[{label:'Can one controller stop a mission?',reply:'Critical decisions follow defined authority and team procedures. Good information moves upward quickly; nobody should hide a dangerous reading.'}]}
+  ]
+ },
+ vendor:{
+  intro:{Morning:'Fresh food. Best selection of the day.',Afternoon:'Busy hour. Keep to the side of the stall.',Evening:'I am counting what is left before closing.',Night:'No stall tonight. Tomorrow begins early.'},
+  topics:[
+   {id:'food',label:'What do people eat in this city?',reply:'Bread, grains, legumes, vegetables, fruit, sauces, wine, fish or meat when available—different households eat very differently depending on money and circumstance.',
+    follow:[{label:'Do most people cook at home?',reply:'Some do, but cramped housing and fire risk make prepared food shops important for many urban residents.'}]},
+   {id:'prices',label:'What makes prices change?',reply:'Supply, harvests, transport, demand, taxes, shortages, distance, and sometimes simple opportunism.'}
+  ]
+ },
+ merchant:{
+  intro:{Morning:'Morning brings the serious buyers.',Afternoon:'Now the square is noisy enough to hide a bargain.',Evening:'Time to count cloth and coin.',Night:'Trade sleeps eventually. Ledgers do not.'},
+  topics:[
+   {id:'trade',label:'Where do your goods come from?',reply:'Not one place. Cloth, dyes, fibers, metal goods, paper, spices, and luxury items move through overlapping networks of merchants and ports.',
+    follow:[{label:'How do you trust distant sellers?',reply:'Reputation, letters, family connections, agents, contracts, repeated business—and sometimes expensive mistakes.'}]},
+   {id:'customers',label:'Who buys fine cloth?',reply:'Households with money, institutions, guilds, courts, clergy, merchants, and craftspeople. Clothing can advertise status before anyone speaks.'}
+  ]
+ },
+ messenger:{
+  intro:{Morning:'Morning roads are best if the weather holds.',Afternoon:'I have already crossed half the city twice.',Evening:'One more delivery before I stop.',Night:'At night every rumor seems urgent.'},
+  topics:[
+   {id:'news',label:'How does news travel?',reply:'Letters, riders, ships, newspapers, travelers, taverns, official notices, merchants, soldiers, and gossip—all at different speeds.',
+    follow:[{label:'How do you know what is true?',reply:'You often do not at first. Time, independent reports, named sources, and written records help separate news from rumor.'}]}
+  ]
+ },
+ artisan:{
+  intro:{Morning:'Morning is for the work that needs steady hands.',Afternoon:'We are in the middle of several orders.',Evening:'I am cleaning tools before dark.',Night:'The workshop rests. Tomorrow the orders remain.'},
+  topics:[
+   {id:'craft',label:'How did you learn this craft?',reply:'Watching, copying, correcting mistakes, repeating the same motions, learning materials, and working beside people who know more than I do.',
+    follow:[{label:'How long does that take?',reply:'Long enough that you stop counting. Skill grows through thousands of small corrections.'}]},
+   {id:'customers',label:'What do customers ask for?',reply:'Useful things first: containers, cloth, repairs, tools, household goods. Fine decoration comes after function for most people.'}
+  ]
+ },
+ usher:{
+  intro:{Morning:'No show yet. We are cleaning and checking the house.',Afternoon:'The matinee crowd will arrive soon.',Evening:'Tickets ready, please. The feature starts shortly.',Night:'Last show is nearly over.'},
+  topics:[
+   {id:'cinema',label:'What happens before a movie starts?',reply:'Ticket sales, lobby cleanup, concessions, projector checks, film handling, seating, lights, doors, and making sure the audience ends up in the right auditorium.',
+    follow:[{label:'What if the film breaks?',reply:'The projectionist stops, repairs or resplices the film, and everyone waits—usually not very patiently.'}]}
+  ]
+ },
+ archivist:{
+  intro:{Morning:'A quiet hour. Good for careful reading.',Afternoon:'Your passport is becoming interesting.',Evening:'The archive feels different when the hall grows quiet.',Night:'Only serious travelers reach the archive this late.'},
+  topics:[
+   {id:'history',label:'How should I think about all these eras?',reply:'Do not memorize a parade of dates. Compare human problems across time: food, work, family, belief, communication, travel, power, danger, leisure, and change.',
+    follow:[{label:'What should I pay attention to?',reply:'Who had choices, who did the work, who was excluded, what technology made possible, and what ordinary people considered normal.'}]},
+   {id:'evidence',label:'What counts as historical evidence?',reply:'Objects, buildings, letters, newspapers, photographs, government records, oral accounts, art, archaeology, financial records, and much more—each with limits.',
+    follow:[{label:'Can evidence disagree?',reply:'Frequently. Historians compare sources, context, authorship, purpose, timing, and independent corroboration rather than expecting every source to match.'}]}
+  ]
+ }
+};
+const genericConversationTopics=[
+ {id:'daily',label:'What is your day like?',reply:(obj)=>'Most of my day is ordinary work: responsibilities, interruptions, meals, errands, conversations, and whatever this place demands. History rarely feels historic while you are living it.',
+  follow:[{label:'What takes most of your time?',reply:'Work and practical needs. The exact tasks change by place and era, but ordinary life always takes more effort than later stories usually show.'}]},
+ {id:'place',label:'What should I notice around here?',reply:(obj)=>'Notice the tools, buildings, clothing, sounds, transport, food, and who is doing which kind of work. Those details tell you as much as the famous events.',
+  follow:[{label:'What do visitors usually miss?',reply:'The background labor. Someone maintains the fire, carries the water, prepares the food, cleans the rooms, moves the goods, keeps the records, or repairs the equipment.'}]},
+ {id:'people',label:'What are people talking about today?',reply:(obj)=>'Work, prices, family, weather, local news, travel, illness, entertainment, and rumors. People in the past worried about tomorrow just as much as people do now.'}
+];
+function conversationKey(obj){return state.scene+':'+obj.id}
+function conversationMemory(obj){state.dialogues=state.dialogues||{};return state.dialogues[conversationKey(obj)]||(state.dialogues[conversationKey(obj)]={topics:[],turns:0})}
+function profileFor(obj){return npcConversationProfiles[obj.id]||null}
+function resolveReply(reply,obj){return typeof reply==='function'?reply(obj):reply}
+function conversationIntro(obj){
+ const p=profileFor(obj),t=times[state.timeIndex%times.length],mem=conversationMemory(obj);
+ if(mem.turns>0)return 'Good to see you again. '+(p?.intro?.[t]||greetingFor(obj));
+ return p?.intro?.[t]||greetingFor(obj)
+}
+function topicPool(obj){
+ const p=profileFor(obj);const quest=Array.isArray(obj.choices)?obj.choices.filter(ch=>(!ch.requires||state.flags[ch.requires])&&(!ch.flag||!state.flags[ch.flag])).map((ch,i)=>({id:'quest:'+i,label:ch.label,reply:ch.reply,flag:ch.flag,requires:ch.requires,quest:true})):[];
+ return [...quest,...(p?.topics||[]),...genericConversationTopics]
+}
+function renderConversation(obj,transcript=[],followUps=[]){
+ const mem=conversationMemory(obj),topics=topicPool(obj).filter(t=>!mem.topics.includes(t.id)).slice(0,6);
+ const options=[...followUps.map((f,i)=>({...f,id:'follow:'+i,follow:true})),...topics].slice(0,7);
+ const memoryHtml=mem.turns>0?'<p class="npc-memory">💭 '+obj.label+' remembers '+mem.turns+' earlier exchange'+(mem.turns===1?'':'s')+' with you.</p>':'';
+ const transcriptHtml=transcript.length?'<div class="dialogue-transcript">'+transcript.map(t=>'<div class="dialogue-line '+t.who+'"><b>'+(t.who==='you'?'You':obj.label)+'</b><p>'+t.text+'</p></div>').join('')+'</div>':'';
+ dialogContent.innerHTML='<p class="mini-kicker">'+scenes[state.scene].name+'</p><h2>'+obj.title+'</h2>'+memoryHtml+transcriptHtml+'<div class="dialogue-prompt">'+(transcript.length?'What would you like to ask next?':conversationIntro(obj))+'</div><div class="dialogue-options">'+options.map((t,i)=>'<button type="button" data-talk-option="'+i+'">'+t.label+'</button>').join('')+'<button type="button" data-talk-leave>End conversation</button></div>';
+ dialogContent.querySelectorAll('[data-talk-option]').forEach(btn=>btn.addEventListener('click',()=>{
+   const option=options[Number(btn.dataset.talkOption)];if(!option)return;
+   if(obj.type==='npc')setNpcState(obj.id,'reacting');
+   const reply=resolveReply(option.reply,obj);const nextTranscript=[...transcript,{who:'you',text:option.label},{who:'npc',text:reply}];
+   mem.turns++;if(!option.follow&&!mem.topics.includes(option.id))mem.topics.push(option.id);
+   if(option.flag)state.flags[option.flag]=true;save();addJournal(obj.title+' — '+option.label,reply);updateChain();renderStatus();
+   setTimeout(()=>{if(obj.type==='npc')setNpcState(obj.id,'talking');renderConversation(obj,nextTranscript,option.follow||option.followUps||[])},180)
+ }));
+ dialogContent.querySelector('[data-talk-leave]')?.addEventListener('click',()=>dialog.close());
+}
+function openNpcConversation(obj){
+ clearNpcBubbles();setNpcState(obj.id,'talking');
+ const dKey=discoveryKey(state.scene,obj.id);if(!state.discoveries.includes(dKey)){state.discoveries.push(dKey);addJournal('Met: '+(obj.title||obj.label),obj.body||'Met while exploring.');save();showToast('New person added to your journal ✨')}
+ renderConversation(obj,[],[]);dialog.showModal();renderStatus()
+}
 
 function makeNpcSprite(obj,index=0){
  const fig=document.createElement('div');fig.className='npc-figure style-'+(index%5);fig.innerHTML='<i class="npc-head"></i><i class="npc-hair"></i><i class="npc-body"></i><i class="npc-arm a1"></i><i class="npc-arm a2"></i><i class="npc-leg l1"></i><i class="npc-leg l2"></i><i class="npc-tool"></i>';
@@ -754,7 +910,7 @@ function moveTo(x,y,check=true){state.x=clamp(x,4,96);state.y=clamp(y,14,93);tra
 function move(dx,dy){if(dx<0)traveler.dataset.dir='left';else if(dx>0)traveler.dataset.dir='right';else if(dy<0)traveler.dataset.dir='up';else if(dy>0)traveler.dataset.dir='down';moveTo(state.x+dx,state.y+dy)}
 function travel(to){const target=scenes[to];if(!target)return;stopAutoWalk();playSceneTransition();setTimeout(()=>{state.scene=to;state.x=target.spawn.x;state.y=target.spawn.y;save();renderScene()},180)}
 function interact(){const obj=nearest();if(!obj)return;if(!isUnlocked(obj)){showToast('Archive locked — complete '+obj.unlockCount+' era objectives');return}if(obj.action==='travel'){if(obj.type==='door'){animateDoor(obj.id,()=>travel(obj.to))}else{travel(obj.to)}return}
- if(obj.type==='npc'){clearNpcBubbles();setNpcState(obj.id,'talking');}const dKey=discoveryKey(state.scene,obj.id);if(!state.discoveries.includes(dKey)){state.discoveries.push(dKey);addJournal(obj.title||obj.label,obj.body||'Discovered while exploring.');save();showToast('New discovery added ✨')}
+ if(obj.type==='npc'){openNpcConversation(obj);return}const dKey=discoveryKey(state.scene,obj.id);if(!state.discoveries.includes(dKey)){state.discoveries.push(dKey);addJournal(obj.title||obj.label,obj.body||'Discovered while exploring.');save();showToast('New discovery added ✨')}
  const availableChoices=Array.isArray(obj.choices)?obj.choices.filter(ch=>(!ch.requires||state.flags[ch.requires])&&(!ch.flag||!state.flags[ch.flag])):[];const remembered=Array.isArray(obj.choices)&&obj.choices.some(ch=>ch.flag&&state.flags[ch.flag]);const choiceHtml=availableChoices.map((ch,i)=>'<button type="button" data-choice="'+i+'">'+ch.label+'</button>').join('');const memoryHtml=remembered?'<p class="npc-memory">💭 This person remembers your earlier conversation.</p>':'';dialogContent.innerHTML='<p class="mini-kicker">'+scenes[state.scene].name+'</p><h2>'+obj.title+'</h2><p>'+obj.body+'</p>'+memoryHtml+'<div id="choiceReply"></div><div class="dialog-actions">'+choiceHtml+'<button type="button" id="rememberBtn">Journal this discovery ✓</button></div>';dialog.showModal();dialogContent.querySelectorAll('[data-choice]').forEach(btn=>btn.addEventListener('click',()=>{const ch=availableChoices[Number(btn.dataset.choice)];if(obj.type==='npc')setNpcState(obj.id,'reacting');state.flags=state.flags||{};if(ch.flag)state.flags[ch.flag]=true;save();const reply=dialogContent.querySelector('#choiceReply');reply.innerHTML='<p class="choice-reply">'+ch.reply+'</p>';addJournal(obj.title+' — '+ch.label,ch.reply);updateChain();renderStatus();showToast(ch.flag==='westPayrollSolved'?'Payroll mystery solved! ✨':'Conversation remembered')}));const remember=dialogContent.querySelector('#rememberBtn');if(remember)remember.addEventListener('click',()=>{addJournal(obj.title,obj.body);showToast('Added to journal')});renderStatus()
 }
 function renderMap(){mapGrid.innerHTML=Object.entries(scenes).filter(([,s])=>s.passport||s===scenes.hall).map(([k,s])=>'<button type="button" data-scene="'+k+'" '+(k!=='hall'&&!state.visited.includes(k)?'disabled':'')+'>'+(k==='hall'||state.visited.includes(k)?'✓ ':'🔒 ')+s.name+'</button>').join('');mapGrid.querySelectorAll('button:not(:disabled)').forEach(b=>b.addEventListener('click',()=>{mapDialog.close();travel(b.dataset.scene)}))}
