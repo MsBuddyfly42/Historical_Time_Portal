@@ -237,3 +237,36 @@
 .scene-backdrop.egyptWorkshop{background:linear-gradient(#a9c6ce 0 16%,#d7bf8a 16% 61%,#9d744b 61%);box-shadow:inset 0 0 90px #65482e66}
 @media(max-width:640px){.npc-speech{min-width:105px;max-width:150px;font-size:.64rem}.npc-figure.patrolling:not(.talking):not(.working):not(.reacting){animation-duration:2.8s}}
 @media(prefers-reduced-motion:reduce){.npc-figure.patrolling,.npc-speech{animation:none!important}.npc-figure.face-left,.npc-figure.face-right{transform:none}}
+
+/* === ENVIRONMENTAL MOTION PASS 12 === */
+.ship-deck .funnel:after{content:"";position:absolute;left:50%;top:-44px;width:54px;height:54px;border-radius:50%;background:radial-gradient(circle,#d9d9d955 0 34%,transparent 36%);filter:blur(3px);animation:smokeDrift 3.8s ease-in-out infinite}
+.egypt-scene .river:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(170deg,transparent 0 18px,#d7f2ff33 18px 21px);animation:riverMove 4.5s linear infinite}
+.victorian-row .lamp-post:after{animation:lampFlicker 2.8s ease-in-out infinite alternate}
+.mainstreet50 .neon{animation:neonBuzz 2.1s ease-in-out infinite alternate}
+.radio-room .onair{animation:onAirBlink 1.4s steps(2,end) infinite}
+.bath-scene .steam{animation:steamRise 2.7s ease-in-out infinite}
+.apollo-yard .antenna:after{animation:dishSweep 5s ease-in-out infinite alternate;transform-origin:center}
+.mission-room .screen{animation:screenGlow 3s ease-in-out infinite alternate}
+.engineering-room .schematic{background-image:linear-gradient(90deg,#295473,#2e678b),repeating-linear-gradient(0deg,transparent 0 16px,#b5d8e833 16px 18px);animation:schematicPulse 3.4s ease-in-out infinite alternate}
+.diner-room .neon{animation:neonBuzz 1.8s ease-in-out infinite alternate}
+.theatre-room .footlights{animation:footlightGlow 2.2s ease-in-out infinite alternate}
+.medieval-kitchen .hearth,.tavern-room .hearth{animation:fireGlow 1.7s ease-in-out infinite alternate}
+.jazz-room .spotlight{animation:spotSweep 5.5s ease-in-out infinite alternate;transform-origin:top center}
+.living-room69 .tv:after{animation:tvFlicker 1.6s steps(2,end) infinite}
+.cinema-room .screen{animation:projectorFlicker 2s steps(3,end) infinite}
+@keyframes smokeDrift{0%{transform:translate(-50%,8px) scale(.7);opacity:.2}55%{transform:translate(-35%,-18px) scale(1);opacity:.55}100%{transform:translate(-12%,-42px) scale(1.3);opacity:0}}
+@keyframes riverMove{to{background-position:120px 0}}
+@keyframes lampFlicker{0%,100%{box-shadow:0 0 10px #e7d18388}50%{box-shadow:0 0 20px #ffe59dcc}}
+@keyframes neonBuzz{0%,100%{filter:brightness(.9);opacity:.82}45%{filter:brightness(1.2);opacity:1}48%{opacity:.65}52%{opacity:1}}
+@keyframes onAirBlink{50%{filter:brightness(1.5);box-shadow:0 0 18px #ff626e}}
+@keyframes steamRise{0%{transform:translateY(8px) scaleX(.8);opacity:.2}100%{transform:translateY(-18px) scaleX(1.2);opacity:.7}}
+@keyframes dishSweep{to{transform:rotate(-13deg)}}
+@keyframes screenGlow{to{box-shadow:inset 0 0 28px #7ddcf777,0 0 9px #7ddcf744}}
+@keyframes schematicPulse{to{filter:brightness(1.18)}}
+@keyframes footlightGlow{to{filter:brightness(1.4);box-shadow:0 0 8px #ffd98a}}
+@keyframes fireGlow{to{box-shadow:inset 0 0 34px #f5a04bbb,0 0 12px #d76c2f55}}
+@keyframes spotSweep{to{transform:rotate(7deg)}}
+@keyframes tvFlicker{50%{filter:brightness(1.25) contrast(1.1)}}
+@keyframes projectorFlicker{50%{filter:brightness(1.08);opacity:.94}}
+.time-world[data-time="night"] .fx-layer .world-particle{animation-duration:4.2s}
+@media(prefers-reduced-motion:reduce){.ship-deck .funnel:after,.egypt-scene .river:after,.victorian-row .lamp-post:after,.mainstreet50 .neon,.radio-room .onair,.bath-scene .steam,.apollo-yard .antenna:after,.mission-room .screen,.engineering-room .schematic,.diner-room .neon,.theatre-room .footlights,.medieval-kitchen .hearth,.tavern-room .hearth,.jazz-room .spotlight,.living-room69 .tv:after,.cinema-room .screen{animation:none!important}}
