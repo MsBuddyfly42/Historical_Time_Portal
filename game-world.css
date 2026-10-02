@@ -297,3 +297,9 @@
 .silkroad-scene .caravanserai{left:30%;right:30%;bottom:24%;height:31%;background:#b88450;border:6px solid #825a36}.silkroad-scene .caravanserai:after{content:"";position:absolute;left:40%;right:40%;bottom:0;height:46%;border-radius:50% 50% 0 0;background:#61442d}.silkroad-scene .dune{bottom:10%;width:45%;height:21%;border-radius:50% 50% 0 0;background:#d8aa62}.silkroad-scene .d1{left:-5%}.silkroad-scene .d2{right:-5%;background:#c99752}.silkroad-scene .palms{left:13%;bottom:25%;width:10px;height:27%;background:#7b5535}
 .seaside-scene .pier{left:14%;right:30%;bottom:21%;height:8%;background:#80624b;box-shadow:0 16px 0 #634b3a}.seaside-scene .sea{left:0;right:0;bottom:0;height:23%;background:linear-gradient(#75aebd,#477a8c)}.seaside-scene .wheel{right:9%;bottom:20%;width:20%;aspect-ratio:1;border:7px solid #d9c7a3;border-radius:50%}.seaside-scene .wheel:before,.seaside-scene .wheel:after{content:"";position:absolute;left:48%;top:0;bottom:0;width:4px;background:#d9c7a3}.seaside-scene .wheel:after{transform:rotate(90deg)}.seaside-scene .hotel{left:5%;bottom:29%;width:24%;height:31%;background:#c9b49b;border:5px solid #7e6b59}
 @media(prefers-reduced-motion:reduce){.sail-scene .mast:after{animation:none!important}}
+
+/* === FULL COMPLETION CEREMONY === */
+.time-world.world-complete .game-header:after{content:"🏆 Keeper of the Twenty Eras";align-self:flex-start;padding:9px 13px;border-radius:999px;background:linear-gradient(135deg,#fff0b0,#d9a94d);color:#2b2130;font-weight:900;box-shadow:0 8px 20px #0005}
+.time-world.world-complete .game-stage{border-color:#ffe39a;box-shadow:0 24px 70px #0009,0 0 0 2px #d6b55c55,0 0 42px #ffd77833}
+.time-world.world-complete .game-header h1{filter:drop-shadow(0 0 14px #ffd77b55)}
+@media(max-width:700px){.time-world.world-complete .game-header:after{font-size:.75rem}}
