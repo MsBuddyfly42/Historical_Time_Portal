@@ -342,3 +342,10 @@
 .destination-marker.show{animation:destinationPing 1s ease-out both}
 @keyframes destinationPing{0%{opacity:0;transform:translate(-50%,-50%) scale(.65)}20%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1.7)}}
 @media(prefers-reduced-motion:reduce){.destination-marker.show{animation:none;opacity:.85}}
+
+/* === FINAL QUICK-START / FLOOR POLISH === */
+.first-run-guide{position:absolute;z-index:60;left:50%;top:50%;transform:translate(-50%,-50%);width:min(430px,88%);padding:18px 19px;border-radius:18px;background:#10182ef2;color:#f7f1df;border:2px solid #d8b66c;box-shadow:0 22px 55px #000a;backdrop-filter:blur(7px)}
+.first-run-guide strong{display:block;font:700 1.35rem Georgia,serif;color:#ffe2a0;margin-bottom:7px}.first-run-guide p{margin:0 0 13px;line-height:1.55;color:#d4dbea}.first-run-guide button{width:100%;min-height:46px;border:1px solid #f0cb77;border-radius:12px;background:linear-gradient(135deg,#ffeaa7,#d8a94e);color:#29213c;font-weight:900;cursor:pointer}.first-run-guide button:hover{filter:brightness(1.06)}
+.game-stage:before{content:"";position:absolute;z-index:3;left:4%;right:4%;bottom:2%;height:9%;border-radius:50%;background:radial-gradient(ellipse at center,#e3c99012,transparent 66%);pointer-events:none}
+@media(max-width:640px){.first-run-guide{padding:15px;width:92%}.first-run-guide strong{font-size:1.15rem}.first-run-guide p{font-size:.86rem}}
+@media(prefers-reduced-motion:reduce){.first-run-guide{backdrop-filter:none}}
