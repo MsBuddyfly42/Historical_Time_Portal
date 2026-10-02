@@ -542,9 +542,33 @@ function renderFx(){
 
 /* --- WALKABLE WORLD / COLLISION + PATHFINDING --- */
 const interiorClasses=new Set(['titanicInterior','titanicDining','westInterior','castleInterior','medievalKitchen','victorianInterior','theatreInterior','stationInterior','dinerInterior','recordInterior','cinemaInterior','jazzInterior','radioInterior','apolloInterior','engineeringInterior','watchInterior','romeForum','romeBaths','printInterior','atelierInterior','revPrintInterior','revTavernInterior','egyptWorkshop','archiveInterior']);
+const sceneFloorProfiles={
+ hall:{minX:4,maxX:96,minY:18,maxY:92},
+ titanic:{minX:5,maxX:95,minY:36,maxY:91},
+ west:{minX:5,maxX:95,minY:43,maxY:92},
+ egypt:{minX:5,maxX:95,minY:43,maxY:92},
+ medieval:{minX:5,maxX:95,minY:42,maxY:92},
+ victorian:{minX:5,maxX:95,minY:43,maxY:92},
+ fifties:{minX:5,maxX:95,minY:43,maxY:92},
+ roaring:{minX:5,maxX:95,minY:43,maxY:92},
+ apollo:{minX:5,maxX:95,minY:43,maxY:92},
+ rome:{minX:5,maxX:95,minY:42,maxY:92},
+ renaissance:{minX:5,maxX:95,minY:42,maxY:92},
+ revolution:{minX:5,maxX:95,minY:42,maxY:92},
+ homefront:{minX:5,maxX:95,minY:42,maxY:92},
+ goldrush:{minX:5,maxX:95,minY:42,maxY:92},
+ depression:{minX:5,maxX:95,minY:42,maxY:92},
+ paris1900:{minX:5,maxX:95,minY:42,maxY:92},
+ ageOfSail:{minX:5,maxX:95,minY:39,maxY:92},
+ pompeii:{minX:5,maxX:95,minY:42,maxY:92},
+ viking:{minX:5,maxX:95,minY:42,maxY:92},
+ silkroad:{minX:5,maxX:95,minY:42,maxY:92},
+ seaside:{minX:5,maxX:95,minY:40,maxY:92}
+};
 function navigationProfile(sceneKey=state.scene){
  const s=scenes[sceneKey],cls=s?.class||sceneKey;
- return {minX:5,maxX:95,minY:interiorClasses.has(cls)?27:31,maxY:92}
+ if(sceneFloorProfiles[cls])return sceneFloorProfiles[cls];
+ return {minX:6,maxX:94,minY:interiorClasses.has(cls)?32:40,maxY:91}
 }
 function activeCollisionObjects(sceneKey=state.scene){
  const s=scenes[sceneKey];if(!s)return[];
@@ -874,6 +898,13 @@ function animateDoor(id,done){
  el.classList.add('door-opening');setTimeout(done,420)
 }
 
+
+function initFirstRunGuide(){
+ const guide=$('#firstRunGuide'),btn=$('#dismissGuideBtn');if(!guide||!btn)return;
+ const seen=store.get('htp-guide-seen',false);if(seen){guide.classList.add('hidden');return}
+ btn.addEventListener('click',()=>{store.set('htp-guide-seen',true);guide.classList.add('hidden');stage.focus({preventScroll:true})})
+}
+
 function save(){store.set('htp-playable-v2',state)}
 function showToast(msg){toast.textContent=msg;toast.classList.add('show');clearTimeout(showToast.t);showToast.t=setTimeout(()=>toast.classList.remove('show'),1700)}
 function addJournal(title,text){if(!state.journal.some(e=>e.title===title)){state.journal.unshift({title,text,date:new Date().toLocaleDateString()});state.journal=state.journal.slice(0,60);save()}}
@@ -1063,5 +1094,5 @@ root.addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(['arrowleft',
 root.addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
 root.querySelectorAll('[data-move]').forEach(btn=>{let timer;const run=()=>{const d=btn.dataset.move;move(d==='left'?-2:d==='right'?2:0,d==='up'?-2:d==='down'?2:0)};btn.addEventListener('pointerdown',e=>{e.preventDefault();run();timer=setInterval(run,88)});['pointerup','pointercancel','pointerleave'].forEach(ev=>btn.addEventListener(ev,()=>clearInterval(timer)))});
 dialog.addEventListener('close',()=>objects.querySelectorAll('.npc-figure').forEach(el=>el.classList.remove('talking','reacting')));exploreBtn.addEventListener('click',interact);$('#mapBtn').addEventListener('click',()=>mapDialog.showModal());$('#journalGameBtn').addEventListener('click',openJournal);if(timeBtn)timeBtn.addEventListener('click',cycleTime);$('#soundBtnGame')?.addEventListener('click',toggleSound);$('#achievementsBtn')?.addEventListener('click',()=>{renderAchievements();achievementDialog.showModal()});$('#backupGameBtn')?.addEventListener('click',exportPlayableBackup);$('#restoreGameBtn')?.addEventListener('click',()=>$('#restoreGameFile')?.click());$('#restoreGameFile')?.addEventListener('change',e=>{importPlayableBackup(e.target.files?.[0]);e.target.value=''});document.addEventListener('visibilitychange',()=>{if(document.hidden){stopAmbience()}else if(soundOn){startAmbience()}});stage.addEventListener('pointerdown',e=>{stage.focus();if(e.button!==undefined&&e.button!==0)return;if(e.target.closest('.interaction-hint,.world-event,.direct-travel,.direct-travel-label,.direct-interact,.direct-interact-label,.click-collectible'))return;const rect=stage.getBoundingClientRect();const x=(e.clientX-rect.left)/rect.width*100,y=(e.clientY-rect.top)/rect.height*100;if(Number.isFinite(x)&&Number.isFinite(y)){const pt=clampWalkable(x,y);walkTo(pt.x,pt.y)}});
-renderScene();stage.focus({preventScroll:true});
+initFirstRunGuide();renderScene();stage.focus({preventScroll:true});
 })();
