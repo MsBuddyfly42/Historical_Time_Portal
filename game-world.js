@@ -80,53 +80,165 @@ hardScenes.medievalCastle=S('Medieval Castle','castleInterior',{x:50,y:84},'Insi
 ],[item('seal',37,70,'🕯️','Wax Seal')],{passport:false,quest:{title:'Castle Household',targets:['greatHall','kitchen','steward'],reward:'Castle Household Stamp'}});
 
 hardScenes.victorian=S('Victorian City • 1890s','victorian',{x:50,y:84},'Gaslight & Newspapers','Walk a busy late-19th-century city street of shops, newspapers, transit, parlors, and public life.',[
- o('newspaper','building',19,47,'Newspaper Office','📰','inspect','Newspaper Office','Editors, typesetters, reporters, printers, delivery workers, and advertisers keep a city paper moving.',{radius:11}),
+ o('newspaper','building',19,47,'Newspaper Office','📰','travel','Enter Newspaper Office','Editors, typesetters, reporters, printers, delivery workers, and advertisers keep a city paper moving.',{radius:11}),
  o('theatre','building',73,43,'Theatre','🎭','inspect','City Theatre','Theatres offered drama, music, comedy, variety performances, and public spectacle.',{radius:11}),
  o('newsboy','npc',47,61,'News Seller','🧑🏻','talk','News Seller','Headlines travel quickly through the street as sellers call out the latest edition.',{radius:8}),
  returnPortal()
 ],[item('penny',80,68,'🪙','Victorian Penny'),item('playbill',30,34,'📃','Theatre Playbill')],{quest:{title:'City Edition',targets:['newspaper','theatre','newsboy'],reward:'Gaslight City Stamp'}});
 
 hardScenes.fifties=S('1950s Main Street','fifties',{x:50,y:84},'Mid-Century Main Street','Explore a stylized American Main Street with a diner, record shop, cinema, and neighborhood life.',[
- o('diner','building',21,48,'Corner Diner','🍔','inspect','Corner Diner','Diners and lunch counters could be social gathering places, though access and treatment varied greatly by location and segregation laws.',{radius:11}),
+ o('diner','building',21,48,'Corner Diner','🍔','travel','Enter Corner Diner','Diners and lunch counters could be social gathering places, though access and treatment varied greatly by location and segregation laws.',{radius:11}),
  o('records','building',73,46,'Record Shop','🎵','inspect','Record Shop','Popular music formats, radio, jukeboxes, and record stores helped shape youth culture and entertainment.',{radius:11}),
  o('student','npc',46,62,'High-School Student','🧑🏽‍🎓','talk','A Local Student','The student is saving for a new record and talking about the Saturday movie matinee.',{radius:8}),
  returnPortal()
 ],[item('nickel',78,70,'🪙','Jukebox Nickel'),item('ticket50',30,34,'🎫','Movie Ticket Stub')],{quest:{title:'Saturday on Main Street',targets:['diner','records','ticket50'],reward:'Main Street Stamp'}});
 
 hardScenes.roaring=S('Roaring Twenties','roaring',{x:50,y:84},'Jazz-Age City','Explore newspapers, radio, nightlife, fashion, and rapid technological and cultural change.',[
- o('jazz','building',20,47,'Jazz Club','🎷','inspect','Jazz Club','Jazz flourished through Black musical innovation and spread through clubs, recordings, radio, touring musicians, and dance culture.',{radius:11}),
+ o('jazz','building',20,47,'Jazz Club','🎷','travel','Enter Jazz Club','Jazz flourished through Black musical innovation and spread through clubs, recordings, radio, touring musicians, and dance culture.',{radius:11}),
  o('radio','building',72,44,'Radio Studio','📻','inspect','Radio Studio','Commercial radio expanded quickly in the 1920s, changing entertainment, advertising, politics, and shared public culture.',{radius:11}),
  o('photographer','npc',48,61,'Street Photographer','📷','talk','Street Photographer','The photographer watches changing clothes, cars, advertisements, and crowds rush through the city.',{radius:8}),
  returnPortal()
 ],[item('record',78,69,'💿','Shellac Record'),item('pressCard',31,34,'🪪','Press Card')],{quest:{title:'City in Motion',targets:['jazz','radio','photographer'],reward:'Jazz Age Stamp'}});
 
 hardScenes.apollo=S('Apollo Era • 1969','apollo',{x:50,y:84},'Moonshot Summer','Explore mission-control culture, engineering work, television, and the public excitement surrounding Apollo 11.',[
- o('control','building',22,44,'Mission Control','🖥️','inspect','Mission Control','Teams of flight controllers monitored systems, trajectories, communications, procedures, and rapidly changing conditions.',{radius:12}),
+ o('control','building',22,44,'Mission Control','🖥️','travel','Enter Mission Control','Teams of flight controllers monitored systems, trajectories, communications, procedures, and rapidly changing conditions.',{radius:12}),
  o('tv','building',73,48,'Watch Party','📺','inspect','Television Watch Party','Millions followed the mission through television and radio, experiencing the moon landing as a shared public event.',{radius:10}),
  o('engineer','npc',47,62,'Engineer','🧑🏾‍🔧','talk','Systems Engineer','Spaceflight depended on large teams across engineering, manufacturing, mathematics, computing, logistics, training, and operations.',{radius:8}),
  returnPortal()
 ],[item('missionPatch',80,69,'🚀','Mission Patch'),item('slideRule',30,35,'📏','Slide Rule')],{quest:{title:'Mission Ready',targets:['control','engineer','missionPatch'],reward:'Apollo Visitor Stamp'}});
 
 hardScenes.rome=S('Ancient Rome','rome',{x:50,y:84},'Roman City','Explore a forum, food stall, bath complex, apartments, and the movement of people through a dense ancient city.',[
- o('forum','building',22,43,'Forum','🏛️','inspect','Forum','Public squares could host commerce, administration, law, religious activity, monuments, and political communication.',{radius:12}),
+ o('forum','building',22,43,'Forum','🏛️','travel','Enter Forum','Public squares could host commerce, administration, law, religious activity, monuments, and political communication.',{radius:12}),
  o('thermae','building',73,46,'Public Baths','♨️','inspect','Public Baths','Bath complexes could include bathing rooms, exercise spaces, social activity, services, and elaborate water systems.',{radius:11}),
  o('vendor','npc',47,62,'Food Vendor','🧑🏽‍🍳','talk','Street Food Vendor','Not every urban resident cooked every meal at home; food shops and prepared foods were part of city life.',{radius:8}),
  returnPortal()
 ],[item('romanCoin',80,69,'🪙','Roman Coin Keepsake'),item('oilLamp',31,34,'🪔','Small Oil Lamp')],{quest:{title:'A Day in the City',targets:['forum','thermae','vendor'],reward:'Roman City Stamp'}});
 
 hardScenes.renaissance=S('Renaissance City • 1500s','renaissance',{x:50,y:84},'Workshop & Piazza','Explore printing, art workshops, markets, music, craft, and urban life in a Renaissance-inspired city.',[
- o('printer','building',21,45,'Print Shop','🖨️','inspect','Print Shop','Movable-type printing transformed the production and circulation of books, pamphlets, images, arguments, and news.',{radius:11}),
+ o('printer','building',21,45,'Print Shop','🖨️','travel','Enter Print Shop','Movable-type printing transformed the production and circulation of books, pamphlets, images, arguments, and news.',{radius:11}),
  o('atelier','building',73,44,'Artist Workshop','🎨','inspect','Artist Workshop','Workshops trained apprentices and produced paintings, sculpture, decorative work, designs, and commissions.',{radius:11}),
  o('merchant','npc',47,62,'Cloth Merchant','🧑🏻‍💼','talk','Cloth Merchant','Trade networks connect local markets with textiles, dyes, luxury goods, raw materials, and distant ports.',{radius:8}),
  returnPortal()
 ],[item('print',80,70,'📜','Printed Broadside'),item('brush',31,34,'🖌️','Workshop Brush')],{quest:{title:'Ideas in the Piazza',targets:['printer','atelier','merchant'],reward:'Renaissance Stamp'}});
 
 hardScenes.revolution=S('Revolution-Era City • 1776','revolution',{x:50,y:84},'Print Shops & Public Debate','Explore a city shaped by war, political argument, trade disruption, newspapers, taverns, households, and messengers.',[
- o('printshop','building',20,44,'Print Shop','📰','inspect','Print Shop','Printers produced newspapers, pamphlets, notices, political arguments, advertisements, and official information.',{radius:11}),
+ o('printshop','building',20,44,'Print Shop','📰','travel','Enter Print Shop','Printers produced newspapers, pamphlets, notices, political arguments, advertisements, and official information.',{radius:11}),
  o('tavern','building',73,47,'Tavern','🍺','inspect','Tavern','Taverns could function as places for meals, lodging, business, mail, meetings, political discussion, and news.',{radius:11}),
  o('messenger','npc',47,61,'Messenger','🏇','talk','City Messenger','News travels by horse, post, print, rumor, and personal networks. Wartime information can be late, incomplete, or contradictory.',{radius:8}),
  returnPortal()
 ],[item('broadside',79,70,'📜','Printed Broadside'),item('quill',30,34,'🪶','Writing Quill')],{quest:{title:'News of 1776',targets:['printshop','messenger','broadside'],reward:'Revolution-Era Stamp'}});
+
+
+/* --- Connected sub-areas: expansion pass 3 --- */
+hardScenes.victorianNews=S('Victorian Newspaper Office','victorianInterior',{x:50,y:84},'Inside the Newspaper Office','Move among desks, type cases, proofs, and a busy press room.',[
+ o('editorDesk','building',25,45,'Editor’s Desk','✒️','inspect','Editor’s Desk','Editors assign stories, review copy, choose headlines, and coordinate the daily edition.',{radius:10}),
+ o('press','building',70,43,'Printing Press','⚙️','inspect','Printing Press','Typesetting, inking, paper handling, and press work turn written copy into thousands of printed sheets.',{radius:11}),
+ o('reporterDesk','npc',47,62,'City Reporter','🧑🏽‍💼','talk','City Reporter','The reporter is deciding whether to follow a court story, a theater opening, or trouble at the railway station.',{radius:8,choices:[
+   {label:'Ask about the railway story',flag:'victorianRail',reply:'The reporter lowers their voice: a delayed train has brought a crowd of anxious relatives to the station.'},
+   {label:'Ask about the theater',flag:'victorianTheatre',reply:'Tonight’s premiere has drawn actors, critics, stagehands, and curious crowds from across the city.'}
+ ]}),
+ o('backCity','door',91,84,'Back to City Street','🚪','travel','','',{to:'victorian',radius:9})
+],[item('proofSheet',36,69,'📄','Printer’s Proof Sheet')],{passport:false,quest:{title:'Make the Edition',targets:['editorDesk','press','reporterDesk'],reward:'Pressroom Stamp'}});
+
+hardScenes.victorianTheatre=S('Victorian Theatre','theatreInterior',{x:50,y:84},'Behind the Curtain','Explore the stage, dressing area, and the people preparing for an evening performance.',[
+ o('stage','building',50,35,'Main Stage','🎭','inspect','Main Stage','Scenery, lighting, props, music, and carefully rehearsed movement create the illusion seen by the audience.',{radius:12}),
+ o('dressing','building',23,61,'Dressing Room','🪞','inspect','Dressing Room','Costumes, makeup, hair, quick changes, and personal preparation happen away from the audience.',{radius:10}),
+ o('stagehand','npc',73,59,'Stagehand','🧑🏻‍🔧','talk','Stagehand','The stagehand checks ropes, scenery, props, entrances, and dozens of practical details before the curtain rises.',{radius:8}),
+ o('backCity2','door',91,84,'Back to City Street','🚪','travel','','',{to:'victorian',radius:9})
+],[item('theatreRibbon',37,70,'🎟️','Theatre Admission Ribbon')],{passport:false,quest:{title:'Before Curtain',targets:['stage','dressing','stagehand'],reward:'Backstage Stamp'}});
+
+hardScenes.fiftiesDiner=S('Corner Diner','dinerInterior',{x:50,y:84},'Inside the Diner','Walk between the counter, jukebox, kitchen pass, and neighborhood regulars.',[
+ o('counter','building',28,42,'Lunch Counter','🥤','inspect','Lunch Counter','Counters served quick meals and became important social spaces; in many U.S. places, segregation also made them sites of exclusion and later civil-rights protest.',{radius:11}),
+ o('jukebox','building',72,43,'Jukebox','🎶','inspect','Jukebox','Coin-operated jukeboxes made popular records part of everyday social life in diners, bars, and youth hangouts.',{radius:10}),
+ o('server','npc',50,62,'Diner Server','🧑🏾‍🍳','talk','Diner Server','The server remembers everyone’s usual order and knows which customers are headed to the Saturday matinee.',{radius:8}),
+ o('backMain','door',91,84,'Back to Main Street','🚪','travel','','',{to:'fifties',radius:9})
+],[item('dinerMenu',37,70,'📋','Diner Menu')],{passport:false,quest:{title:'Lunch Rush',targets:['counter','jukebox','server'],reward:'Diner Stamp'}});
+
+hardScenes.fiftiesRecords=S('Record Shop','recordInterior',{x:50,y:84},'Inside the Record Shop','Browse listening booths, new releases, and the local music scene.',[
+ o('bins','building',25,45,'Record Bins','💿','inspect','Record Bins','Singles and albums are sorted by artist, label, style, and popularity for customers to browse.',{radius:10}),
+ o('booth','building',70,43,'Listening Booth','🎧','inspect','Listening Booth','Customers can sample records before buying, turning the shop into both a store and a social space.',{radius:10}),
+ o('clerk','npc',48,62,'Record Clerk','🧑🏻‍🎤','talk','Record Clerk','The clerk is tracking which songs teenagers keep requesting and which records adults call too loud.',{radius:8,choices:[
+   {label:'Ask what’s popular',flag:'fiftiesPop',reply:'The clerk points to a stack of fast-selling singles and says radio requests are pushing demand.'},
+   {label:'Ask about local musicians',flag:'fiftiesLocal',reply:'A handwritten flyer advertises a small local dance band playing at the community hall.'}
+ ]}),
+ o('backMain2','door',91,84,'Back to Main Street','🚪','travel','','',{to:'fifties',radius:9})
+],[item('single45',35,70,'🎵','45 RPM Single')],{passport:false,quest:{title:'New Release Day',targets:['bins','booth','clerk'],reward:'Record Shop Stamp'}});
+
+hardScenes.roaringJazz=S('Jazz Club','jazzInterior',{x:50,y:84},'Inside the Jazz Club','Move between the bandstand, tables, and backstage corridor.',[
+ o('bandstand','building',50,34,'Bandstand','🎷','inspect','Bandstand','Ensembles build performances around rhythm, arrangement, individual style, improvisation, and close listening.',{radius:12}),
+ o('pianoJazz','building',24,58,'Club Piano','🎹','inspect','Club Piano','The piano anchors harmony and rhythm while interacting with the rest of the band.',{radius:10}),
+ o('bandleader','npc',74,59,'Bandleader','🧑🏾‍🎼','talk','Bandleader','The bandleader balances rehearsal, personalities, arrangements, bookings, and the energy of the room.',{radius:8}),
+ o('backJazz','door',91,84,'Back to City','🚪','travel','','',{to:'roaring',radius:9})
+],[item('setList',37,70,'📝','Band Set List')],{passport:false,quest:{title:'Tonight’s Set',targets:['bandstand','pianoJazz','bandleader'],reward:'Jazz Club Stamp'}});
+
+hardScenes.roaringRadio=S('Radio Studio','radioInterior',{x:50,y:84},'On the Air','Explore microphones, control equipment, scripts, and live broadcasting routines.',[
+ o('mic','building',26,44,'Broadcast Microphone','🎙️','inspect','Broadcast Microphone','Performers, announcers, musicians, and speakers gather around sensitive microphones for live programs.',{radius:10}),
+ o('controlRoom','building',70,43,'Control Room','🎛️','inspect','Control Room','Technicians manage levels, cues, timing, and the practical flow of a live broadcast.',{radius:10}),
+ o('announcer','npc',48,62,'Radio Announcer','🧑🏼‍💼','talk','Radio Announcer','The announcer watches the clock closely; every sponsor message, song, and news item must fit the schedule.',{radius:8}),
+ o('backRadio','door',91,84,'Back to City','🚪','travel','','',{to:'roaring',radius:9})
+],[item('radioScript',36,70,'📄','Broadcast Script')],{passport:false,quest:{title:'Live Broadcast',targets:['mic','controlRoom','announcer'],reward:'On-Air Stamp'}});
+
+hardScenes.apolloControl=S('Mission Control','apolloInterior',{x:50,y:84},'Inside Mission Control','Walk the control room floor and meet the teams watching spacecraft systems.',[
+ o('consoles','building',30,42,'Flight Consoles','🖥️','inspect','Flight Consoles','Specialized controllers monitor different systems while sharing information through tightly coordinated procedures.',{radius:12}),
+ o('bigBoard','building',70,39,'Status Displays','📊','inspect','Status Displays','Large displays give teams a shared picture of timing, trajectory, communications, and mission status.',{radius:11}),
+ o('controller','npc',50,62,'Flight Controller','🧑🏽‍🚀','talk','Flight Controller','The controller explains that success depends on disciplined teamwork, precise communication, and preparation for failures as well as normal operations.',{radius:8,choices:[
+   {label:'Ask about teamwork',flag:'apolloTeam',reply:'No single console can understand the entire spacecraft alone. Controllers rely on each other’s expertise.'},
+   {label:'Ask about emergencies',flag:'apolloEmergency',reply:'Teams rehearse abnormal situations so they can respond with procedures instead of panic.'}
+ ]}),
+ o('backApollo','door',91,84,'Back Outside','🚪','travel','','',{to:'apollo',radius:9})
+],[item('consoleCard',36,70,'🗂️','Controller Reference Card')],{passport:false,quest:{title:'Flight Control',targets:['consoles','bigBoard','controller'],reward:'Mission Control Stamp'}});
+
+hardScenes.apolloWatch=S('1969 Watch Party','watchInterior',{x:50,y:84},'Living-Room Watch Party','Join a household gathered around a television as the moon landing unfolds.',[
+ o('television','building',50,34,'Television','📺','inspect','Television','Broadcast images and commentary brought the mission into homes around the world.',{radius:12}),
+ o('newspaperPile','building',24,60,'Newspapers','📰','inspect','Newspapers','Special editions, diagrams, photographs, and headlines helped readers follow the mission in detail.',{radius:10}),
+ o('neighbor','npc',74,60,'Neighbor','🧑🏿','talk','Neighbor','The neighbor says the whole block seems unusually quiet because so many families are gathered around television sets.',{radius:8}),
+ o('backApollo2','door',91,84,'Back Outside','🚪','travel','','',{to:'apollo',radius:9})
+],[item('moonHeadline',36,70,'🗞️','Moon-Landing Headline')],{passport:false,quest:{title:'Watching History',targets:['television','newspaperPile','neighbor'],reward:'Watch Party Stamp'}});
+
+hardScenes.romeForum=S('Roman Forum','romeForum',{x:50,y:84},'In the Forum','Explore public business, inscriptions, vendors, and civic life.',[
+ o('basilica','building',26,42,'Basilica','🏛️','inspect','Basilica','Large public halls could host legal proceedings, business, administration, and social activity.',{radius:11}),
+ o('inscription','building',70,42,'Public Inscription','🪨','inspect','Public Inscription','Stone inscriptions preserve official names, honors, dedications, building records, and political messages.',{radius:10}),
+ o('citizen','npc',49,62,'City Resident','🧑🏽','talk','City Resident','The resident complains about prices, crowds, and how long it takes to finish business in the forum.',{radius:8}),
+ o('backRome','door',91,84,'Back to Roman City','🚪','travel','','',{to:'rome',radius:9})
+],[item('forumToken',35,70,'🪙','Forum Token')],{passport:false,quest:{title:'Public Business',targets:['basilica','inscription','citizen'],reward:'Forum Stamp'}});
+
+hardScenes.romeBaths=S('Roman Baths','romeBaths',{x:50,y:84},'Inside the Baths','Explore changing rooms, heated chambers, water systems, and social spaces.',[
+ o('changing','building',24,47,'Changing Room','🧺','inspect','Changing Room','Visitors store clothing and belongings before moving through the bathing complex.',{radius:10}),
+ o('hotRoom','building',70,43,'Heated Room','♨️','inspect','Heated Room','Underfloor heating systems warm selected spaces using hot air moving beneath raised floors.',{radius:11}),
+ o('attendant','npc',48,62,'Bath Attendant','🧑🏻‍🔧','talk','Bath Attendant','The attendant keeps track of cleaning, fuel, visitors, equipment, and the practical work hidden behind the marble.',{radius:8}),
+ o('backRome2','door',91,84,'Back to Roman City','🚪','travel','','',{to:'rome',radius:9})
+],[item('bathOil',36,70,'🏺','Small Oil Flask')],{passport:false,quest:{title:'How the Baths Work',targets:['changing','hotRoom','attendant'],reward:'Bathhouse Stamp'}});
+
+hardScenes.renaissancePrint=S('Renaissance Print Shop','printInterior',{x:50,y:84},'Inside the Print Shop','Move from type cases to the press and meet the people producing printed pages.',[
+ o('typeCase','building',25,45,'Type Cases','🔠','inspect','Type Cases','Individual pieces of movable type must be selected, arranged, inked, printed, redistributed, and reused.',{radius:10}),
+ o('handPress','building',70,43,'Hand Press','🖨️','inspect','Hand Press','A screw press transfers ink from arranged type onto sheets of paper with repeated manual work.',{radius:11}),
+ o('apprentice','npc',48,62,'Printer’s Apprentice','🧑🏻‍🏭','talk','Printer’s Apprentice','The apprentice sweeps, sorts type, carries paper, mixes ink, learns the trade, and tries not to drop anything expensive.',{radius:8}),
+ o('backRen','door',91,84,'Back to Piazza','🚪','travel','','',{to:'renaissance',radius:9})
+],[item('typePiece',36,70,'🔡','Piece of Movable Type')],{passport:false,quest:{title:'Make a Page',targets:['typeCase','handPress','apprentice'],reward:'Printer Stamp'}});
+
+hardScenes.renaissanceAtelier=S('Artist Workshop','atelierInterior',{x:50,y:84},'Inside the Workshop','Explore drawings, pigments, commissions, and apprenticeship.',[
+ o('drawing','building',24,45,'Drawing Table','✏️','inspect','Drawing Table','Preparatory drawings help artists study figures, composition, perspective, architecture, and details before final work.',{radius:10}),
+ o('pigments','building',70,43,'Pigment Shelf','🎨','inspect','Pigments must be sourced, ground, mixed, stored, and combined with suitable binders for different surfaces.',{radius:10}),
+ o('master','npc',48,62,'Workshop Master','🧑🏻‍🎨','talk','Workshop Master','The master balances commissions, patrons, materials, apprentices, deadlines, and artistic decisions.',{radius:8}),
+ o('backRen2','door',91,84,'Back to Piazza','🚪','travel','','',{to:'renaissance',radius:9})
+],[item('charcoal',36,70,'🖍️','Charcoal Study Stick')],{passport:false,quest:{title:'Workshop Practice',targets:['drawing','pigments','master'],reward:'Atelier Stamp'}});
+
+hardScenes.revolutionPrint=S('1776 Print Shop','revPrintInterior',{x:50,y:84},'Inside the Print Shop','Explore type, broadsides, advertisements, and fast-moving wartime information.',[
+ o('composing','building',24,44,'Composing Table','🔠','inspect','Composing Table','Printers arrange type by hand, line by line, before pages or broadsides can be printed.',{radius:10}),
+ o('broadsideRack','building',70,43,'Broadside Rack','📜','inspect','Broadside Rack','Single-sheet notices can carry news, announcements, advertisements, political arguments, or official orders.',{radius:10}),
+ o('printer1776','npc',48,62,'Printer','🧑🏽‍🏭','talk','Printer','The printer says demand is high, paper is expensive, and every new report brings customers asking what has happened.',{radius:8}),
+ o('backRev','door',91,84,'Back to Street','🚪','travel','','',{to:'revolution',radius:9})
+],[item('inkBall',36,70,'⚫','Printer’s Ink Ball')],{passport:false,quest:{title:'Print the News',targets:['composing','broadsideRack','printer1776'],reward:'1776 Printer Stamp'}});
+
+hardScenes.revolutionTavern=S('1776 Tavern','revTavernInterior',{x:50,y:84},'Inside the Tavern','Listen to travelers, merchants, messengers, and neighbors compare uncertain news.',[
+ o('hearth','building',24,44,'Hearth','🔥','inspect','Tavern Hearth','Meals, warmth, and conversation gather around the hearth while travelers come and go.',{radius:10}),
+ o('postTable','building',70,43,'Post & Notices','✉️','inspect','Post & Notices','Letters, notices, travel information, and personal messages move through informal local networks.',{radius:10}),
+ o('traveler1776','npc',48,62,'Road Traveler','🧑🏼','talk','Road Traveler','The traveler has heard three different versions of the same military rumor and trusts none of them completely.',{radius:8,choices:[
+   {label:'Ask how they judge a rumor',flag:'revSource',reply:'They compare who said it, where that person came from, and whether two independent travelers tell the same story.'},
+   {label:'Ask about the road',flag:'revRoad',reply:'Travel is slow and uncertain. Weather, checkpoints, damaged roads, and military activity can all change a journey.'}
+ ]}),
+ o('backRev2','door',91,84,'Back to Street','🚪','travel','','',{to:'revolution',radius:9})
+],[item('tavernToken',36,70,'🪙','Tavern Trade Token')],{passport:false,quest:{title:'Rumor & Reliability',targets:['hearth','postTable','traveler1776'],reward:'Tavern Listener Stamp'}});
 
 const scenes=hardScenes;
 let state=store.get('htp-playable-v2',null)||store.get('htp-playable-v1',null)||{scene:'hall',x:50,y:90,visited:['hall'],discoveries:[],keepsakes:[],journal:[],quests:{}};
@@ -146,7 +258,7 @@ function updateQuest(){
 function renderScene(){
  const s=scenes[state.scene];sceneName.textContent=s.name;backdrop.className='scene-backdrop '+s.class;journeyTitle.textContent=s.title;journeyText.textContent=s.text;objects.innerHTML='';labels.innerHTML='';collectibles.innerHTML='';
  s.objects.forEach(obj=>{const el=document.createElement('div');el.className='world-object '+obj.type;el.style.left=obj.x+'%';el.style.top=obj.y+'%';if(obj.icon)el.textContent=obj.icon;objects.appendChild(el);const lab=document.createElement('div');lab.className='world-label';lab.style.left=obj.x+'%';lab.style.top=(obj.y-(obj.type==='portal'?13:9))+'%';lab.textContent=obj.label;labels.appendChild(lab)});
- s.items.forEach(it=>{if(state.keepsakes.includes(it.id))return;const el=document.createElement('div');el.className='collectible';el.style.left=it.x+'%';el.style.top=it.y+'%';el.textContent=it.icon;el.title=it.name;collectibles.appendChild(el)});
+ for(let i=0;i<3;i++){const walker=document.createElement('div');walker.className='ambient-walker w'+i;walker.textContent=['🚶🏽','🚶🏻','🚶🏿'][i];walker.style.top=(46+i*14)+'%';objects.appendChild(walker)}\n s.items.forEach(it=>{if(state.keepsakes.includes(it.id))return;const el=document.createElement('div');el.className='collectible';el.style.left=it.x+'%';el.style.top=it.y+'%';el.textContent=it.icon;el.title=it.name;collectibles.appendChild(el)});
  if(s.passport&&!state.visited.includes(state.scene)){state.visited.push(state.scene);addJournal('Arrived: '+s.name,'You entered '+s.name+'.');save()}
  const spawn=s.spawn;moveTo(Number.isFinite(state.x)?state.x:spawn.x,Number.isFinite(state.y)?state.y:spawn.y,false);renderStatus();updateNearby();showToast('Entered '+s.name)
 }
@@ -159,7 +271,7 @@ function move(dx,dy){moveTo(state.x+dx,state.y+dy)}
 function travel(to){const target=scenes[to];if(!target)return;state.scene=to;state.x=target.spawn.x;state.y=target.spawn.y;save();renderScene()}
 function interact(){const obj=nearest();if(!obj)return;if(obj.action==='travel'){travel(obj.to);return}
  const dKey=discoveryKey(state.scene,obj.id);if(!state.discoveries.includes(dKey)){state.discoveries.push(dKey);addJournal(obj.title||obj.label,obj.body||'Discovered while exploring.');save();showToast('New discovery added ✨')}
- dialogContent.innerHTML='<p class="mini-kicker">'+scenes[state.scene].name+'</p><h2>'+obj.title+'</h2><p>'+obj.body+'</p><div class="dialog-actions"><button type="button" id="rememberBtn">Journal this discovery ✓</button></div>';dialog.showModal();const remember=dialogContent.querySelector('#rememberBtn');if(remember)remember.addEventListener('click',()=>{addJournal(obj.title,obj.body);showToast('Added to journal')});renderStatus()
+ const choiceHtml=Array.isArray(obj.choices)?obj.choices.map((ch,i)=>'<button type="button" data-choice="'+i+'">'+ch.label+'</button>').join(''):'';dialogContent.innerHTML='<p class="mini-kicker">'+scenes[state.scene].name+'</p><h2>'+obj.title+'</h2><p>'+obj.body+'</p><div id="choiceReply"></div><div class="dialog-actions">'+choiceHtml+'<button type="button" id="rememberBtn">Journal this discovery ✓</button></div>';dialog.showModal();dialogContent.querySelectorAll('[data-choice]').forEach(btn=>btn.addEventListener('click',()=>{const ch=obj.choices[Number(btn.dataset.choice)];state.flags=state.flags||{};state.flags[ch.flag]=true;save();const reply=dialogContent.querySelector('#choiceReply');reply.innerHTML='<p class="choice-reply">'+ch.reply+'</p>';addJournal(obj.title+' — '+ch.label,ch.reply);showToast('Conversation remembered')}));const remember=dialogContent.querySelector('#rememberBtn');if(remember)remember.addEventListener('click',()=>{addJournal(obj.title,obj.body);showToast('Added to journal')});renderStatus()
 }
 function renderMap(){mapGrid.innerHTML=Object.entries(scenes).filter(([,s])=>s.passport||s===scenes.hall).map(([k,s])=>'<button type="button" data-scene="'+k+'" '+(k!=='hall'&&!state.visited.includes(k)?'disabled':'')+'>'+(k==='hall'||state.visited.includes(k)?'✓ ':'🔒 ')+s.name+'</button>').join('');mapGrid.querySelectorAll('button:not(:disabled)').forEach(b=>b.addEventListener('click',()=>{mapDialog.close();travel(b.dataset.scene)}))}
 function openJournal(){journalEntries.innerHTML=state.journal.length?state.journal.map(e=>'<div class="journal-entry"><b>'+e.title+'</b><div>'+e.text+'</div><small>'+e.date+'</small></div>').join(''):'<p>Your journal is empty. Walk around and discover something.</p>';journalDialog.showModal()}
