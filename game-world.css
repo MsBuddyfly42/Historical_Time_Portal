@@ -327,3 +327,12 @@
 /* === WALK-TO-DOOR AUTO-ENTRY FIX === */
 .world-object.travel-pending{filter:drop-shadow(0 0 18px #ffe89d) drop-shadow(0 8px 8px #0007)!important}
 .world-object.travel-pending.door .door-frame{box-shadow:0 0 0 3px #ffe59a99,0 0 22px #ffe59aaa,0 8px 14px #0007}
+
+/* === UNIFIED CLICK-TO-INTERACT PASS === */
+.world-object.direct-interact,.world-label.direct-interact-label,.click-collectible{cursor:pointer}
+.world-object.interaction-pending{filter:drop-shadow(0 0 18px #9fdcff) drop-shadow(0 8px 8px #0007)!important}
+.world-object.direct-interact:hover{filter:drop-shadow(0 0 13px #b8e7ff) drop-shadow(0 8px 8px #0006)!important}
+.world-label.direct-interact-label{appearance:none;font:inherit}
+.world-label.direct-interact-label:not(:disabled):hover{background:#dcefff;color:#18253a;border-color:#9fd5ff;box-shadow:0 0 14px #8dcaff66}
+.click-collectible{border:0;background:transparent;padding:0;line-height:1;z-index:8}
+.click-collectible:hover{filter:drop-shadow(0 0 14px #fff2a3);transform:translate(-50%,-50%) scale(1.08)}
