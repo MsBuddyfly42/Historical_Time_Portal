@@ -208,3 +208,14 @@
 @keyframes particleFloat{to{transform:translateY(-18px) translateX(8px);opacity:.78}}
 @media(max-width:640px){.scenery-layer{opacity:.9}.scenery-layer .building,.scenery-layer .palazzo,.scenery-layer .house{transform:scaleY(.92);transform-origin:bottom}}
 @media(prefers-reduced-motion:reduce){.world-particle{animation:none!important}}
+
+/* === CAMERA + PROXIMITY PASS 10 === */
+.game-stage{--cam-x:0;--cam-y:0}
+.scenery-layer{transform:translate(calc(var(--cam-x) * -7px),calc(var(--cam-y) * -5px)) scale(1.015);transition:transform .18s ease-out;transform-origin:center}
+.fx-layer{transform:translate(calc(var(--cam-x) * -3px),calc(var(--cam-y) * -2px));transition:transform .22s ease-out}
+.world-object.nearby{filter:drop-shadow(0 0 12px #ffe59a) drop-shadow(0 8px 8px #0006)!important}
+.world-object.nearby.npc .npc-figure{animation:nearbyAttention .8s ease-in-out infinite alternate}
+.world-object.nearby.door .door-frame{box-shadow:0 0 0 3px #ffe29d99,0 0 18px #ffe29d88,0 8px 14px #0007}
+.world-label.nearby{background:#fff2b8;color:#251b29;border-color:#fff0ad;box-shadow:0 0 14px #ffdc7d88;transform:translate(-50%,-50%) translateY(-3px)}
+@keyframes nearbyAttention{to{transform:translateY(-3px) scale(1.02)}}
+@media(prefers-reduced-motion:reduce){.scenery-layer,.fx-layer{transition:none;transform:none}.world-object.nearby.npc .npc-figure{animation:none!important}.world-label.nearby{transform:translate(-50%,-50%)}}
