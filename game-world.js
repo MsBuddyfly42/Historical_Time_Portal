@@ -545,14 +545,45 @@ function stopAutoWalk(cancelArrival=true){walkTarget=null;if(cancelArrival)walkA
 function autoWalkTick(){
  if(!walkTarget){walkRaf=0;traveler.classList.remove('walking');return}
  const dx=walkTarget.x-state.x,dy=walkTarget.y-state.y,d=Math.hypot(dx,dy);
- if(d<1.2){moveTo(walkTarget.x,walkTarget.y);const done=walkArrival;walkArrival=null;stopAutoWalk(false);if(done)setTimeout(done,70);return}
- const speed=1.15;moveTo(state.x+dx/d*speed,state.y+dy/d*speed);traveler.classList.add('walking');walkRaf=requestAnimationFrame(autoWalkTick)
+ if(d<1.2){moveTo(walkTarget.x,walkTarget.y,false);const done=walkArrival;walkArrival=null;stopAutoWalk(false);if(done)setTimeout(done,70);return}
+ const speed=1.15;moveTo(state.x+dx/d*speed,state.y+dy/d*speed,false);traveler.classList.add('walking');walkRaf=requestAnimationFrame(autoWalkTick)
 }
 function walkTo(x,y,onArrival=null){stopAutoWalk();const tx=clamp(x,4,96),ty=clamp(y,14,93);traveler.dataset.dir=Math.abs(tx-state.x)>Math.abs(ty-state.y)?(tx<state.x?'left':'right'):(ty<state.y?'up':'down');walkTarget={x:tx,y:ty};walkArrival=typeof onArrival==='function'?onArrival:null;walkRaf=requestAnimationFrame(autoWalkTick)}
 function walkAndTravel(obj){
  if(!isUnlocked(obj)){showToast('This doorway is still locked');return}
  const finish=()=>{const targetEl=objects.querySelector('[data-object-id="'+obj.id+'"]');targetEl?.classList.remove('travel-pending');if(obj.type==='door')animateDoor(obj.id,()=>travel(obj.to));else travel(obj.to)};
  const targetEl=objects.querySelector('[data-object-id="'+obj.id+'"]');targetEl?.classList.add('travel-pending');showToast('Walking to '+obj.label+'…');walkTo(obj.x,obj.y,finish)
+}
+function activateObject(obj){
+ if(!obj)return;
+ if(!isUnlocked(obj)){showToast('This interaction is still locked');return}
+ if(obj.action==='travel'){walkAndTravel(obj);return}
+ if(obj.type==='npc'){openNpcConversation(obj);return}
+ const dKey=discoveryKey(state.scene,obj.id);
+ if(!state.discoveries.includes(dKey)){state.discoveries.push(dKey);addJournal(obj.title||obj.label,obj.body||'Discovered while exploring.');save();showToast('New discovery added ✨')}
+ const availableChoices=Array.isArray(obj.choices)?obj.choices.filter(ch=>(!ch.requires||state.flags[ch.requires])&&(!ch.flag||!state.flags[ch.flag])):[];
+ const remembered=Array.isArray(obj.choices)&&obj.choices.some(ch=>ch.flag&&state.flags[ch.flag]);
+ const choiceHtml=availableChoices.map((ch,i)=>'<button type="button" data-choice="'+i+'">'+ch.label+'</button>').join('');
+ const memoryHtml=remembered?'<p class="npc-memory">💭 You have explored this before.</p>':'';
+ dialogContent.innerHTML='<p class="mini-kicker">'+scenes[state.scene].name+'</p><h2>'+obj.title+'</h2><p>'+obj.body+'</p>'+memoryHtml+'<div id="choiceReply"></div><div class="dialog-actions">'+choiceHtml+'<button type="button" id="rememberBtn">Journal this discovery ✓</button></div>';
+ dialog.showModal();
+ dialogContent.querySelectorAll('[data-choice]').forEach(btn=>btn.addEventListener('click',()=>{const ch=availableChoices[Number(btn.dataset.choice)];state.flags=state.flags||{};if(ch.flag)state.flags[ch.flag]=true;save();const reply=dialogContent.querySelector('#choiceReply');reply.innerHTML='<p class="choice-reply">'+ch.reply+'</p>';addJournal(obj.title+' — '+ch.label,ch.reply);updateChain();renderStatus();showToast('Discovery updated')}));
+ dialogContent.querySelector('#rememberBtn')?.addEventListener('click',()=>{addJournal(obj.title,obj.body);showToast('Added to journal')});
+ renderStatus()
+}
+function walkAndInteract(obj){
+ if(!isUnlocked(obj)){showToast('This interaction is still locked');return}
+ const targetEl=objects.querySelector('[data-object-id="'+obj.id+'"]');targetEl?.classList.add('interaction-pending');
+ showToast('Walking to '+obj.label+'…');
+ walkTo(obj.x,obj.y,()=>{targetEl?.classList.remove('interaction-pending');activateObject(obj)})
+}
+function collectSpecificItem(it){
+ if(state.keepsakes.includes(it.id))return;
+ state.keepsakes.push(it.id);addJournal('Keepsake: '+it.name,'Found while exploring '+scenes[state.scene].name+'.');save();showToast('Collected '+it.name+' ✨');renderScene()
+}
+function walkAndCollect(it){
+ showToast('Walking to '+it.name+'…');
+ walkTo(it.x,it.y,()=>collectSpecificItem(it))
 }
 function playSceneTransition(){
  transitionCurtain.classList.remove('active');void transitionCurtain.offsetWidth;transitionCurtain.classList.add('active');setTimeout(()=>transitionCurtain.classList.remove('active'),620)
@@ -892,9 +923,27 @@ function updateQuest(){
 }
 function renderScene(){if(state.achievements?.completionist)root.classList.add('world-complete');
  const s=scenes[state.scene];sceneName.textContent=s.name;backdrop.className='scene-backdrop '+s.class;renderScenery(s.class);renderFx();journeyTitle.textContent=s.title;journeyText.textContent=s.text;objects.innerHTML='';labels.innerHTML='';collectibles.innerHTML='';
- const activeObjects=sceneObjectsForTime(state.scene,s);activeObjects.forEach((obj,index)=>{const unlocked=isUnlocked(obj);const el=document.createElement('div');el.className='world-object '+obj.type+(unlocked?'':' locked');el.dataset.objectId=obj.id;el.style.left=obj.x+'%';el.style.top=obj.y+'%';if(obj.type==='npc'){const fig=makeNpcSprite(obj,index);if(patrolNpcIds.has(obj.id))fig.classList.add('patrolling');el.appendChild(fig)}else if(obj.type==='door'){el.innerHTML='<span class="door-frame"><i class="door-panel"></i><i class="door-knob"></i></span>'}else if(obj.icon)el.textContent=obj.icon;if(obj.action==='travel'){el.classList.add('direct-travel');el.setAttribute('role','button');el.setAttribute('tabindex','0');el.setAttribute('aria-label',obj.label);const go=e=>{e.preventDefault();e.stopPropagation();walkAndTravel(obj)};el.addEventListener('click',go);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){go(e)}})}objects.appendChild(el);const lab=document.createElement(obj.action==='travel'?'button':'div');lab.className='world-label'+(unlocked?'':' locked-label')+(obj.action==='travel'?' direct-travel-label':'');lab.style.left=obj.x+'%';lab.style.top=(obj.y-(obj.type==='portal'?13:9))+'%';lab.textContent=unlocked?obj.label:(obj.lockedLabel||'🔒 '+obj.label);if(obj.action==='travel'){lab.type='button';lab.disabled=!unlocked;lab.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();if(unlocked)walkAndTravel(obj)})}labels.appendChild(lab)});
+ const activeObjects=sceneObjectsForTime(state.scene,s);activeObjects.forEach((obj,index)=>{
+ const unlocked=isUnlocked(obj);
+ const el=document.createElement('div');
+ el.className='world-object '+obj.type+(unlocked?'':' locked');
+ el.dataset.objectId=obj.id;el.style.left=obj.x+'%';el.style.top=obj.y+'%';
+ if(obj.type==='npc'){const fig=makeNpcSprite(obj,index);if(patrolNpcIds.has(obj.id))fig.classList.add('patrolling');el.appendChild(fig)}
+ else if(obj.type==='door'){el.innerHTML='<span class="door-frame"><i class="door-panel"></i><i class="door-knob"></i></span>'}
+ else if(obj.icon)el.textContent=obj.icon;
+ el.classList.add(obj.action==='travel'?'direct-travel':'direct-interact');
+ el.setAttribute('role','button');el.setAttribute('tabindex','0');el.setAttribute('aria-label',obj.label);
+ const go=e=>{e.preventDefault();e.stopPropagation();if(!unlocked){showToast('This interaction is still locked');return}if(obj.action==='travel')walkAndTravel(obj);else walkAndInteract(obj)};
+ el.addEventListener('click',go);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')go(e)});
+ objects.appendChild(el);
+ const lab=document.createElement('button');
+ lab.className='world-label'+(unlocked?'':' locked-label')+(obj.action==='travel'?' direct-travel-label':' direct-interact-label');
+ lab.style.left=obj.x+'%';lab.style.top=(obj.y-(obj.type==='portal'?13:9))+'%';lab.textContent=unlocked?obj.label:(obj.lockedLabel||'🔒 '+obj.label);lab.type='button';lab.disabled=!unlocked;
+ lab.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();if(!unlocked)return;if(obj.action==='travel')walkAndTravel(obj);else walkAndInteract(obj)});
+ labels.appendChild(lab)
+});
  for(let i=0;i<3;i++){const walker=document.createElement('div');walker.className='ambient-walker w'+i;walker.style.top=(46+i*14)+'%';const fig=makeNpcSprite({id:'ambient'+i},i+2);fig.classList.add('walking');walker.appendChild(fig);objects.appendChild(walker)}
- s.items.forEach(it=>{if(state.keepsakes.includes(it.id))return;const el=document.createElement('div');el.className='collectible';el.style.left=it.x+'%';el.style.top=it.y+'%';el.textContent=it.icon;el.title=it.name;collectibles.appendChild(el)});
+ s.items.forEach(it=>{if(state.keepsakes.includes(it.id))return;const el=document.createElement('button');el.type='button';el.className='collectible click-collectible';el.style.left=it.x+'%';el.style.top=it.y+'%';el.textContent=it.icon;el.title='Collect '+it.name;el.setAttribute('aria-label','Collect '+it.name);el.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();walkAndCollect(it)});collectibles.appendChild(el)});
  if(s.passport&&!state.visited.includes(state.scene)){state.visited.push(state.scene);addJournal('Arrived: '+s.name,'You entered '+s.name+'.');save()}
  const spawn=s.spawn;moveTo(Number.isFinite(state.x)?state.x:spawn.x,Number.isFinite(state.y)?state.y:spawn.y,false);applyTime();applyNpcWorkStates();renderStatus();if(soundOn)startAmbience();updateNearby();updateChain();updateWorldEvent();showToast('Entered '+s.name)
 }
@@ -913,16 +962,13 @@ function updateNearby(){objects.querySelectorAll('.world-object.nearby').forEach
 function moveTo(x,y,check=true){state.x=clamp(x,4,96);state.y=clamp(y,14,93);traveler.style.left=state.x+'%';traveler.style.top=state.y+'%';stage.style.setProperty('--cam-x',((state.x-50)/50).toFixed(3));stage.style.setProperty('--cam-y',((state.y-54)/46).toFixed(3));if(check){if(!collectNearby()){updateNearby();updateQuest();save()}}}
 function move(dx,dy){if(dx<0)traveler.dataset.dir='left';else if(dx>0)traveler.dataset.dir='right';else if(dy<0)traveler.dataset.dir='up';else if(dy>0)traveler.dataset.dir='down';moveTo(state.x+dx,state.y+dy)}
 function travel(to){const target=scenes[to];if(!target)return;stopAutoWalk();playSceneTransition();setTimeout(()=>{state.scene=to;state.x=target.spawn.x;state.y=target.spawn.y;save();renderScene()},180)}
-function interact(){const obj=nearest();if(!obj)return;if(!isUnlocked(obj)){showToast('Archive locked — complete '+obj.unlockCount+' era objectives');return}if(obj.action==='travel'){if(obj.type==='door'){animateDoor(obj.id,()=>travel(obj.to))}else{travel(obj.to)}return}
- if(obj.type==='npc'){openNpcConversation(obj);return}const dKey=discoveryKey(state.scene,obj.id);if(!state.discoveries.includes(dKey)){state.discoveries.push(dKey);addJournal(obj.title||obj.label,obj.body||'Discovered while exploring.');save();showToast('New discovery added ✨')}
- const availableChoices=Array.isArray(obj.choices)?obj.choices.filter(ch=>(!ch.requires||state.flags[ch.requires])&&(!ch.flag||!state.flags[ch.flag])):[];const remembered=Array.isArray(obj.choices)&&obj.choices.some(ch=>ch.flag&&state.flags[ch.flag]);const choiceHtml=availableChoices.map((ch,i)=>'<button type="button" data-choice="'+i+'">'+ch.label+'</button>').join('');const memoryHtml=remembered?'<p class="npc-memory">💭 This person remembers your earlier conversation.</p>':'';dialogContent.innerHTML='<p class="mini-kicker">'+scenes[state.scene].name+'</p><h2>'+obj.title+'</h2><p>'+obj.body+'</p>'+memoryHtml+'<div id="choiceReply"></div><div class="dialog-actions">'+choiceHtml+'<button type="button" id="rememberBtn">Journal this discovery ✓</button></div>';dialog.showModal();dialogContent.querySelectorAll('[data-choice]').forEach(btn=>btn.addEventListener('click',()=>{const ch=availableChoices[Number(btn.dataset.choice)];if(obj.type==='npc')setNpcState(obj.id,'reacting');state.flags=state.flags||{};if(ch.flag)state.flags[ch.flag]=true;save();const reply=dialogContent.querySelector('#choiceReply');reply.innerHTML='<p class="choice-reply">'+ch.reply+'</p>';addJournal(obj.title+' — '+ch.label,ch.reply);updateChain();renderStatus();showToast(ch.flag==='westPayrollSolved'?'Payroll mystery solved! ✨':'Conversation remembered')}));const remember=dialogContent.querySelector('#rememberBtn');if(remember)remember.addEventListener('click',()=>{addJournal(obj.title,obj.body);showToast('Added to journal')});renderStatus()
-}
+function interact(){const obj=nearest();if(!obj)return;activateObject(obj)}
 function renderMap(){mapGrid.innerHTML=Object.entries(scenes).filter(([,s])=>s.passport||s===scenes.hall).map(([k,s])=>'<button type="button" data-scene="'+k+'" '+(k!=='hall'&&!state.visited.includes(k)?'disabled':'')+'>'+(k==='hall'||state.visited.includes(k)?'✓ ':'🔒 ')+s.name+'</button>').join('');mapGrid.querySelectorAll('button:not(:disabled)').forEach(b=>b.addEventListener('click',()=>{mapDialog.close();travel(b.dataset.scene)}))}
 function openJournal(){journalEntries.innerHTML=state.journal.length?state.journal.map(e=>'<div class="journal-entry"><b>'+e.title+'</b><div>'+e.text+'</div><small>'+e.date+'</small></div>').join(''):'<p>Your journal is empty. Walk around and discover something.</p>';journalDialog.showModal()}
 const keys=new Set();let raf=0,last=0;function tick(t){if(!keys.size){raf=0;return}if(t-last>43){let dx=0,dy=0;if(keys.has('arrowleft')||keys.has('a'))dx-=1.65;if(keys.has('arrowright')||keys.has('d'))dx+=1.65;if(keys.has('arrowup')||keys.has('w'))dy-=1.65;if(keys.has('arrowdown')||keys.has('s'))dy+=1.65;if(dx||dy)move(dx,dy);last=t}raf=requestAnimationFrame(tick)}
 root.addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(['arrowleft','arrowright','arrowup','arrowdown','w','a','s','d'].includes(k)){e.preventDefault();stopAutoWalk();keys.add(k);if(!raf)raf=requestAnimationFrame(tick)}else if(k==='e'){e.preventDefault();interact()}else if(k==='m'){e.preventDefault();mapDialog.showModal()}else if(k==='j'){e.preventDefault();openJournal()}else if(k==='t'){e.preventDefault();cycleTime()}});
 root.addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
 root.querySelectorAll('[data-move]').forEach(btn=>{let timer;const run=()=>{const d=btn.dataset.move;move(d==='left'?-2:d==='right'?2:0,d==='up'?-2:d==='down'?2:0)};btn.addEventListener('pointerdown',e=>{e.preventDefault();run();timer=setInterval(run,88)});['pointerup','pointercancel','pointerleave'].forEach(ev=>btn.addEventListener(ev,()=>clearInterval(timer)))});
-dialog.addEventListener('close',()=>objects.querySelectorAll('.npc-figure').forEach(el=>el.classList.remove('talking','reacting')));exploreBtn.addEventListener('click',interact);$('#mapBtn').addEventListener('click',()=>mapDialog.showModal());$('#journalGameBtn').addEventListener('click',openJournal);if(timeBtn)timeBtn.addEventListener('click',cycleTime);$('#soundBtnGame')?.addEventListener('click',toggleSound);$('#achievementsBtn')?.addEventListener('click',()=>{renderAchievements();achievementDialog.showModal()});$('#backupGameBtn')?.addEventListener('click',exportPlayableBackup);$('#restoreGameBtn')?.addEventListener('click',()=>$('#restoreGameFile')?.click());$('#restoreGameFile')?.addEventListener('change',e=>{importPlayableBackup(e.target.files?.[0]);e.target.value=''});document.addEventListener('visibilitychange',()=>{if(document.hidden){stopAmbience()}else if(soundOn){startAmbience()}});stage.addEventListener('pointerdown',e=>{stage.focus();if(e.button!==undefined&&e.button!==0)return;if(e.target.closest('.interaction-hint,.world-event,.direct-travel,.direct-travel-label'))return;const rect=stage.getBoundingClientRect();const x=(e.clientX-rect.left)/rect.width*100,y=(e.clientY-rect.top)/rect.height*100;if(Number.isFinite(x)&&Number.isFinite(y))walkTo(x,y)});
+dialog.addEventListener('close',()=>objects.querySelectorAll('.npc-figure').forEach(el=>el.classList.remove('talking','reacting')));exploreBtn.addEventListener('click',interact);$('#mapBtn').addEventListener('click',()=>mapDialog.showModal());$('#journalGameBtn').addEventListener('click',openJournal);if(timeBtn)timeBtn.addEventListener('click',cycleTime);$('#soundBtnGame')?.addEventListener('click',toggleSound);$('#achievementsBtn')?.addEventListener('click',()=>{renderAchievements();achievementDialog.showModal()});$('#backupGameBtn')?.addEventListener('click',exportPlayableBackup);$('#restoreGameBtn')?.addEventListener('click',()=>$('#restoreGameFile')?.click());$('#restoreGameFile')?.addEventListener('change',e=>{importPlayableBackup(e.target.files?.[0]);e.target.value=''});document.addEventListener('visibilitychange',()=>{if(document.hidden){stopAmbience()}else if(soundOn){startAmbience()}});stage.addEventListener('pointerdown',e=>{stage.focus();if(e.button!==undefined&&e.button!==0)return;if(e.target.closest('.interaction-hint,.world-event,.direct-travel,.direct-travel-label,.direct-interact,.direct-interact-label,.click-collectible'))return;const rect=stage.getBoundingClientRect();const x=(e.clientX-rect.left)/rect.width*100,y=(e.clientY-rect.top)/rect.height*100;if(Number.isFinite(x)&&Number.isFinite(y))walkTo(x,y)});
 renderScene();stage.focus({preventScroll:true});
 })();
