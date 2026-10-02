@@ -549,10 +549,27 @@ function autoWalkTick(){
  const speed=1.15;moveTo(state.x+dx/d*speed,state.y+dy/d*speed,false);traveler.classList.add('walking');walkRaf=requestAnimationFrame(autoWalkTick)
 }
 function walkTo(x,y,onArrival=null){stopAutoWalk();const tx=clamp(x,4,96),ty=clamp(y,14,93);traveler.dataset.dir=Math.abs(tx-state.x)>Math.abs(ty-state.y)?(tx<state.x?'left':'right'):(ty<state.y?'up':'down');walkTarget={x:tx,y:ty};walkArrival=typeof onArrival==='function'?onArrival:null;walkRaf=requestAnimationFrame(autoWalkTick)}
+
+function approachPoint(obj){
+ const gap=obj.type==='door'||obj.action==='travel'?7:obj.type==='npc'?6:5;
+ let x=obj.x,y=obj.y+gap;
+ if(y>90)y=obj.y-gap;
+ if(x<7)x=obj.x+5;else if(x>93)x=obj.x-5;
+ return {x:clamp(x,4,96),y:clamp(y,14,93)}
+}
+function faceTravelerToward(obj){
+ const dx=obj.x-state.x,dy=obj.y-state.y;
+ traveler.dataset.dir=Math.abs(dx)>Math.abs(dy)?(dx<0?'left':'right'):(dy<0?'up':'down')
+}
+function showDestinationMarker(x,y){
+ let m=stage.querySelector('.destination-marker');if(!m){m=document.createElement('span');m.className='destination-marker';stage.appendChild(m)}
+ m.style.left=x+'%';m.style.top=y+'%';m.classList.remove('show');void m.offsetWidth;m.classList.add('show')
+}
+
 function walkAndTravel(obj){
  if(!isUnlocked(obj)){showToast('This doorway is still locked');return}
  const finish=()=>{const targetEl=objects.querySelector('[data-object-id="'+obj.id+'"]');targetEl?.classList.remove('travel-pending');if(obj.type==='door')animateDoor(obj.id,()=>travel(obj.to));else travel(obj.to)};
- const targetEl=objects.querySelector('[data-object-id="'+obj.id+'"]');targetEl?.classList.add('travel-pending');showToast('Walking to '+obj.label+'…');walkTo(obj.x,obj.y,finish)
+ const targetEl=objects.querySelector('[data-object-id="'+obj.id+'"]');targetEl?.classList.add('travel-pending');const pt=approachPoint(obj);showDestinationMarker(pt.x,pt.y);showToast('Walking to '+obj.label+'…');walkTo(pt.x,pt.y,()=>{faceTravelerToward(obj);finish()})
 }
 function activateObject(obj){
  if(!obj)return;
@@ -573,17 +590,17 @@ function activateObject(obj){
 }
 function walkAndInteract(obj){
  if(!isUnlocked(obj)){showToast('This interaction is still locked');return}
- const targetEl=objects.querySelector('[data-object-id="'+obj.id+'"]');targetEl?.classList.add('interaction-pending');
+ const targetEl=objects.querySelector('[data-object-id="'+obj.id+'"]');targetEl?.classList.add('interaction-pending');const pt=approachPoint(obj);showDestinationMarker(pt.x,pt.y);
  showToast('Walking to '+obj.label+'…');
- walkTo(obj.x,obj.y,()=>{targetEl?.classList.remove('interaction-pending');activateObject(obj)})
+ walkTo(pt.x,pt.y,()=>{faceTravelerToward(obj);targetEl?.classList.remove('interaction-pending');activateObject(obj)})
 }
 function collectSpecificItem(it){
  if(state.keepsakes.includes(it.id))return;
  state.keepsakes.push(it.id);addJournal('Keepsake: '+it.name,'Found while exploring '+scenes[state.scene].name+'.');save();showToast('Collected '+it.name+' ✨');renderScene()
 }
 function walkAndCollect(it){
- showToast('Walking to '+it.name+'…');
- walkTo(it.x,it.y,()=>collectSpecificItem(it))
+ const pt={x:clamp(it.x,4,96),y:clamp(it.y+5,14,93)};showDestinationMarker(pt.x,pt.y);showToast('Walking to '+it.name+'…');
+ walkTo(pt.x,pt.y,()=>{traveler.dataset.dir='up';collectSpecificItem(it)})
 }
 function playSceneTransition(){
  transitionCurtain.classList.remove('active');void transitionCurtain.offsetWidth;transitionCurtain.classList.add('active');setTimeout(()=>transitionCurtain.classList.remove('active'),620)
