@@ -337,6 +337,52 @@ const chainTitle=$('#chainTitle'),chainProgress=$('#chainProgress');
 const eventBanner=document.createElement('div');eventBanner.className='world-event';eventBanner.setAttribute('role','status');stage.appendChild(eventBanner);
 const timeLabel=$('#gameTimeOfDay'),timeBtn=$('#timeShiftBtn');
 
+
+const sceneryLayer=document.createElement('div');sceneryLayer.className='scenery-layer';backdrop.insertAdjacentElement('afterend',sceneryLayer);
+const fxLayer=document.createElement('div');fxLayer.className='fx-layer';sceneryLayer.insertAdjacentElement('afterend',fxLayer);
+function renderScenery(cls){
+ const templates={
+  hall:'<div class="arch a1"></div><div class="arch a2"></div><div class="arch a3"></div><div class="floor-lines"></div>',
+  titanic:'<div class="ship-deck"><i class="rail r1"></i><i class="rail r2"></i><i class="funnel"></i><i class="deckhouse"></i></div>',
+  titanicInterior:'<div class="grand-interior"><i class="panel p1"></i><i class="panel p2"></i><i class="stairs s1"></i><i class="stairs s2"></i><i class="lamp l1"></i><i class="lamp l2"></i></div>',
+  west:'<div class="western-row"><i class="facade f1"></i><i class="facade f2"></i><i class="facade f3"></i><i class="awning aw1"></i><i class="hitch"></i></div>',
+  westInterior:'<div class="saloon-room"><i class="bar"></i><i class="mirror"></i><i class="table t1"></i><i class="table t2"></i><i class="lamp"></i></div>',
+  egypt:'<div class="egypt-scene"><i class="pyramid py1"></i><i class="pyramid py2"></i><i class="river"></i><i class="palm pm1"></i><i class="palm pm2"></i></div>',
+  medieval:'<div class="medieval-scene"><i class="wall"></i><i class="tower tw1"></i><i class="tower tw2"></i><i class="gatehouse"></i><i class="cottage c1"></i><i class="cottage c2"></i></div>',
+  castleInterior:'<div class="castle-room"><i class="column c1"></i><i class="column c2"></i><i class="banner b1"></i><i class="banner b2"></i><i class="hearth"></i></div>',
+  victorian:'<div class="victorian-row"><i class="building b1"></i><i class="building b2"></i><i class="building b3"></i><i class="lamp-post lp1"></i><i class="lamp-post lp2"></i></div>',
+  victorianInterior:'<div class="press-room"><i class="desk d1"></i><i class="desk d2"></i><i class="press"></i><i class="paper-stack"></i></div>',
+  theatreInterior:'<div class="theatre-room"><i class="curtain left"></i><i class="curtain right"></i><i class="stage-floor"></i><i class="footlights"></i></div>',
+  stationInterior:'<div class="station-room"><i class="platform"></i><i class="clock"></i><i class="window w1"></i><i class="window w2"></i><i class="track"></i></div>',
+  fifties:'<div class="mainstreet50"><i class="store s1"></i><i class="store s2"></i><i class="store s3"></i><i class="neon n1"></i><i class="neon n2"></i></div>',
+  dinerInterior:'<div class="diner-room"><i class="counter"></i><i class="stool st1"></i><i class="stool st2"></i><i class="stool st3"></i><i class="neon"></i></div>',
+  recordInterior:'<div class="record-room"><i class="shelf sh1"></i><i class="shelf sh2"></i><i class="booth"></i><i class="record-display"></i></div>',
+  roaring:'<div class="city20"><i class="building b1"></i><i class="building b2"></i><i class="marquee"></i><i class="streetlamp"></i></div>',
+  jazzInterior:'<div class="jazz-room"><i class="stage"></i><i class="spotlight"></i><i class="table t1"></i><i class="table t2"></i></div>',
+  radioInterior:'<div class="radio-room"><i class="booth"></i><i class="console"></i><i class="onair"></i><i class="mic-stand"></i></div>',
+  apollo:'<div class="apollo-yard"><i class="hangar"></i><i class="antenna"></i><i class="tower"></i></div>',
+  apolloInterior:'<div class="mission-room"><i class="console c1"></i><i class="console c2"></i><i class="console c3"></i><i class="screen s1"></i><i class="screen s2"></i></div>',
+  engineeringInterior:'<div class="engineering-room"><i class="bench"></i><i class="rack r1"></i><i class="rack r2"></i><i class="schematic"></i></div>',
+  watchInterior:'<div class="living-room69"><i class="sofa"></i><i class="tv"></i><i class="lamp"></i><i class="rug"></i></div>',
+  rome:'<div class="roman-street"><i class="column c1"></i><i class="column c2"></i><i class="arch"></i><i class="stall"></i></div>',
+  romeForum:'<div class="forum-scene"><i class="temple"></i><i class="column c1"></i><i class="column c2"></i><i class="column c3"></i><i class="steps"></i></div>',
+  romeBaths:'<div class="bath-scene"><i class="pool"></i><i class="arch a1"></i><i class="arch a2"></i><i class="steam st1"></i><i class="steam st2"></i></div>',
+  renaissance:'<div class="renaissance-street"><i class="palazzo p1"></i><i class="palazzo p2"></i><i class="archway"></i><i class="fountain"></i></div>',
+  printInterior:'<div class="print-room"><i class="press"></i><i class="case c1"></i><i class="case c2"></i><i class="paper"></i></div>',
+  atelierInterior:'<div class="atelier-room"><i class="easel"></i><i class="canvas"></i><i class="table"></i><i class="window"></i></div>',
+  revolution:'<div class="colonial-street"><i class="house h1"></i><i class="house h2"></i><i class="shop"></i><i class="sign"></i></div>',
+  revPrintInterior:'<div class="colonial-print"><i class="press"></i><i class="typecase"></i><i class="broadsides"></i></div>',
+  revTavernInterior:'<div class="tavern-room"><i class="hearth"></i><i class="table t1"></i><i class="table t2"></i><i class="beam"></i></div>',
+  archiveInterior:'<div class="archive-room"><i class="shelf s1"></i><i class="shelf s2"></i><i class="case c1"></i><i class="case c2"></i><i class="desk"></i></div>'
+ };
+ sceneryLayer.innerHTML=templates[cls]||'<div class="generic-scenery"><i></i><i></i><i></i></div>';
+}
+function renderFx(){
+ fxLayer.innerHTML='';const t=times[state.timeIndex%times.length];
+ const count=t==='Night'?16:8;
+ for(let i=0;i<count;i++){const p=document.createElement('i');p.className='world-particle p'+(i%4);p.style.left=((i*37+13)%97)+'%';p.style.top=(12+((i*29)%72))+'%';p.style.animationDelay=(-i*.7)+'s';fxLayer.appendChild(p)}
+}
+
 const transitionCurtain=document.createElement('div');transitionCurtain.className='scene-transition';transitionCurtain.setAttribute('aria-hidden','true');stage.appendChild(transitionCurtain);
 let walkRaf=0,walkTarget=null;
 function stopAutoWalk(){walkTarget=null;if(walkRaf){cancelAnimationFrame(walkRaf);walkRaf=0}traveler.classList.remove('walking')}
@@ -376,7 +422,7 @@ function isUnlocked(obj){return !obj.unlockCount||completedQuestCount()>=obj.unl
 function applyTime(){
  const t=times[state.timeIndex%times.length];root.dataset.time=t.toLowerCase();if(timeLabel)timeLabel.textContent=t;
 }
-function cycleTime(){state.timeIndex=(state.timeIndex+1)%times.length;applyTime();save();updateWorldEvent(true);showToast('Time shifted to '+times[state.timeIndex])}
+function cycleTime(){state.timeIndex=(state.timeIndex+1)%times.length;applyTime();renderFx();save();updateWorldEvent(true);showToast('Time shifted to '+times[state.timeIndex])}
 const sceneEvents={
  hall:{Morning:'The Time Hall is quiet; new portals hum softly.',Afternoon:'Travelers cross the hall between centuries.',Evening:'The portal rings glow brighter as the hall darkens.',Night:'Only the portals and archive lamps illuminate the hall.'},
  titanic:{Morning:'Stewards prepare passenger spaces for the day.',Afternoon:'Passengers gather along the promenade.',Evening:'Dinner preparations and music animate the ship.',Night:'The deck is colder and quieter beneath the stars.'},
@@ -437,7 +483,7 @@ function updateQuest(){
  if(done===q.targets.length&&!state.quests[state.scene]){state.quests[state.scene]=true;addJournal('Completed: '+q.title,'Reward earned: '+q.reward+'.');save();showToast('Objective complete — '+q.reward+' ✨')}
 }
 function renderScene(){
- const s=scenes[state.scene];sceneName.textContent=s.name;backdrop.className='scene-backdrop '+s.class;journeyTitle.textContent=s.title;journeyText.textContent=s.text;objects.innerHTML='';labels.innerHTML='';collectibles.innerHTML='';
+ const s=scenes[state.scene];sceneName.textContent=s.name;backdrop.className='scene-backdrop '+s.class;renderScenery(s.class);renderFx();journeyTitle.textContent=s.title;journeyText.textContent=s.text;objects.innerHTML='';labels.innerHTML='';collectibles.innerHTML='';
  const activeObjects=sceneObjectsForTime(state.scene,s);activeObjects.forEach((obj,index)=>{const unlocked=isUnlocked(obj);const el=document.createElement('div');el.className='world-object '+obj.type+(unlocked?'':' locked');el.dataset.objectId=obj.id;el.style.left=obj.x+'%';el.style.top=obj.y+'%';if(obj.type==='npc'){el.appendChild(makeNpcSprite(obj,index))}else if(obj.type==='door'){el.innerHTML='<span class="door-frame"><i class="door-panel"></i><i class="door-knob"></i></span>'}else if(obj.icon)el.textContent=obj.icon;objects.appendChild(el);const lab=document.createElement('div');lab.className='world-label'+(unlocked?'':' locked-label');lab.style.left=obj.x+'%';lab.style.top=(obj.y-(obj.type==='portal'?13:9))+'%';lab.textContent=unlocked?obj.label:(obj.lockedLabel||'🔒 '+obj.label);labels.appendChild(lab)});
  for(let i=0;i<3;i++){const walker=document.createElement('div');walker.className='ambient-walker w'+i;walker.style.top=(46+i*14)+'%';const fig=makeNpcSprite({id:'ambient'+i},i+2);fig.classList.add('walking');walker.appendChild(fig);objects.appendChild(walker)}\n s.items.forEach(it=>{if(state.keepsakes.includes(it.id))return;const el=document.createElement('div');el.className='collectible';el.style.left=it.x+'%';el.style.top=it.y+'%';el.textContent=it.icon;el.title=it.name;collectibles.appendChild(el)});
  if(s.passport&&!state.visited.includes(state.scene)){state.visited.push(state.scene);addJournal('Arrived: '+s.name,'You entered '+s.name+'.');save()}
