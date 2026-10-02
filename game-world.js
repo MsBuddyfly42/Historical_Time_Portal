@@ -297,6 +297,89 @@ hardScenes.apolloEngineering=S('Apollo Engineering Annex','engineeringInterior',
  o('backApolloEngineering','door',91,84,'Back Outside','🚪','travel','','',{to:'apollo',radius:9})
 ],[item('wiringTag',35,70,'🏷️','Engineering Wiring Tag')],{passport:false,quest:{title:'Trace the Signal',targets:['schematics','testBench','systemsTech'],reward:'Engineering Annex Stamp'}});
 
+
+hardScenes.homefront=S('1940s Home Front','homefront',{x:50,y:84},'Home Front • 1940s','Explore rationing, radio news, factory work, household routines, and community life during wartime.',[
+ o('rationOffice','building',22,44,'Ration Office','📒','inspect','Ration Office','Ration systems regulated access to selected goods and required households to plan purchases carefully.',{radius:10}),
+ o('radioHome','building',72,44,'Family Radio','📻','inspect','Family Radio','Radio carried news, entertainment, government messages, and wartime information into homes.',{radius:10}),
+ o('factoryWorker','npc',48,62,'Factory Worker','🧑🏽‍🏭','talk','Factory Worker','The worker describes long shifts, production targets, transportation challenges, and changing roles in wartime industry.',{radius:8}),
+ o('returnHomefront','portal',91,84,'Return to East Gallery','', 'travel','','',{to:'hallEast',radius:10})
+],[item('rationBook',36,70,'📘','Ration Book Keepsake'),item('victoryPin',78,34,'📍','Home Front Pin')],{quest:{title:'A Wartime Day',targets:['rationOffice','radioHome','factoryWorker'],reward:'Home Front Stamp'}});
+
+hardScenes.goldrush=S('Gold Rush Town • 1850s','goldrush',{x:50,y:84},'Gold Rush Settlement','Explore a boomtown of supply stores, claims, transport, newspapers, and people chasing uncertain opportunity.',[
+ o('assay','building',22,44,'Assay Office','⚖️','inspect','Assay Office','Assayers evaluate ore and gold samples, helping determine value and purity.',{radius:10}),
+ o('supply','building',72,44,'Supply Store','⛏️','inspect','Supply Store','Tools, food, clothing, rope, pans, boots, and basic supplies could cost dearly in a remote boomtown.',{radius:10}),
+ o('prospector','npc',48,62,'Prospector','🧔🏻','talk','Prospector','The prospector has learned that finding gold is only one challenge; transport, food, weather, prices, and luck matter too.',{radius:8}),
+ o('returnGold','portal',91,84,'Return to East Gallery','', 'travel','','',{to:'hallEast',radius:10})
+],[item('goldPan',36,70,'🥣','Gold Pan'),item('claimTag',78,34,'🏷️','Claim Tag')],{quest:{title:'Boomtown Basics',targets:['assay','supply','prospector'],reward:'Gold Rush Stamp'}});
+
+hardScenes.depression=S('Depression-Era America • 1930s','depression',{x:50,y:84},'Hard Times • 1930s','Explore relief offices, neighborhood kitchens, job boards, radio, and the ways families adapted during economic crisis.',[
+ o('jobBoard','building',22,44,'Job Board','📋','inspect','Job Board','Job notices could draw many applicants during a period of severe unemployment.',{radius:10}),
+ o('communityKitchen','building',72,44,'Community Kitchen','🍲','inspect','Community Kitchen','Relief organizations, charities, churches, governments, and neighbors provided food assistance in different forms.',{radius:10}),
+ o('parent','npc',48,62,'Local Parent','🧑🏿','talk','Local Parent','The parent describes stretching meals, sharing resources, looking for work, and trying to protect children from constant worry.',{radius:8}),
+ o('returnDepression','portal',91,84,'Return to East Gallery','', 'travel','','',{to:'hallEast',radius:10})
+],[item('radioCard',36,70,'📻','Radio Program Card'),item('mealToken',78,34,'🎟️','Meal Token')],{quest:{title:'Making Do',targets:['jobBoard','communityKitchen','parent'],reward:'1930s Community Stamp'}});
+
+hardScenes.paris1900=S('Paris • 1900','paris1900',{x:50,y:84},'Paris at the Turn of the Century','Explore boulevards, cafés, posters, transit, department stores, artists, and the excitement of a rapidly changing city.',[
+ o('cafeParis','building',22,44,'Boulevard Café','☕','inspect','Boulevard Café','Cafés provided places to eat, meet, read newspapers, conduct business, and observe urban life.',{radius:10}),
+ o('metro','building',72,44,'Métro Entrance','🚇','inspect','Paris Métro','The first line of the Paris Métro opened in 1900, transforming movement through the growing city.',{radius:10}),
+ o('posterArtist','npc',48,62,'Poster Artist','🧑🏻‍🎨','talk','Poster Artist','The artist studies bold lettering, color, printing limits, and crowded streets where every poster competes for attention.',{radius:8}),
+ o('returnParis','portal',91,84,'Return to East Gallery','', 'travel','','',{to:'hallEast',radius:10})
+],[item('metroTicket',36,70,'🎫','Métro Ticket'),item('posterPrint',78,34,'🖼️','Poster Print')],{quest:{title:'Modern City',targets:['cafeParis','metro','posterArtist'],reward:'Paris 1900 Stamp'}});
+
+hardScenes.ageOfSail=S('Age of Sail','ageOfSail',{x:50,y:84},'Harbor Under Sail','Explore docks, ship chandlers, navigation, cargo, sailors, and the labor required to send a sailing vessel to sea.',[
+ o('chandler','building',22,44,'Ship Chandler','⚓','inspect','Ship Chandler','Chandlers supplied rope, canvas, tools, food, lamps, hardware, and other necessities for ships.',{radius:10}),
+ o('chartTable','building',72,44,'Navigation Table','🧭','inspect','Navigation Table','Sailors combine charts, observations, instruments, experience, weather, and careful recordkeeping to navigate.',{radius:10}),
+ o('sailor','npc',48,62,'Sailor','🧑🏼‍✈️','talk','Sailor','The sailor explains watches, rigging work, weather, maintenance, cramped quarters, and the constant discipline of shipboard life.',{radius:8}),
+ o('returnSail','portal',91,84,'Return to West Gallery','', 'travel','','',{to:'hallWest',radius:10})
+],[item('ropeKnot',36,70,'🪢','Practice Rope Knot'),item('compassToken',78,34,'🧭','Compass Token')],{quest:{title:'Ready the Ship',targets:['chandler','chartTable','sailor'],reward:'Age of Sail Stamp'}});
+
+hardScenes.pompeii=S('Pompeii • 79 CE','pompeii',{x:50,y:84},'A Roman Town Before Vesuvius','Explore streets, food shops, homes, fountains, workshops, and everyday life before the eruption.',[
+ o('bakeryPompeii','building',22,44,'Bakery','🍞','inspect','Pompeii Bakery','Bakeries used mills and ovens to produce bread for a dense urban population.',{radius:10}),
+ o('fountainPompeii','building',72,44,'Street Fountain','⛲','inspect','Street Fountain','Public fountains distributed water through the town and served as everyday gathering points.',{radius:10}),
+ o('residentPompeii','npc',48,62,'Town Resident','🧑🏽','talk','Town Resident','The resident is concerned with ordinary errands, prices, neighbors, work, and the day ahead—without knowing what history will remember.',{radius:8}),
+ o('returnPompeii','portal',91,84,'Return to West Gallery','', 'travel','','',{to:'hallWest',radius:10})
+],[item('breadStamp',36,70,'🍞','Bread Stamp Replica'),item('mosaicTile',78,34,'🟦','Mosaic Tile')],{quest:{title:'Ordinary Pompeii',targets:['bakeryPompeii','fountainPompeii','residentPompeii'],reward:'Pompeii Life Stamp'}});
+
+hardScenes.viking=S('Viking-Age Harbor','viking',{x:50,y:84},'Northern Harbor','Explore boats, workshops, trade goods, homes, navigation, and seasonal travel in a Viking-Age settlement.',[
+ o('longship','building',22,44,'Longship','⛵','inspect','Longship','Long, shallow-draft vessels could move along coasts, rivers, and open water, supporting trade, travel, warfare, and settlement.',{radius:10}),
+ o('smithViking','building',72,44,'Smithy','⚒️','inspect','Harbor Smithy','Metalworkers produced and repaired tools, fittings, weapons, fasteners, and household objects.',{radius:10}),
+ o('traderViking','npc',48,62,'Trader','🧔🏼','talk','Harbor Trader','The trader carries goods from distant places and depends on weather, ships, trusted contacts, and seasonal routes.',{radius:8}),
+ o('returnViking','portal',91,84,'Return to West Gallery','', 'travel','','',{to:'hallWest',radius:10})
+],[item('beadViking',36,70,'🔵','Trade Bead'),item('runeToken',78,34,'🪵','Carved Rune Token')],{quest:{title:'Harbor Trade',targets:['longship','smithViking','traderViking'],reward:'Viking Harbor Stamp'}});
+
+hardScenes.silkroad=S('Silk Road Oasis','silkroad',{x:50,y:84},'Oasis Caravan Stop','Explore caravan trade, water management, inns, languages, animals, and goods moving across long-distance networks.',[
+ o('caravanserai','building',22,44,'Caravanserai','🏨','inspect','Caravanserai','Roadside inns offered shelter, storage, food, water, information, and space for people and animals on long journeys.',{radius:10}),
+ o('oasisWell','building',72,44,'Oasis Well','💧','inspect','Oasis Water','Reliable water sources shaped routes, settlement, agriculture, and the timing of caravan travel.',{radius:10}),
+ o('caravanTrader','npc',48,62,'Caravan Trader','🧑🏾‍💼','talk','Caravan Trader','The trader carries textiles, spices, metal goods, stories, languages, and news across overlapping trade networks.',{radius:8}),
+ o('returnSilk','portal',91,84,'Return to West Gallery','', 'travel','','',{to:'hallWest',radius:10})
+],[item('silkSample',36,70,'🧣','Silk Sample'),item('tradeSeal',78,34,'🔖','Caravan Trade Seal')],{quest:{title:'Caravan Stop',targets:['caravanserai','oasisWell','caravanTrader'],reward:'Silk Road Stamp'}});
+
+hardScenes.seaside=S('Edwardian Seaside • 1900s','seaside',{x:50,y:84},'Edwardian Seaside Resort','Explore a pier, bathing machines, promenade entertainment, hotels, postcards, and holiday routines.',[
+ o('pier','building',22,44,'Seaside Pier','🎡','inspect','Seaside Pier','Piers could combine promenading, music, entertainment, refreshments, boats, and scenic views.',{radius:10}),
+ o('postcardShop','building',72,44,'Postcard Shop','💌','inspect','Postcard Shop','Picture postcards became a hugely popular way for travelers to share short messages and holiday images.',{radius:10}),
+ o('holidaymaker','npc',48,62,'Holidaymaker','🧑🏻‍🎩','talk','Holidaymaker','The visitor plans a promenade, sea air, photographs, refreshments, and an evening performance.',{radius:8}),
+ o('returnSeaside','portal',91,84,'Return to West Gallery','', 'travel','','',{to:'hallWest',radius:10})
+],[item('seasidePostcard',36,70,'💌','Seaside Postcard'),item('pierTicket',78,34,'🎫','Pier Admission Ticket')],{quest:{title:'Day by the Sea',targets:['pier','postcardShop','holidaymaker'],reward:'Seaside Resort Stamp'}});
+
+hardScenes.hallEast=S('Time Hall • East Gallery','hall',{x:50,y:86},'East Gallery','A quieter wing of the Time Hall holds portals to modern and industrial-era worlds.',[
+ o('peHomefront','portal',13,35,'1940s Home Front','', 'travel','','',{to:'homefront',radius:10}),
+ o('peGold','portal',32,35,'1850s Gold Rush','', 'travel','','',{to:'goldrush',radius:10}),
+ o('peDepression','portal',51,35,'1930s Depression Era','', 'travel','','',{to:'depression',radius:10}),
+ o('peParis','portal',70,35,'Paris • 1900','', 'travel','','',{to:'paris1900',radius:10}),
+ o('eastKeeper','npc',50,64,'Gallery Curator','🧑🏽‍🏫','talk','East Gallery Curator','These portals focus on rapid social, technological, and economic change in the modern era.',{radius:8}),
+ o('eastBack','door',91,86,'Central Time Hall','🚪','travel','','',{to:'hall',radius:9})
+],[],{passport:false});
+
+hardScenes.hallWest=S('Time Hall • West Gallery','hall',{x:50,y:86},'West Gallery','This wing opens onto maritime, ancient, trade-route, and travel worlds.',[
+ o('pwSail','portal',12,35,'Age of Sail','', 'travel','','',{to:'ageOfSail',radius:10}),
+ o('pwPompeii','portal',31,35,'Pompeii • 79 CE','', 'travel','','',{to:'pompeii',radius:10}),
+ o('pwViking','portal',50,35,'Viking Harbor','', 'travel','','',{to:'viking',radius:10}),
+ o('pwSilk','portal',69,35,'Silk Road Oasis','', 'travel','','',{to:'silkroad',radius:10}),
+ o('pwSeaside','portal',88,35,'Edwardian Seaside','', 'travel','','',{to:'seaside',radius:10}),
+ o('westKeeper','npc',50,64,'Gallery Curator','🧑🏻‍🏫','talk','West Gallery Curator','These portals connect worlds shaped by travel, trade, coastlines, ancient cities, and long-distance exchange.',{radius:8}),
+ o('westBack','door',91,86,'Central Time Hall','🚪','travel','','',{to:'hall',radius:9})
+],[],{passport:false});
+
 hardScenes.archive=S('Chronicle Archive','archiveInterior',{x:50,y:84},'The Chronicle Archive','A reward space for travelers who have completed multiple era objectives. Examine curated cases and speak with the archivist.',[
  o('caseOne','building',23,42,'Everyday Life Case','🗄️','inspect','Everyday Life Collection','Tickets, tools, menus, advertisements, receipts, letters, and ordinary objects can reveal how people actually lived.',{radius:10}),
  o('caseTwo','building',72,42,'Communication Case','📚','inspect','Communication Collection','From handwritten messages to print, wireless, radio, and television, communication technologies reshape how communities share information.',{radius:10}),
@@ -307,6 +390,7 @@ hardScenes.archive=S('Chronicle Archive','archiveInterior',{x:50,y:84},'The Chro
  o('backHallArchive','door',91,84,'Return to Time Hall','🚪','travel','','',{to:'hall',radius:9})
 ],[item('archiveSeal',36,70,'🏅','Chronicle Archive Seal')],{passport:false,quest:{title:'Read the Archive',targets:['caseOne','caseTwo','archivist'],reward:'Chronicle Scholar Stamp'}});
 
+hardScenes.hall.objects.push(o('eastGalleryDoor','door',7,85,'East Gallery','🚪','travel','East Gallery','',{to:'hallEast',radius:9}),o('westGalleryDoor','door',93,85,'West Gallery','🚪','travel','West Gallery','',{to:'hallWest',radius:9}));
 const scenes=hardScenes;
 
 /* --- PAYROLL MYSTERY CHAIN + LOCKED PROGRESSION --- */
@@ -402,6 +486,15 @@ const fxLayer=document.createElement('div');fxLayer.className='fx-layer';scenery
 function renderScenery(cls){
  const templates={
   hall:'<div class="arch a1"></div><div class="arch a2"></div><div class="arch a3"></div><div class="floor-lines"></div>',
+  homefront:'<div class="homefront-scene"><i class="rowhouse h1"></i><i class="rowhouse h2"></i><i class="factory"></i><i class="radio-tower"></i></div>',
+  goldrush:'<div class="goldrush-scene"><i class="shop s1"></i><i class="shop s2"></i><i class="mountain"></i><i class="sluice"></i></div>',
+  depression:'<div class="depression-scene"><i class="store"></i><i class="job-board"></i><i class="kitchen-sign"></i></div>',
+  paris1900:'<div class="paris-scene"><i class="facade f1"></i><i class="facade f2"></i><i class="metro-sign"></i><i class="lamp"></i></div>',
+  ageOfSail:'<div class="sail-scene"><i class="ship"></i><i class="mast m1"></i><i class="mast m2"></i><i class="dock"></i></div>',
+  pompeii:'<div class="pompeii-scene"><i class="vesuvius"></i><i class="villa v1"></i><i class="villa v2"></i><i class="road"></i></div>',
+  viking:'<div class="viking-scene"><i class="longhouse"></i><i class="ship"></i><i class="water"></i></div>',
+  silkroad:'<div class="silkroad-scene"><i class="caravanserai"></i><i class="dune d1"></i><i class="dune d2"></i><i class="palms"></i></div>',
+  seaside:'<div class="seaside-scene"><i class="pier"></i><i class="sea"></i><i class="wheel"></i><i class="hotel"></i></div>',
   titanic:'<div class="ship-deck"><i class="rail r1"></i><i class="rail r2"></i><i class="funnel"></i><i class="deckhouse"></i></div>',
   titanicDining:'<div class="dining-room"><i class="table dt1"></i><i class="table dt2"></i><i class="table dt3"></i><i class="chandelier"></i><i class="service-board"></i></div>',
   titanicInterior:'<div class="grand-interior"><i class="panel p1"></i><i class="panel p2"></i><i class="stairs s1"></i><i class="stairs s2"></i><i class="lamp l1"></i><i class="lamp l2"></i></div>',
@@ -504,7 +597,7 @@ function addJournal(title,text){if(!state.journal.some(e=>e.title===title)){stat
 const achievements={
  firstStep:{title:'First Step Through Time',desc:'Visit your first historical era.',test:()=>state.visited.filter(v=>v!=='hall').length>=1},
  collector:{title:'Keeper of Keepsakes',desc:'Collect 10 historical keepsakes.',test:()=>state.keepsakes.length>=10},
- explorer:{title:'Century Hopper',desc:'Visit 8 major eras.',test:()=>state.visited.filter(v=>scenes[v]?.passport).length>=8},
+ explorer:{title:'Century Hopper',desc:'Visit 12 major eras.',test:()=>state.visited.filter(v=>scenes[v]?.passport).length>=12},
  storyteller:{title:'Story Solver',desc:'Resolve at least 3 multi-step story threads.',test:()=>['westPayrollSolved','victorianMessageSolved','apolloSignalSolved','romeWaterSolved','renPrintSolved'].filter(f=>state.flags[f]).length>=3},
  scholar:{title:'Chronicle Scholar',desc:'Unlock and visit the Chronicle Archive.',test:()=>state.visited.includes('archive')||state.discoveries.some(d=>d.startsWith('archive:'))},
  quester:{title:'Era Specialist',desc:'Complete 10 era objectives.',test:()=>completedQuestCount()>=10},
@@ -513,7 +606,7 @@ const achievements={
 state.achievements=state.achievements||{};
 function totalDiscoverables(){return Object.values(scenes).reduce((n,s)=>n+s.objects.filter(o=>o.action!=='travel').length+s.items.length,0)}
 function completionPercent(){
- const visitPart=Math.min(1,state.visited.filter(v=>scenes[v]?.passport).length/11);
+ const visitPart=Math.min(1,state.visited.filter(v=>scenes[v]?.passport).length/20);
  const questPart=Math.min(1,completedQuestCount()/14);
  const discoverPart=Math.min(1,(state.discoveries.length+state.keepsakes.length)/Math.max(1,totalDiscoverables()));
  return Math.round((visitPart*.35+questPart*.35+discoverPart*.30)*100)
