@@ -240,15 +240,94 @@ hardScenes.revolutionTavern=S('1776 Tavern','revTavernInterior',{x:50,y:84},'Ins
  o('backRev2','door',91,84,'Back to Street','🚪','travel','','',{to:'revolution',radius:9})
 ],[item('tavernToken',36,70,'🪙','Tavern Trade Token')],{passport:false,quest:{title:'Rumor & Reliability',targets:['hearth','postTable','traveler1776'],reward:'Tavern Listener Stamp'}});
 
+
+hardScenes.archive=S('Chronicle Archive','archiveInterior',{x:50,y:84},'The Chronicle Archive','A reward space for travelers who have completed multiple era objectives. Examine curated cases and speak with the archivist.',[
+ o('caseOne','building',23,42,'Everyday Life Case','🗄️','inspect','Everyday Life Collection','Tickets, tools, menus, advertisements, receipts, letters, and ordinary objects can reveal how people actually lived.',{radius:10}),
+ o('caseTwo','building',72,42,'Communication Case','📚','inspect','Communication Collection','From handwritten messages to print, wireless, radio, and television, communication technologies reshape how communities share information.',{radius:10}),
+ o('archivist','npc',49,61,'Chronicle Archivist','🧑🏽‍🏫','talk','Chronicle Archivist','The archivist studies your passport and says the strongest historical understanding comes from comparing ordinary life across different periods.',{radius:8,choices:[
+   {label:'Ask how to compare eras',flag:'archiveCompare',reply:'Start with the same human questions: How did people eat, work, travel, communicate, learn, celebrate, care for family, and respond to danger?'},
+   {label:'Ask what objects can reveal',flag:'archiveObjects',reply:'Even a small object can carry evidence about technology, trade, class, taste, labor, or everyday routines.'}
+ ]}),
+ o('backHallArchive','door',91,84,'Return to Time Hall','🚪','travel','','',{to:'hall',radius:9})
+],[item('archiveSeal',36,70,'🏅','Chronicle Archive Seal')],{passport:false,quest:{title:'Read the Archive',targets:['caseOne','caseTwo','archivist'],reward:'Chronicle Scholar Stamp'}});
+
 const scenes=hardScenes;
-let state=store.get('htp-playable-v2',null)||store.get('htp-playable-v1',null)||{scene:'hall',x:50,y:90,visited:['hall'],discoveries:[],keepsakes:[],journal:[],quests:{}};
-state.visited=Array.isArray(state.visited)?state.visited:['hall'];state.discoveries=Array.isArray(state.discoveries)?state.discoveries:[];state.keepsakes=Array.isArray(state.keepsakes)?state.keepsakes:[];state.journal=Array.isArray(state.journal)?state.journal:[];state.quests=state.quests||{};
+
+/* --- PAYROLL MYSTERY CHAIN + LOCKED PROGRESSION --- */
+const findObj=(scene,id)=>scenes[scene]?.objects.find(x=>x.id===id);
+scenes.hall.objects.push(o('archivePortal','portal',91,79,'Chronicle Archive','', 'travel','Chronicle Archive','',{to:'archive',radius:10,unlockCount:3,lockedLabel:'🔒 Chronicle Archive'}));
+const westReporter=findObj('west','reporter');
+if(westReporter)westReporter.choices=[
+ {label:'Ask about the missing payroll box',flag:'westPayrollLead',reply:'The reporter says the payroll box was last seen near the sheriff’s office just before the delayed stagecoach arrived.'},
+ {label:'Ask about the delayed stagecoach',flag:'westStagecoach',reply:'The stagecoach arrived late, dusty, and missing one piece of freight paperwork.'}
+];
+const westSheriff=findObj('west','sheriff');
+if(westSheriff)westSheriff.choices=[
+ {label:'Mention the payroll box',requires:'westPayrollLead',flag:'westSheriffClue',reply:'The sheriff remembers a witness seeing someone carry a heavy wooden box toward the saloon alley.'}
+];
+const westBarkeep=findObj('westSaloon','barkeep');
+if(westBarkeep)westBarkeep.choices=[
+ {label:'Ask about the saloon alley',requires:'westSheriffClue',flag:'westSaloonClue',reply:'The barkeep saw a stagehand hide something behind the notice board, then leave before sunset.'}
+];
+const westBoard=findObj('westSaloon','board');
+if(westBoard)westBoard.choices=[
+ {label:'Search behind the notice board',requires:'westSaloonClue',flag:'westPayrollSolved',reply:'Behind the board you find the missing payroll box wrapped in canvas. Mystery solved.'}
+];
+
+let state=store.get('htp-playable-v2',null)||store.get('htp-playable-v1',null)||{scene:'hall',x:50,y:90,visited:['hall'],discoveries:[],keepsakes:[],journal:[],quests:{},flags:{},timeIndex:1,events:[]};
+state.visited=Array.isArray(state.visited)?state.visited:['hall'];state.discoveries=Array.isArray(state.discoveries)?state.discoveries:[];state.keepsakes=Array.isArray(state.keepsakes)?state.keepsakes:[];state.journal=Array.isArray(state.journal)?state.journal:[];state.quests=state.quests||{};state.flags=state.flags||{};state.events=Array.isArray(state.events)?state.events:[];state.timeIndex=Number.isInteger(state.timeIndex)?state.timeIndex:1;
 if(!scenes[state.scene]){state.scene='hall';state.x=50;state.y=90}
 const questCard=document.createElement('div');questCard.className='quest-card';questCard.innerHTML='<p class="mini-kicker">ERA OBJECTIVE</p><h2 id="questTitle">Explore freely</h2><div id="questProgress">No required objective in the Time Hall.</div><div class="quest-meter"><i id="questFill"></i></div>';side.insertBefore(questCard,side.children[1]||null);
 const questTitle=$('#questTitle'),questProgress=$('#questProgress'),questFill=$('#questFill');
+
+const chainCard=document.createElement('div');chainCard.className='chain-card';chainCard.innerHTML='<p class="mini-kicker">STORY THREAD</p><h2 id="chainTitle">No active thread</h2><div id="chainProgress">Explore and talk to people to uncover longer stories.</div>';side.insertBefore(chainCard,side.children[2]||null);
+const chainTitle=$('#chainTitle'),chainProgress=$('#chainProgress');
+const eventBanner=document.createElement('div');eventBanner.className='world-event';eventBanner.setAttribute('role','status');stage.appendChild(eventBanner);
+const timeLabel=$('#gameTimeOfDay'),timeBtn=$('#timeShiftBtn');
+const times=['Morning','Afternoon','Evening','Night'];
+
 function save(){store.set('htp-playable-v2',state)}
 function showToast(msg){toast.textContent=msg;toast.classList.add('show');clearTimeout(showToast.t);showToast.t=setTimeout(()=>toast.classList.remove('show'),1700)}
 function addJournal(title,text){if(!state.journal.some(e=>e.title===title)){state.journal.unshift({title,text,date:new Date().toLocaleDateString()});state.journal=state.journal.slice(0,60);save()}}
+
+function completedQuestCount(){return Object.values(state.quests).filter(Boolean).length}
+function isUnlocked(obj){return !obj.unlockCount||completedQuestCount()>=obj.unlockCount}
+function applyTime(){
+ const t=times[state.timeIndex%times.length];root.dataset.time=t.toLowerCase();if(timeLabel)timeLabel.textContent=t;
+}
+function cycleTime(){state.timeIndex=(state.timeIndex+1)%times.length;applyTime();save();updateWorldEvent(true);showToast('Time shifted to '+times[state.timeIndex])}
+const sceneEvents={
+ hall:{Morning:'The Time Hall is quiet; new portals hum softly.',Afternoon:'Travelers cross the hall between centuries.',Evening:'The portal rings glow brighter as the hall darkens.',Night:'Only the portals and archive lamps illuminate the hall.'},
+ titanic:{Morning:'Stewards prepare passenger spaces for the day.',Afternoon:'Passengers gather along the promenade.',Evening:'Dinner preparations and music animate the ship.',Night:'The deck is colder and quieter beneath the stars.'},
+ west:{Morning:'Wagons arrive and storefronts open along Main Street.',Afternoon:'Dust hangs in the road as business reaches its busiest hour.',Evening:'Music begins to drift from the saloon.',Night:'Lanterns glow along the street and the town grows quieter.'},
+ victorian:{Morning:'Delivery carts and newspaper sellers fill the street.',Afternoon:'Shops, offices, and theaters bustle with traffic.',Evening:'Gas lamps flicker on and theater crowds gather.',Night:'The street settles under pools of gaslight.'},
+ fifties:{Morning:'Main Street opens with delivery trucks and breakfast crowds.',Afternoon:'Students, shoppers, and music spill onto the sidewalk.',Evening:'Neon signs and the cinema marquee brighten the street.',Night:'The diner and record shop remain the liveliest corners.'},
+ roaring:{Morning:'Newspapers and delivery traffic take over the avenues.',Afternoon:'Radio studios, offices, and shops hum with activity.',Evening:'Jazz clubs prepare for the night crowd.',Night:'Music and electric signs transform the city after dark.'},
+ apollo:{Morning:'Engineers review procedures and overnight reports.',Afternoon:'Mission teams monitor a steady stream of data.',Evening:'Families gather around televisions for updates.',Night:'Control rooms remain bright while much of the city sleeps.'}
+};
+function updateWorldEvent(force=false){
+ const t=times[state.timeIndex%times.length],group=scenes[state.scene]?.class||state.scene,key=sceneEvents[group]?group:(sceneEvents[state.scene]?state.scene:null);
+ const msg=key?sceneEvents[key][t]:t+' settles over '+scenes[state.scene].name+'.';
+ eventBanner.textContent='✦ '+msg;eventBanner.classList.remove('show');void eventBanner.offsetWidth;eventBanner.classList.add('show');
+ const eventKey=state.scene+':'+t;if(force||!state.events.includes(eventKey)){if(!state.events.includes(eventKey))state.events.push(eventKey);save()}
+}
+function updateChain(){
+ if(state.scene==='west'||state.scene==='westSaloon'){
+  chainTitle.textContent='The Missing Payroll Box';
+  const steps=[
+   ['westPayrollLead','Ask the reporter about the missing payroll box.'],
+   ['westSheriffClue','Take the reporter’s lead to the sheriff.'],
+   ['westSaloonClue','Question the barkeep about the alley.'],
+   ['westPayrollSolved','Search behind the saloon notice board.']
+  ];
+  const next=steps.find(([flag])=>!state.flags[flag]);
+  if(!next){chainProgress.textContent='Solved ✓ You recovered the missing payroll box.';chainCard.classList.add('complete')}
+  else{const done=steps.filter(([flag])=>state.flags[flag]).length;chainProgress.textContent='Step '+(done+1)+' of '+steps.length+': '+next[1];chainCard.classList.remove('complete')}
+ }else{
+  chainTitle.textContent='No active story thread';chainProgress.textContent='Explore and talk to people. Some eras contain longer stories that remember your choices.';chainCard.classList.remove('complete')
+ }
+}
+
 function discoveryKey(scene,id){return scene+':'+id}\nfunction targetDone(id){return state.discoveries.includes(discoveryKey(state.scene,id))||state.keepsakes.includes(id)}
 function updateQuest(){
  const q=scenes[state.scene].quest;if(!q){questTitle.textContent='Explore freely';questProgress.textContent='No required objective here. Wander wherever you like.';questFill.style.width='0%';return}
@@ -257,28 +336,28 @@ function updateQuest(){
 }
 function renderScene(){
  const s=scenes[state.scene];sceneName.textContent=s.name;backdrop.className='scene-backdrop '+s.class;journeyTitle.textContent=s.title;journeyText.textContent=s.text;objects.innerHTML='';labels.innerHTML='';collectibles.innerHTML='';
- s.objects.forEach(obj=>{const el=document.createElement('div');el.className='world-object '+obj.type;el.style.left=obj.x+'%';el.style.top=obj.y+'%';if(obj.icon)el.textContent=obj.icon;objects.appendChild(el);const lab=document.createElement('div');lab.className='world-label';lab.style.left=obj.x+'%';lab.style.top=(obj.y-(obj.type==='portal'?13:9))+'%';lab.textContent=obj.label;labels.appendChild(lab)});
+ s.objects.forEach(obj=>{const unlocked=isUnlocked(obj);const el=document.createElement('div');el.className='world-object '+obj.type+(unlocked?'':' locked');el.style.left=obj.x+'%';el.style.top=obj.y+'%';if(obj.icon)el.textContent=obj.icon;objects.appendChild(el);const lab=document.createElement('div');lab.className='world-label'+(unlocked?'':' locked-label');lab.style.left=obj.x+'%';lab.style.top=(obj.y-(obj.type==='portal'?13:9))+'%';lab.textContent=unlocked?obj.label:(obj.lockedLabel||'🔒 '+obj.label);labels.appendChild(lab)});
  for(let i=0;i<3;i++){const walker=document.createElement('div');walker.className='ambient-walker w'+i;walker.textContent=['🚶🏽','🚶🏻','🚶🏿'][i];walker.style.top=(46+i*14)+'%';objects.appendChild(walker)}\n s.items.forEach(it=>{if(state.keepsakes.includes(it.id))return;const el=document.createElement('div');el.className='collectible';el.style.left=it.x+'%';el.style.top=it.y+'%';el.textContent=it.icon;el.title=it.name;collectibles.appendChild(el)});
  if(s.passport&&!state.visited.includes(state.scene)){state.visited.push(state.scene);addJournal('Arrived: '+s.name,'You entered '+s.name+'.');save()}
- const spawn=s.spawn;moveTo(Number.isFinite(state.x)?state.x:spawn.x,Number.isFinite(state.y)?state.y:spawn.y,false);renderStatus();updateNearby();showToast('Entered '+s.name)
+ const spawn=s.spawn;moveTo(Number.isFinite(state.x)?state.x:spawn.x,Number.isFinite(state.y)?state.y:spawn.y,false);applyTime();renderStatus();updateNearby();updateChain();updateWorldEvent();showToast('Entered '+s.name)
 }
 function renderStatus(){discoveryCount.textContent=state.discoveries.length;keepsakeCount.textContent=state.keepsakes.length;passportList.innerHTML=Object.entries(scenes).filter(([,s])=>s.passport).map(([k,s])=>'<span class="passport-stamp '+(state.visited.includes(k)?'visited':'')+'">'+(state.visited.includes(k)?'✓ ':'')+s.name.split('•')[0].trim()+'</span>').join('');renderMap();updateQuest()}
 function nearest(){const s=scenes[state.scene];let best=null,bestD=999;for(const obj of s.objects){const d=distance({x:state.x,y:state.y},obj);if(d<bestD){best=obj;bestD=d}}return best&&bestD<=(best.radius||9)?best:null}
 function collectNearby(){const s=scenes[state.scene];for(const it of s.items){if(state.keepsakes.includes(it.id))continue;if(distance({x:state.x,y:state.y},it)<6){state.keepsakes.push(it.id);addJournal('Keepsake: '+it.name,'Found while exploring '+s.name+'.');save();showToast('Collected '+it.name+' ✨');renderScene();return true}}return false}
-function updateNearby(){const n=nearest();if(n){nearbyInfo.innerHTML='<b>'+n.label+'</b><br>'+(n.action==='travel'?'A doorway is within reach.':'Move close and explore.');exploreBtn.disabled=false;hint.classList.remove('hidden');hint.textContent=n.action==='travel'?'Step through':'Press E or tap Explore'}else{nearbyInfo.textContent='Keep walking. Look for people, buildings, glowing portals, doors, and keepsakes.';exploreBtn.disabled=true;hint.classList.add('hidden')}}
+function updateNearby(){const n=nearest();if(n){const unlocked=isUnlocked(n);nearbyInfo.innerHTML='<b>'+(unlocked?n.label:(n.lockedLabel||'🔒 '+n.label))+'</b><br>'+(!unlocked?'Complete '+n.unlockCount+' era objectives to unlock this doorway.':(n.action==='travel'?'A doorway is within reach.':'Move close and explore.'));exploreBtn.disabled=false;hint.classList.remove('hidden');hint.textContent=!unlocked?'Locked — explore more':(n.action==='travel'?'Step through':'Press E or tap Explore')}else{nearbyInfo.textContent='Keep walking. Look for people, buildings, glowing portals, doors, and keepsakes.';exploreBtn.disabled=true;hint.classList.add('hidden')}}
 function moveTo(x,y,check=true){state.x=clamp(x,4,96);state.y=clamp(y,14,93);traveler.style.left=state.x+'%';traveler.style.top=state.y+'%';if(check){if(!collectNearby()){updateNearby();updateQuest();save()}}}
 function move(dx,dy){moveTo(state.x+dx,state.y+dy)}
 function travel(to){const target=scenes[to];if(!target)return;state.scene=to;state.x=target.spawn.x;state.y=target.spawn.y;save();renderScene()}
-function interact(){const obj=nearest();if(!obj)return;if(obj.action==='travel'){travel(obj.to);return}
+function interact(){const obj=nearest();if(!obj)return;if(!isUnlocked(obj)){showToast('Archive locked — complete '+obj.unlockCount+' era objectives');return}if(obj.action==='travel'){travel(obj.to);return}
  const dKey=discoveryKey(state.scene,obj.id);if(!state.discoveries.includes(dKey)){state.discoveries.push(dKey);addJournal(obj.title||obj.label,obj.body||'Discovered while exploring.');save();showToast('New discovery added ✨')}
- const choiceHtml=Array.isArray(obj.choices)?obj.choices.map((ch,i)=>'<button type="button" data-choice="'+i+'">'+ch.label+'</button>').join(''):'';dialogContent.innerHTML='<p class="mini-kicker">'+scenes[state.scene].name+'</p><h2>'+obj.title+'</h2><p>'+obj.body+'</p><div id="choiceReply"></div><div class="dialog-actions">'+choiceHtml+'<button type="button" id="rememberBtn">Journal this discovery ✓</button></div>';dialog.showModal();dialogContent.querySelectorAll('[data-choice]').forEach(btn=>btn.addEventListener('click',()=>{const ch=obj.choices[Number(btn.dataset.choice)];state.flags=state.flags||{};state.flags[ch.flag]=true;save();const reply=dialogContent.querySelector('#choiceReply');reply.innerHTML='<p class="choice-reply">'+ch.reply+'</p>';addJournal(obj.title+' — '+ch.label,ch.reply);showToast('Conversation remembered')}));const remember=dialogContent.querySelector('#rememberBtn');if(remember)remember.addEventListener('click',()=>{addJournal(obj.title,obj.body);showToast('Added to journal')});renderStatus()
+ const availableChoices=Array.isArray(obj.choices)?obj.choices.filter(ch=>(!ch.requires||state.flags[ch.requires])&&(!ch.flag||!state.flags[ch.flag])):[];const remembered=Array.isArray(obj.choices)&&obj.choices.some(ch=>ch.flag&&state.flags[ch.flag]);const choiceHtml=availableChoices.map((ch,i)=>'<button type="button" data-choice="'+i+'">'+ch.label+'</button>').join('');const memoryHtml=remembered?'<p class="npc-memory">💭 This person remembers your earlier conversation.</p>':'';dialogContent.innerHTML='<p class="mini-kicker">'+scenes[state.scene].name+'</p><h2>'+obj.title+'</h2><p>'+obj.body+'</p>'+memoryHtml+'<div id="choiceReply"></div><div class="dialog-actions">'+choiceHtml+'<button type="button" id="rememberBtn">Journal this discovery ✓</button></div>';dialog.showModal();dialogContent.querySelectorAll('[data-choice]').forEach(btn=>btn.addEventListener('click',()=>{const ch=availableChoices[Number(btn.dataset.choice)];state.flags=state.flags||{};if(ch.flag)state.flags[ch.flag]=true;save();const reply=dialogContent.querySelector('#choiceReply');reply.innerHTML='<p class="choice-reply">'+ch.reply+'</p>';addJournal(obj.title+' — '+ch.label,ch.reply);updateChain();renderStatus();showToast(ch.flag==='westPayrollSolved'?'Payroll mystery solved! ✨':'Conversation remembered')}));const remember=dialogContent.querySelector('#rememberBtn');if(remember)remember.addEventListener('click',()=>{addJournal(obj.title,obj.body);showToast('Added to journal')});renderStatus()
 }
 function renderMap(){mapGrid.innerHTML=Object.entries(scenes).filter(([,s])=>s.passport||s===scenes.hall).map(([k,s])=>'<button type="button" data-scene="'+k+'" '+(k!=='hall'&&!state.visited.includes(k)?'disabled':'')+'>'+(k==='hall'||state.visited.includes(k)?'✓ ':'🔒 ')+s.name+'</button>').join('');mapGrid.querySelectorAll('button:not(:disabled)').forEach(b=>b.addEventListener('click',()=>{mapDialog.close();travel(b.dataset.scene)}))}
 function openJournal(){journalEntries.innerHTML=state.journal.length?state.journal.map(e=>'<div class="journal-entry"><b>'+e.title+'</b><div>'+e.text+'</div><small>'+e.date+'</small></div>').join(''):'<p>Your journal is empty. Walk around and discover something.</p>';journalDialog.showModal()}
 const keys=new Set();let raf=0,last=0;function tick(t){if(!keys.size){raf=0;return}if(t-last>43){let dx=0,dy=0;if(keys.has('arrowleft')||keys.has('a'))dx-=1.65;if(keys.has('arrowright')||keys.has('d'))dx+=1.65;if(keys.has('arrowup')||keys.has('w'))dy-=1.65;if(keys.has('arrowdown')||keys.has('s'))dy+=1.65;if(dx||dy)move(dx,dy);last=t}raf=requestAnimationFrame(tick)}
-root.addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(['arrowleft','arrowright','arrowup','arrowdown','w','a','s','d'].includes(k)){e.preventDefault();keys.add(k);if(!raf)raf=requestAnimationFrame(tick)}else if(k==='e'){e.preventDefault();interact()}else if(k==='m'){e.preventDefault();mapDialog.showModal()}else if(k==='j'){e.preventDefault();openJournal()}});
+root.addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(['arrowleft','arrowright','arrowup','arrowdown','w','a','s','d'].includes(k)){e.preventDefault();keys.add(k);if(!raf)raf=requestAnimationFrame(tick)}else if(k==='e'){e.preventDefault();interact()}else if(k==='m'){e.preventDefault();mapDialog.showModal()}else if(k==='j'){e.preventDefault();openJournal()}else if(k==='t'){e.preventDefault();cycleTime()}});
 root.addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
 root.querySelectorAll('[data-move]').forEach(btn=>{let timer;const run=()=>{const d=btn.dataset.move;move(d==='left'?-2:d==='right'?2:0,d==='up'?-2:d==='down'?2:0)};btn.addEventListener('pointerdown',e=>{e.preventDefault();run();timer=setInterval(run,88)});['pointerup','pointercancel','pointerleave'].forEach(ev=>btn.addEventListener(ev,()=>clearInterval(timer)))});
-exploreBtn.addEventListener('click',interact);$('#mapBtn').addEventListener('click',()=>mapDialog.showModal());$('#journalGameBtn').addEventListener('click',openJournal);stage.addEventListener('pointerdown',()=>stage.focus());
+exploreBtn.addEventListener('click',interact);$('#mapBtn').addEventListener('click',()=>mapDialog.showModal());$('#journalGameBtn').addEventListener('click',openJournal);if(timeBtn)timeBtn.addEventListener('click',cycleTime);stage.addEventListener('pointerdown',()=>stage.focus());
 renderScene();stage.focus({preventScroll:true});
 })();
