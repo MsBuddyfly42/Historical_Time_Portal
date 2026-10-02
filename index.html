@@ -7,8 +7,93 @@
 <meta name="description" content="Explore 20 historical worlds through immersive scenes, role-play, mysteries, and a peaceful Just Visit mode." />
 <title>Templar's Historical Time Portal</title>
 <link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="game-world.css" />
 </head>
-<body>
+<body class="playable-mode">
+
+<section id="timeWorld" class="time-world" aria-label="Playable Historical Time Portal">
+  <header class="game-header">
+    <div>
+      <p class="game-kicker">TEMPLAR'S PLAYABLE HISTORY WORLD</p>
+      <h1>Historical Time Portal</h1>
+      <p class="game-subtitle">Walk the Time Hall. Step through a portal. Explore the past.</p>
+    </div>
+    <div class="game-stats" aria-label="Traveler status">
+      <span>🧭 <b id="gameSceneName">Time Hall</b></span>
+      <span>✨ Discoveries <b id="gameDiscoveryCount">0</b></span>
+      <span>🎒 Keepsakes <b id="gameKeepsakeCount">0</b></span>
+    </div>
+  </header>
+
+  <div class="game-shell">
+    <section class="game-view">
+      <div class="game-stage" id="gameStage" tabindex="0" aria-label="Playable history world. Use arrow keys or WASD to walk.">
+        <div id="sceneBackdrop" class="scene-backdrop hall"></div>
+        <div id="worldObjects" class="world-objects" aria-hidden="true"></div>
+        <div id="worldLabels" class="world-labels"></div>
+        <div id="collectibles" class="collectibles"></div>
+        <div id="traveler" class="traveler" aria-label="Your traveler">
+          <div class="traveler-shadow"></div>
+          <div class="traveler-body"><span class="traveler-head">🙂</span><span class="traveler-coat"></span></div>
+        </div>
+        <div id="interactionHint" class="interaction-hint hidden">Press E or tap Explore</div>
+        <div id="sceneToast" class="scene-toast" role="status" aria-live="polite"></div>
+      </div>
+
+      <div class="game-controls">
+        <div class="dpad" aria-label="Movement controls">
+          <span></span><button type="button" data-move="up" aria-label="Walk up">▲</button><span></span>
+          <button type="button" data-move="left" aria-label="Walk left">◀</button>
+          <button type="button" data-move="down" aria-label="Walk down">▼</button>
+          <button type="button" data-move="right" aria-label="Walk right">▶</button>
+        </div>
+        <div class="action-controls">
+          <button type="button" id="exploreBtn" class="game-action" disabled>✨ Explore</button>
+          <button type="button" id="mapBtn" class="game-action secondary">🗺️ Time Map</button>
+          <button type="button" id="journalGameBtn" class="game-action secondary">📜 Journal</button>
+        </div>
+      </div>
+      <p class="control-note">Computer: Arrow keys or WASD to walk • E to explore • M for map. Phone/tablet: use the movement pad.</p>
+    </section>
+
+    <aside class="game-side">
+      <div class="mission-card">
+        <p class="mini-kicker">CURRENT JOURNEY</p>
+        <h2 id="journeyTitle">The Hall Between Centuries</h2>
+        <p id="journeyText">Walk toward a glowing portal. When you get close, Explore becomes available.</p>
+      </div>
+      <div class="nearby-card">
+        <p class="mini-kicker">NEARBY</p>
+        <div id="nearbyInfo">No one nearby yet. Start walking.</div>
+      </div>
+      <div class="passport-card">
+        <p class="mini-kicker">TRAVELER PASSPORT</p>
+        <div id="passportList" class="passport-list"></div>
+      </div>
+    </aside>
+  </div>
+
+  <dialog id="worldDialog" class="world-dialog">
+    <form method="dialog"><button class="dialog-close" aria-label="Close">×</button></form>
+    <div id="worldDialogContent"></div>
+  </dialog>
+
+  <dialog id="timeMapDialog" class="world-dialog map-dialog">
+    <form method="dialog"><button class="dialog-close" aria-label="Close">×</button></form>
+    <p class="mini-kicker">TIME MAP</p>
+    <h2>Choose a discovered destination</h2>
+    <div id="timeMapGrid" class="time-map-grid"></div>
+  </dialog>
+
+  <dialog id="gameJournalDialog" class="world-dialog">
+    <form method="dialog"><button class="dialog-close" aria-label="Close">×</button></form>
+    <p class="mini-kicker">TRAVELER JOURNAL</p>
+    <h2>Your historical discoveries</h2>
+    <div id="gameJournalEntries"></div>
+  </dialog>
+</section>
+<div class="legacy-world" aria-hidden="true">
+
   <a class="skip-link" href="#experiencePanel">Skip to active experience</a>
   <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
   <div class="stars"></div>
@@ -431,5 +516,7 @@
   <div id="a11yAnnouncements" class="sr-only" role="status" aria-live="polite"></div>
 <script src="script.js"></script>
 <script src="enhancements.js" defer></script>
+</div>
+<script src="game-world.js"></script>
 </body>
 </html>

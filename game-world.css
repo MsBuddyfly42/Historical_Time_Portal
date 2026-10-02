@@ -1,0 +1,43 @@
+
+/* === PLAYABLE HISTORICAL WORLD === */
+.playable-mode{margin:0;background:#070b18;color:#f7f1df;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Arial,sans-serif}
+.playable-mode>.legacy-world{display:none!important}
+.time-world{min-height:100vh;background:
+  radial-gradient(circle at 50% -10%,#3b346a 0,transparent 36rem),
+  linear-gradient(160deg,#090d1e,#121b35 55%,#070b18);padding:24px clamp(12px,3vw,36px) 34px}
+.game-header{width:min(1280px,100%);margin:0 auto 18px;display:flex;align-items:end;justify-content:space-between;gap:18px}
+.game-kicker,.mini-kicker{margin:0 0 5px;color:#ffd77f;font-size:.72rem;font-weight:900;letter-spacing:.18em}
+.game-header h1{margin:0;font-family:Georgia,serif;font-size:clamp(2rem,5vw,4.6rem);line-height:.95;background:linear-gradient(110deg,#fff9da,#f4c66d 50%,#a9d9ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.game-subtitle{margin:9px 0 0;color:#c5ccdc}
+.game-stats{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.game-stats span{background:#111a35d9;border:1px solid #616989;border-radius:999px;padding:9px 12px;color:#d9e2f1;font-size:.86rem}.game-stats b{color:#ffe099}
+.game-shell{width:min(1280px,100%);margin:auto;display:grid;grid-template-columns:minmax(0,1fr) 285px;gap:18px;align-items:start}
+.game-view{min-width:0}.game-stage{position:relative;aspect-ratio:16/10;min-height:340px;overflow:hidden;border:2px solid #d7b267;border-radius:26px;background:#1b2440;box-shadow:0 24px 70px #0009,inset 0 0 60px #0c102080;outline:none;touch-action:none}
+.game-stage:focus-visible{outline:3px solid #fff0a6;outline-offset:4px}
+.scene-backdrop{position:absolute;inset:0;transition:background .6s ease}
+.scene-backdrop.hall{background:
+ radial-gradient(circle at 50% 32%,#c7b8ff33 0 5%,transparent 26%),
+ linear-gradient(90deg,#18203d 0 4%,transparent 4% 96%,#18203d 96%),
+ linear-gradient(#20284d 0 14%,#303b65 14% 16%,#151b38 16% 74%,#5b4b43 74% 78%,#24213d 78%)}
+.scene-backdrop.titanic{background:linear-gradient(#7fa7c8 0 48%,#dfe8ee 48% 52%,#3b6681 52% 66%,#102f48 66%);box-shadow:inset 0 -130px 90px #07172599}
+.scene-backdrop.west{background:linear-gradient(#58a1d6 0 38%,#f0aa6e 38% 53%,#a95743 53% 62%,#d39b67 62%)}
+.scene-backdrop.egypt{background:linear-gradient(#56a8df 0 46%,#f2c774 46% 61%,#d9ae62 61%)}
+.scene-backdrop.medieval{background:linear-gradient(#8ca8ca 0 45%,#a8bc8b 45% 57%,#5f845f 57%)}
+.world-objects,.world-labels,.collectibles{position:absolute;inset:0}.world-object{position:absolute;transform:translate(-50%,-50%);display:grid;place-items:center;filter:drop-shadow(0 9px 9px #0007)}
+.world-object.portal{width:13%;aspect-ratio:.7;border:8px solid #f3ce7b;border-radius:50%;background:radial-gradient(circle,#fff6bd 0 12%,#8ebfff 40%,#7350be 63%,#151b46 66%);box-shadow:0 0 32px #f9d980,0 0 60px #785bd5;animation:portalPulse 2.2s ease-in-out infinite alternate}
+.world-object.portal:before{content:"";position:absolute;inset:-14px;border:3px solid #a68ad7;border-radius:50%;transform:rotate(17deg)}
+.world-object.building{font-size:clamp(2.1rem,6vw,5rem)}.world-object.npc{font-size:clamp(1.7rem,4vw,3.2rem);z-index:3}.world-object.prop{font-size:clamp(1.4rem,3.5vw,2.8rem)}
+.world-label{position:absolute;transform:translate(-50%,-50%);padding:5px 9px;background:#10172dd9;border:1px solid #d8c28e;border-radius:10px;color:#fff7dc;font-size:clamp(.62rem,1.3vw,.83rem);font-weight:800;white-space:nowrap;box-shadow:0 5px 15px #0006}
+.collectible{position:absolute;transform:translate(-50%,-50%);font-size:clamp(1.35rem,3vw,2.2rem);filter:drop-shadow(0 0 10px #fff5ab);animation:floatItem 1.4s ease-in-out infinite alternate}
+.traveler{position:absolute;width:5.6%;aspect-ratio:.65;transform:translate(-50%,-76%);z-index:10;transition:left .045s linear,top .045s linear;filter:drop-shadow(0 7px 5px #0008)}
+.traveler-body{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center}.traveler-head{font-size:clamp(1.15rem,3vw,2.1rem);z-index:2}.traveler-coat{width:72%;height:58%;margin-top:-2px;background:linear-gradient(90deg,#8d5a39,#c8864e 48%,#704026 52%);border-radius:44% 44% 20% 20%;border:2px solid #f0c18a}.traveler-shadow{position:absolute;width:90%;height:14%;bottom:0;background:#0006;filter:blur(4px);border-radius:50%}
+.interaction-hint{position:absolute;left:50%;bottom:4%;transform:translateX(-50%);z-index:20;background:#fff2bf;color:#231a2c;border:2px solid #7e5f9e;border-radius:999px;padding:8px 13px;font-size:.83rem;font-weight:900;box-shadow:0 8px 18px #0006}.hidden{display:none!important}
+.scene-toast{position:absolute;top:3%;left:50%;transform:translateX(-50%) translateY(-15px);opacity:0;z-index:25;max-width:80%;padding:9px 13px;border-radius:12px;background:#121a35ee;border:1px solid #e8c879;color:#fff2ca;text-align:center;pointer-events:none;transition:.25s}.scene-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.game-controls{display:flex;justify-content:space-between;gap:14px;align-items:center;padding:14px 4px}.dpad{display:grid;grid-template-columns:48px 48px 48px;grid-template-rows:44px 44px;gap:5px}.dpad button,.game-action{border:1px solid #c5ae7c;background:#172240;color:#fff0c9;border-radius:12px;font-weight:850;min-height:44px;cursor:pointer}.dpad button:active,.game-action:active{transform:translateY(2px)}.dpad button:hover,.game-action:hover{background:#29365f}.action-controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.game-action{padding:10px 15px}.game-action:not(.secondary){background:linear-gradient(135deg,#ffe79c,#d8a94e);color:#29213c}.game-action:disabled{opacity:.45;cursor:not-allowed}.control-note{margin:0;color:#9da9c1;font-size:.78rem}
+.game-side{display:grid;gap:12px}.mission-card,.nearby-card,.passport-card{background:#111a31d9;border:1px solid #424e70;border-radius:18px;padding:16px;box-shadow:0 12px 32px #0005}.game-side h2{margin:0 0 8px;font-family:Georgia,serif;font-size:1.35rem}.game-side p,#nearbyInfo{color:#c9d0df;line-height:1.55}.passport-list{display:flex;flex-wrap:wrap;gap:6px}.passport-stamp{font-size:.72rem;border:1px solid #665d84;border-radius:999px;padding:6px 8px;color:#aab3c7}.passport-stamp.visited{border-color:#dfba68;color:#ffe5a2;background:#44361f66}
+.world-dialog{width:min(620px,calc(100% - 24px));border:1px solid #d7b267;border-radius:22px;background:#10172d;color:#f6f0df;padding:24px;box-shadow:0 25px 80px #000b}.world-dialog::backdrop{background:#050814cc;backdrop-filter:blur(5px)}.dialog-close{float:right;border:0;background:#2c3654;color:white;border-radius:50%;width:40px;height:40px;font-size:1.4rem;cursor:pointer}.world-dialog h2{font-family:Georgia,serif;font-size:clamp(1.6rem,4vw,2.3rem);margin:.2rem 0 .6rem;color:#ffe0a0}.world-dialog p{color:#cbd3e1;line-height:1.6}.dialog-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}.dialog-actions button,.time-map-grid button{border:1px solid #c9ae72;background:#1e2b4e;color:#fff0ca;border-radius:12px;padding:11px 13px;cursor:pointer;font-weight:800}.dialog-actions button:hover,.time-map-grid button:hover{background:#34456f}.time-map-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.time-map-grid button:disabled{opacity:.4;cursor:not-allowed}
+.journal-entry{border-left:3px solid #d6b05e;padding:8px 0 8px 12px;margin:10px 0}.journal-entry b{color:#ffe2a2}
+@keyframes portalPulse{to{filter:brightness(1.2);box-shadow:0 0 40px #f9e0a1,0 0 74px #815fd4}}@keyframes floatItem{to{transform:translate(-50%,calc(-50% - 8px))}}
+@media(max-width:900px){.game-header{align-items:flex-start;flex-direction:column}.game-stats{justify-content:flex-start}.game-shell{grid-template-columns:1fr}.game-side{grid-template-columns:repeat(3,minmax(0,1fr))}.game-stage{min-height:0}.mission-card,.nearby-card,.passport-card{padding:13px}}
+@media(max-width:640px){.time-world{padding:14px 10px 26px}.game-stage{border-radius:18px}.game-side{grid-template-columns:1fr}.game-controls{align-items:flex-start}.action-controls{max-width:185px}.game-action{flex:1 1 80px;padding:9px}.dpad{grid-template-columns:46px 46px 46px}.game-header h1{font-size:2.55rem}.game-stats span{font-size:.75rem}.control-note{font-size:.72rem}.world-label{font-size:.58rem}.time-map-grid{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.world-object.portal,.collectible{animation:none!important}.traveler{transition:none}.scene-toast{transition:none}}
