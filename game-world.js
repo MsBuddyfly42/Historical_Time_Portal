@@ -40,7 +40,8 @@ hardScenes.titanic=S('RMS Titanic • 1912','titanic',{x:50,y:84},'Aboard RMS Ti
 hardScenes.titanicInterior=S('Titanic • Interior','titanicInterior',{x:50,y:84},'Inside the Ship','Walk through an interpretation of passenger spaces. This is a respectful educational setting, not a disaster game.',[
  o('stairs','building',50,35,'Grand Staircase','🪜','inspect','Grand Staircase','The famous first-class staircase was one of several vertical circulation spaces aboard the ship.',{radius:13}),
  o('library','building',22,58,'Second-Class Library','📚','inspect','Second-Class Library','A quieter passenger room for reading, writing, and conversation.',{radius:10}),
- o('musician','npc',75,57,'Ship Musician','🎻','talk','Ship Musician','Music was part of passenger life aboard ocean liners, including ensembles that played in public rooms.',{radius:8}),
+ o('diningDoor','door',52,67,'Dining Saloon','🍽️','travel','Enter Dining Saloon','',{to:'titanicDining',radius:9}),
+  o('musician','npc',75,57,'Ship Musician','🎻','talk','Ship Musician','Music was part of passenger life aboard ocean liners, including ensembles that played in public rooms.',{radius:8}),
  o('backDeck','door',90,84,'Return to Deck','🚪','travel','Back to Deck','',{to:'titanic',radius:9})
 ],[item('menu',36,70,'📜','Dining Menu Keepsake')],{passport:false,quest:{title:'Inside the Ship',targets:['stairs','library','musician'],reward:'Interior Explorer Stamp'}});
 
@@ -61,6 +62,7 @@ hardScenes.westSaloon=S('Golden Spur Saloon','westInterior',{x:50,y:84},'Inside 
 hardScenes.egypt=S('Ancient Egypt','egypt',{x:50,y:83},'Along the Nile','Explore a riverside settlement of workshops, scribes, markets, temples, and household life.',[
  o('monuments','building',22,42,'Monument District','🔺','inspect','Monument District','Monumental building required planning, skilled labor, food supply, tools, transport, and administration.',{radius:12}),
  o('market','building',70,58,'Riverside Market','🧺','inspect','Riverside Market','Grain, linen, pottery, produce, tools, and household goods move through a busy market.',{radius:11}),
+ o('workshopDoor','door',84,62,'Craft Workshop','🛠️','travel','Enter Workshop','',{to:'egyptWorkshop',radius:9}),
  o('scribe','npc',47,48,'Working Scribe','🧑🏾‍🏫','talk','A Working Scribe','Writing supported taxation, trade, legal records, religion, administration, and private communication.',{radius:8}),
  returnPortal()
 ],[item('scarab',81,35,'🪲','Blue Scarab Keepsake'),item('papyrus',34,69,'📜','Papyrus Fragment')],{quest:{title:'River Settlement',targets:['market','scribe','papyrus'],reward:'Nile Visitor Stamp'}});
@@ -74,7 +76,7 @@ hardScenes.medieval=S('Medieval Europe','medieval',{x:50,y:83},'Castle & Village
 
 hardScenes.medievalCastle=S('Medieval Castle','castleInterior',{x:50,y:84},'Inside the Castle','Explore working castle spaces rather than only royal rooms.',[
  o('greatHall','building',50,34,'Great Hall','🕯️','inspect','Great Hall','A large multipurpose room for dining, administration, hospitality, ceremonies, and household activity.',{radius:12}),
- o('kitchen','building',22,59,'Castle Kitchen','🍲','inspect','Castle Kitchen','Large households required cooks, fuel, storage, water, food preparation, and careful coordination.',{radius:10}),
+ o('kitchen','door',22,59,'Castle Kitchen','🍲','travel','Enter Castle Kitchen','',{to:'medievalKitchen',radius:10}),
  o('steward','npc',74,58,'Household Steward','🧑🏼‍💼','talk','Household Steward','The steward tracks supplies, workers, visitors, expenses, and the many practical needs of the household.',{radius:8}),
  o('backVillage','door',91,84,'Back to Village','🚪','travel','','',{to:'medieval',radius:9})
 ],[item('seal',37,70,'🕯️','Wax Seal')],{passport:false,quest:{title:'Castle Household',targets:['greatHall','kitchen','steward'],reward:'Castle Household Stamp'}});
@@ -90,6 +92,7 @@ hardScenes.victorian=S('Victorian City • 1890s','victorian',{x:50,y:84},'Gasli
 hardScenes.fifties=S('1950s Main Street','fifties',{x:50,y:84},'Mid-Century Main Street','Explore a stylized American Main Street with a diner, record shop, cinema, and neighborhood life.',[
  o('diner','building',21,48,'Corner Diner','🍔','travel','Enter Corner Diner','Diners and lunch counters could be social gathering places, though access and treatment varied greatly by location and segregation laws.',{radius:11}),
  o('records','building',73,46,'Record Shop','🎵','travel','Enter Record Shop','',{to:'fiftiesRecords',radius:11}),
+ o('cinemaDoor','door',54,37,'Movie House','🎬','travel','Enter Movie House','',{to:'fiftiesCinema',radius:9}),
  o('student','npc',46,62,'High-School Student','🧑🏽‍🎓','talk','A Local Student','The student is saving for a new record and talking about the Saturday movie matinee.',{radius:8}),
  returnPortal()
 ],[item('nickel',78,70,'🪙','Jukebox Nickel'),item('ticket50',30,34,'🎫','Movie Ticket Stub')],{quest:{title:'Saturday on Main Street',targets:['diner','records','ticket50'],reward:'Main Street Stamp'}});
@@ -132,6 +135,35 @@ hardScenes.revolution=S('Revolution-Era City • 1776','revolution',{x:50,y:84},
 
 
 /* --- Connected sub-areas: expansion pass 3 --- */
+
+hardScenes.titanicDining=S('Titanic • Dining Saloon','titanicDining',{x:50,y:84},'Dining Saloon','Move among tables, service stations, and staff preparing a formal meal aboard the ship.',[
+ o('tables','building',26,43,'Dining Tables','🍽️','inspect','Dining Tables','Large passenger dining rooms required careful seating, service routines, linens, tableware, food preparation, and coordination between many crew members.',{radius:10}),
+ o('service','building',71,43,'Service Station','🥄','inspect','Service Station','Stewards organize dishes, courses, tableware, and timing between the galley and dining room.',{radius:10}),
+ o('diningSteward','npc',48,62,'Dining Steward','🧑🏻‍🍳','talk','Dining Steward','The steward is checking place settings and timing before passengers arrive.',{radius:8}),
+ o('backTitanicInside','door',91,84,'Back to Ship Interior','🚪','travel','','',{to:'titanicInterior',radius:9})
+],[item('napkinRing',36,70,'⭕','Replica Napkin Ring')],{passport:false,quest:{title:'Prepare the Saloon',targets:['tables','service','diningSteward'],reward:'Dining Saloon Stamp'}});
+
+hardScenes.medievalKitchen=S('Medieval Castle Kitchen','medievalKitchen',{x:50,y:84},'Castle Kitchen','Explore hearths, preparation tables, storage, and the household labor behind a large meal.',[
+ o('hearthKitchen','building',24,43,'Cooking Hearth','🔥','inspect','Cooking Hearth','Large hearths, spits, pots, ovens, fuel, and constant labor support the preparation of meals for a sizeable household.',{radius:10}),
+ o('prepTable','building',70,43,'Preparation Table','🥕','inspect','Preparation Table','Food preparation involves chopping, grinding, mixing, portioning, preserving, and coordinating many dishes.',{radius:10}),
+ o('cook','npc',48,62,'Castle Cook','🧑🏼‍🍳','talk','Castle Cook','The cook is organizing bread, pottage, roasted foods, sauces, and servants carrying dishes to the hall.',{radius:8}),
+ o('backCastleRoom','door',91,84,'Back to Castle','🚪','travel','','',{to:'medievalCastle',radius:9})
+],[item('woodenSpoon',36,70,'🥄','Wooden Kitchen Spoon')],{passport:false,quest:{title:'Feed the Household',targets:['hearthKitchen','prepTable','cook'],reward:'Castle Kitchen Stamp'}});
+
+hardScenes.fiftiesCinema=S('1950s Movie House','cinemaInterior',{x:50,y:84},'At the Movie House','Walk through the lobby, auditorium, and projection booth of a neighborhood cinema.',[
+ o('lobby','building',24,43,'Cinema Lobby','🍿','inspect','Cinema Lobby','Ticket sales, concessions, posters, ushers, and crowds all converge in the lobby before a screening.',{radius:10}),
+ o('projection','building',70,43,'Projection Booth','🎞️','inspect','Projection Booth','Projectionists manage film reels, changeovers, focus, sound, and equipment throughout the program.',{radius:10}),
+ o('usher','npc',48,62,'Usher','🧑🏾‍💼','talk','Cinema Usher','The usher checks tickets, helps seat patrons, tidies the auditorium, and watches the lobby between shows.',{radius:8}),
+ o('backFiftiesStreet','door',91,84,'Back to Main Street','🚪','travel','','',{to:'fifties',radius:9})
+],[item('cinemaProgram',36,70,'🎟️','Cinema Program')],{passport:false,quest:{title:'Before the Feature',targets:['lobby','projection','usher'],reward:'Movie House Stamp'}});
+
+hardScenes.egyptWorkshop=S('Ancient Egyptian Workshop','egyptWorkshop',{x:50,y:84},'Craft Workshop','Explore pottery, textile work, tools, storage, and skilled labor in a riverside settlement.',[
+ o('pottery','building',24,43,'Pottery Area','🏺','inspect','Pottery Area','Clay vessels are formed, dried, decorated, fired, stored, traded, and used throughout daily life.',{radius:10}),
+ o('loom','building',70,43,'Loom','🧵','inspect','Loom','Textile production involves spinning fibers, preparing thread, weaving cloth, and finishing fabric for household and trade use.',{radius:10}),
+ o('artisan','npc',48,62,'Workshop Artisan','🧑🏾‍🎨','talk','Workshop Artisan','The artisan divides the day between customer orders, repairs, teaching a younger worker, and preparing goods for market.',{radius:8}),
+ o('backEgypt','door',91,84,'Back to Riverside Settlement','🚪','travel','','',{to:'egypt',radius:9})
+],[item('clayToken',36,70,'🔸','Small Clay Token')],{passport:false,quest:{title:'Workshop Day',targets:['pottery','loom','artisan'],reward:'Artisan Workshop Stamp'}});
+
 hardScenes.victorianNews=S('Victorian Newspaper Office','victorianInterior',{x:50,y:84},'Inside the Newspaper Office','Move among desks, type cases, proofs, and a busy press room.',[
  o('editorDesk','building',25,45,'Editor’s Desk','✒️','inspect','Editor’s Desk','Editors assign stories, review copy, choose headlines, and coordinate the daily edition.',{radius:10}),
  o('press','building',70,43,'Printing Press','⚙️','inspect','Printing Press','Typesetting, inking, paper handling, and press work turn written copy into thousands of printed sheets.',{radius:11}),
@@ -344,17 +376,21 @@ function renderScenery(cls){
  const templates={
   hall:'<div class="arch a1"></div><div class="arch a2"></div><div class="arch a3"></div><div class="floor-lines"></div>',
   titanic:'<div class="ship-deck"><i class="rail r1"></i><i class="rail r2"></i><i class="funnel"></i><i class="deckhouse"></i></div>',
+  titanicDining:'<div class="dining-room"><i class="table dt1"></i><i class="table dt2"></i><i class="table dt3"></i><i class="chandelier"></i><i class="service-board"></i></div>',
   titanicInterior:'<div class="grand-interior"><i class="panel p1"></i><i class="panel p2"></i><i class="stairs s1"></i><i class="stairs s2"></i><i class="lamp l1"></i><i class="lamp l2"></i></div>',
   west:'<div class="western-row"><i class="facade f1"></i><i class="facade f2"></i><i class="facade f3"></i><i class="awning aw1"></i><i class="hitch"></i></div>',
   westInterior:'<div class="saloon-room"><i class="bar"></i><i class="mirror"></i><i class="table t1"></i><i class="table t2"></i><i class="lamp"></i></div>',
+  egyptWorkshop:'<div class="egypt-workshop"><i class="loom"></i><i class="pottery"></i><i class="shelf"></i><i class="window"></i></div>',
   egypt:'<div class="egypt-scene"><i class="pyramid py1"></i><i class="pyramid py2"></i><i class="river"></i><i class="palm pm1"></i><i class="palm pm2"></i></div>',
   medieval:'<div class="medieval-scene"><i class="wall"></i><i class="tower tw1"></i><i class="tower tw2"></i><i class="gatehouse"></i><i class="cottage c1"></i><i class="cottage c2"></i></div>',
+  medievalKitchen:'<div class="medieval-kitchen"><i class="hearth"></i><i class="prep"></i><i class="shelf"></i><i class="pot p1"></i><i class="pot p2"></i></div>',
   castleInterior:'<div class="castle-room"><i class="column c1"></i><i class="column c2"></i><i class="banner b1"></i><i class="banner b2"></i><i class="hearth"></i></div>',
   victorian:'<div class="victorian-row"><i class="building b1"></i><i class="building b2"></i><i class="building b3"></i><i class="lamp-post lp1"></i><i class="lamp-post lp2"></i></div>',
   victorianInterior:'<div class="press-room"><i class="desk d1"></i><i class="desk d2"></i><i class="press"></i><i class="paper-stack"></i></div>',
   theatreInterior:'<div class="theatre-room"><i class="curtain left"></i><i class="curtain right"></i><i class="stage-floor"></i><i class="footlights"></i></div>',
   stationInterior:'<div class="station-room"><i class="platform"></i><i class="clock"></i><i class="window w1"></i><i class="window w2"></i><i class="track"></i></div>',
   fifties:'<div class="mainstreet50"><i class="store s1"></i><i class="store s2"></i><i class="store s3"></i><i class="neon n1"></i><i class="neon n2"></i></div>',
+  cinemaInterior:'<div class="cinema-room"><i class="screen"></i><i class="seatrow r1"></i><i class="seatrow r2"></i><i class="curtain c1"></i><i class="curtain c2"></i></div>',
   dinerInterior:'<div class="diner-room"><i class="counter"></i><i class="stool st1"></i><i class="stool st2"></i><i class="stool st3"></i><i class="neon"></i></div>',
   recordInterior:'<div class="record-room"><i class="shelf sh1"></i><i class="shelf sh2"></i><i class="booth"></i><i class="record-display"></i></div>',
   roaring:'<div class="city20"><i class="building b1"></i><i class="building b2"></i><i class="marquee"></i><i class="streetlamp"></i></div>',
@@ -399,6 +435,26 @@ function playSceneTransition(){
 
 const times=['Morning','Afternoon','Evening','Night'];
 
+
+
+const npcGreetingMap={
+ reporter:'I may have a story worth following.',steward:'Good day. Mind the passageways.',diningSteward:'We are preparing for service.',
+ herbalist:'The garden changes with every season.',cook:'Careful near the hearth.',newsboy:'Latest edition! Fresh headlines!',student:'I’m headed downtown after school.',
+ photographer:'Hold still—this street changes every minute.',engineer:'We are checking a systems report.',controller:'Keep your questions concise; the room is busy.',
+ vendor:'Fresh food—while it lasts!',merchant:'Trade brings the whole city through this square.',messenger:'News travels slower than rumor.',
+ artisan:'Mind the tools. We are working today.',usher:'Tickets ready, please.',archivist:'Your passport tells quite a story.'
+};
+const patrolNpcIds=new Set(['reporter','newsboy','student','photographer','engineer','vendor','messenger','artisan','usher']);
+function greetingFor(obj){return npcGreetingMap[obj.id]||('Hello from '+obj.label+'.')}
+function faceNpcTowardTraveler(obj){
+ const el=objects.querySelector('[data-object-id="'+obj.id+'"] .npc-figure');if(!el)return;
+ el.classList.toggle('face-left',state.x<obj.x);el.classList.toggle('face-right',state.x>=obj.x)
+}
+function showNpcBubble(obj){
+ const host=objects.querySelector('[data-object-id="'+obj.id+'"]');if(!host||host.querySelector('.npc-speech'))return;
+ const b=document.createElement('span');b.className='npc-speech';b.textContent=greetingFor(obj);host.appendChild(b)
+}
+function clearNpcBubbles(){objects.querySelectorAll('.npc-speech').forEach(el=>el.remove())}
 
 function makeNpcSprite(obj,index=0){
  const fig=document.createElement('div');fig.className='npc-figure style-'+(index%5);fig.innerHTML='<i class="npc-head"></i><i class="npc-hair"></i><i class="npc-body"></i><i class="npc-arm a1"></i><i class="npc-arm a2"></i><i class="npc-leg l1"></i><i class="npc-leg l2"></i><i class="npc-tool"></i>';
@@ -484,14 +540,14 @@ function updateQuest(){
 }
 function renderScene(){
  const s=scenes[state.scene];sceneName.textContent=s.name;backdrop.className='scene-backdrop '+s.class;renderScenery(s.class);renderFx();journeyTitle.textContent=s.title;journeyText.textContent=s.text;objects.innerHTML='';labels.innerHTML='';collectibles.innerHTML='';
- const activeObjects=sceneObjectsForTime(state.scene,s);activeObjects.forEach((obj,index)=>{const unlocked=isUnlocked(obj);const el=document.createElement('div');el.className='world-object '+obj.type+(unlocked?'':' locked');el.dataset.objectId=obj.id;el.style.left=obj.x+'%';el.style.top=obj.y+'%';if(obj.type==='npc'){el.appendChild(makeNpcSprite(obj,index))}else if(obj.type==='door'){el.innerHTML='<span class="door-frame"><i class="door-panel"></i><i class="door-knob"></i></span>'}else if(obj.icon)el.textContent=obj.icon;objects.appendChild(el);const lab=document.createElement('div');lab.className='world-label'+(unlocked?'':' locked-label');lab.style.left=obj.x+'%';lab.style.top=(obj.y-(obj.type==='portal'?13:9))+'%';lab.textContent=unlocked?obj.label:(obj.lockedLabel||'🔒 '+obj.label);labels.appendChild(lab)});
+ const activeObjects=sceneObjectsForTime(state.scene,s);activeObjects.forEach((obj,index)=>{const unlocked=isUnlocked(obj);const el=document.createElement('div');el.className='world-object '+obj.type+(unlocked?'':' locked');el.dataset.objectId=obj.id;el.style.left=obj.x+'%';el.style.top=obj.y+'%';if(obj.type==='npc'){const fig=makeNpcSprite(obj,index);if(patrolNpcIds.has(obj.id))fig.classList.add('patrolling');el.appendChild(fig)}else if(obj.type==='door'){el.innerHTML='<span class="door-frame"><i class="door-panel"></i><i class="door-knob"></i></span>'}else if(obj.icon)el.textContent=obj.icon;objects.appendChild(el);const lab=document.createElement('div');lab.className='world-label'+(unlocked?'':' locked-label');lab.style.left=obj.x+'%';lab.style.top=(obj.y-(obj.type==='portal'?13:9))+'%';lab.textContent=unlocked?obj.label:(obj.lockedLabel||'🔒 '+obj.label);labels.appendChild(lab)});
  for(let i=0;i<3;i++){const walker=document.createElement('div');walker.className='ambient-walker w'+i;walker.style.top=(46+i*14)+'%';const fig=makeNpcSprite({id:'ambient'+i},i+2);fig.classList.add('walking');walker.appendChild(fig);objects.appendChild(walker)}\n s.items.forEach(it=>{if(state.keepsakes.includes(it.id))return;const el=document.createElement('div');el.className='collectible';el.style.left=it.x+'%';el.style.top=it.y+'%';el.textContent=it.icon;el.title=it.name;collectibles.appendChild(el)});
  if(s.passport&&!state.visited.includes(state.scene)){state.visited.push(state.scene);addJournal('Arrived: '+s.name,'You entered '+s.name+'.');save()}
  const spawn=s.spawn;moveTo(Number.isFinite(state.x)?state.x:spawn.x,Number.isFinite(state.y)?state.y:spawn.y,false);applyTime();applyNpcWorkStates();renderStatus();updateNearby();updateChain();updateWorldEvent();showToast('Entered '+s.name)
 }
 
 const workersByScene={
- west:['reporter'],victorianNews:['reporterDesk'],victorianTheatre:['stagehand'],fiftiesDiner:['server'],fiftiesRecords:['clerk'],roaringJazz:['bandleader'],roaringRadio:['announcer'],apolloControl:['controller'],apolloEngineering:['systemsTech'],romeBaths:['attendant'],renaissancePrint:['apprentice'],renaissanceAtelier:['master'],revolutionPrint:['printer1776']
+ west:['reporter'],victorianNews:['reporterDesk'],victorianTheatre:['stagehand'],fiftiesDiner:['server'],fiftiesRecords:['clerk'],roaringJazz:['bandleader'],roaringRadio:['announcer'],apolloControl:['controller'],apolloEngineering:['systemsTech'],romeBaths:['attendant'],renaissancePrint:['apprentice'],renaissanceAtelier:['master'],revolutionPrint:['printer1776'],titanicDining:['diningSteward'],medievalKitchen:['cook'],egyptWorkshop:['artisan'],fiftiesCinema:['usher']
 };
 function applyNpcWorkStates(){
  const ids=workersByScene[state.scene]||[];ids.forEach(id=>setNpcState(id,state.timeIndex===3?'idle':'working'))
@@ -500,12 +556,12 @@ function applyNpcWorkStates(){
 function renderStatus(){discoveryCount.textContent=state.discoveries.length;keepsakeCount.textContent=state.keepsakes.length;passportList.innerHTML=Object.entries(scenes).filter(([,s])=>s.passport).map(([k,s])=>'<span class="passport-stamp '+(state.visited.includes(k)?'visited':'')+'">'+(state.visited.includes(k)?'✓ ':'')+s.name.split('•')[0].trim()+'</span>').join('');renderMap();updateQuest()}
 function nearest(){const s=scenes[state.scene];let best=null,bestD=999;for(const obj of sceneObjectsForTime(state.scene,s)){const d=distance({x:state.x,y:state.y},obj);if(d<bestD){best=obj;bestD=d}}return best&&bestD<=(best.radius||9)?best:null}
 function collectNearby(){const s=scenes[state.scene];for(const it of s.items){if(state.keepsakes.includes(it.id))continue;if(distance({x:state.x,y:state.y},it)<6){state.keepsakes.push(it.id);addJournal('Keepsake: '+it.name,'Found while exploring '+s.name+'.');save();showToast('Collected '+it.name+' ✨');renderScene();return true}}return false}
-function updateNearby(){objects.querySelectorAll('.world-object.nearby').forEach(el=>el.classList.remove('nearby'));labels.querySelectorAll('.world-label.nearby').forEach(el=>el.classList.remove('nearby'));const n=nearest();if(n){const objEl=objects.querySelector('[data-object-id="'+n.id+'"]');if(objEl)objEl.classList.add('nearby');const labEls=[...labels.querySelectorAll('.world-label')];const labEl=labEls.find(el=>el.textContent.includes(n.label));if(labEl)labEl.classList.add('nearby');const unlocked=isUnlocked(n);nearbyInfo.innerHTML='<b>'+(unlocked?n.label:(n.lockedLabel||'🔒 '+n.label))+'</b><br>'+(!unlocked?'Complete '+n.unlockCount+' era objectives to unlock this doorway.':(n.action==='travel'?'A doorway is within reach.':'Move close and explore.'));exploreBtn.disabled=false;hint.classList.remove('hidden');hint.textContent=!unlocked?'Locked — explore more':(n.action==='travel'?'Step through':'Press E or tap Explore')}else{nearbyInfo.textContent='Keep walking. Look for people, buildings, glowing portals, doors, and keepsakes.';exploreBtn.disabled=true;hint.classList.add('hidden')}}
+function updateNearby(){objects.querySelectorAll('.world-object.nearby').forEach(el=>el.classList.remove('nearby'));labels.querySelectorAll('.world-label.nearby').forEach(el=>el.classList.remove('nearby'));const n=nearest();if(n){clearNpcBubbles();const objEl=objects.querySelector('[data-object-id="'+n.id+'"]');if(objEl)objEl.classList.add('nearby');if(n.type==='npc'){faceNpcTowardTraveler(n);showNpcBubble(n)}const labEls=[...labels.querySelectorAll('.world-label')];const labEl=labEls.find(el=>el.textContent.includes(n.label));if(labEl)labEl.classList.add('nearby');const unlocked=isUnlocked(n);nearbyInfo.innerHTML='<b>'+(unlocked?n.label:(n.lockedLabel||'🔒 '+n.label))+'</b><br>'+(!unlocked?'Complete '+n.unlockCount+' era objectives to unlock this doorway.':(n.action==='travel'?'A doorway is within reach.':'Move close and explore.'));exploreBtn.disabled=false;hint.classList.remove('hidden');hint.textContent=!unlocked?'Locked — explore more':(n.action==='travel'?'Step through':'Press E or tap Explore')}else{clearNpcBubbles();nearbyInfo.textContent='Keep walking. Look for people, buildings, glowing portals, doors, and keepsakes.';exploreBtn.disabled=true;hint.classList.add('hidden')}}
 function moveTo(x,y,check=true){state.x=clamp(x,4,96);state.y=clamp(y,14,93);traveler.style.left=state.x+'%';traveler.style.top=state.y+'%';stage.style.setProperty('--cam-x',((state.x-50)/50).toFixed(3));stage.style.setProperty('--cam-y',((state.y-54)/46).toFixed(3));if(check){if(!collectNearby()){updateNearby();updateQuest();save()}}}
 function move(dx,dy){if(dx<0)traveler.dataset.dir='left';else if(dx>0)traveler.dataset.dir='right';else if(dy<0)traveler.dataset.dir='up';else if(dy>0)traveler.dataset.dir='down';moveTo(state.x+dx,state.y+dy)}
 function travel(to){const target=scenes[to];if(!target)return;stopAutoWalk();playSceneTransition();setTimeout(()=>{state.scene=to;state.x=target.spawn.x;state.y=target.spawn.y;save();renderScene()},180)}
 function interact(){const obj=nearest();if(!obj)return;if(!isUnlocked(obj)){showToast('Archive locked — complete '+obj.unlockCount+' era objectives');return}if(obj.action==='travel'){if(obj.type==='door'){animateDoor(obj.id,()=>travel(obj.to))}else{travel(obj.to)}return}
- if(obj.type==='npc')setNpcState(obj.id,'talking');const dKey=discoveryKey(state.scene,obj.id);if(!state.discoveries.includes(dKey)){state.discoveries.push(dKey);addJournal(obj.title||obj.label,obj.body||'Discovered while exploring.');save();showToast('New discovery added ✨')}
+ if(obj.type==='npc'){clearNpcBubbles();setNpcState(obj.id,'talking');}const dKey=discoveryKey(state.scene,obj.id);if(!state.discoveries.includes(dKey)){state.discoveries.push(dKey);addJournal(obj.title||obj.label,obj.body||'Discovered while exploring.');save();showToast('New discovery added ✨')}
  const availableChoices=Array.isArray(obj.choices)?obj.choices.filter(ch=>(!ch.requires||state.flags[ch.requires])&&(!ch.flag||!state.flags[ch.flag])):[];const remembered=Array.isArray(obj.choices)&&obj.choices.some(ch=>ch.flag&&state.flags[ch.flag]);const choiceHtml=availableChoices.map((ch,i)=>'<button type="button" data-choice="'+i+'">'+ch.label+'</button>').join('');const memoryHtml=remembered?'<p class="npc-memory">💭 This person remembers your earlier conversation.</p>':'';dialogContent.innerHTML='<p class="mini-kicker">'+scenes[state.scene].name+'</p><h2>'+obj.title+'</h2><p>'+obj.body+'</p>'+memoryHtml+'<div id="choiceReply"></div><div class="dialog-actions">'+choiceHtml+'<button type="button" id="rememberBtn">Journal this discovery ✓</button></div>';dialog.showModal();dialogContent.querySelectorAll('[data-choice]').forEach(btn=>btn.addEventListener('click',()=>{const ch=availableChoices[Number(btn.dataset.choice)];if(obj.type==='npc')setNpcState(obj.id,'reacting');state.flags=state.flags||{};if(ch.flag)state.flags[ch.flag]=true;save();const reply=dialogContent.querySelector('#choiceReply');reply.innerHTML='<p class="choice-reply">'+ch.reply+'</p>';addJournal(obj.title+' — '+ch.label,ch.reply);updateChain();renderStatus();showToast(ch.flag==='westPayrollSolved'?'Payroll mystery solved! ✨':'Conversation remembered')}));const remember=dialogContent.querySelector('#rememberBtn');if(remember)remember.addEventListener('click',()=>{addJournal(obj.title,obj.body);showToast('Added to journal')});renderStatus()
 }
 function renderMap(){mapGrid.innerHTML=Object.entries(scenes).filter(([,s])=>s.passport||s===scenes.hall).map(([k,s])=>'<button type="button" data-scene="'+k+'" '+(k!=='hall'&&!state.visited.includes(k)?'disabled':'')+'>'+(k==='hall'||state.visited.includes(k)?'✓ ':'🔒 ')+s.name+'</button>').join('');mapGrid.querySelectorAll('button:not(:disabled)').forEach(b=>b.addEventListener('click',()=>{mapDialog.close();travel(b.dataset.scene)}))}
