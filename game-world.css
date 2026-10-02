@@ -125,3 +125,30 @@
 .world-object.building,.world-object.door,.world-object.npc,.world-object.prop{user-select:none}
 @media(max-width:640px){.game-stage{cursor:default}.control-note:after{content:" • Or tap anywhere in the scene to walk there."}}
 @media(prefers-reduced-motion:reduce){.scene-transition.active,.traveler.walking .traveler-body,.traveler.walking .traveler-shadow{animation:none!important}.scene-transition.active{opacity:.72}}
+
+/* === CHARACTER + DOOR ANIMATION PASS 7 === */
+.world-object.npc{width:54px;height:86px;font-size:0;filter:drop-shadow(0 8px 6px #0006)}
+.npc-figure{position:relative;width:42px;height:78px;margin:auto;transform-origin:50% 90%;animation:npcBreathe 1.8s ease-in-out infinite alternate}
+.npc-figure i{position:absolute;display:block}
+.npc-head{left:11px;top:2px;width:20px;height:20px;border-radius:50%;background:#c98f68;border:2px solid #6c4637;z-index:3}
+.style-1 .npc-head,.style-4 .npc-head{background:#8f5c3e}.style-2 .npc-head{background:#e1ad88}.style-3 .npc-head{background:#6b412e}
+.npc-hair{left:9px;top:0;width:24px;height:11px;border-radius:60% 60% 40% 40%;background:#34241f;z-index:4}.style-2 .npc-hair{background:#705033}.style-4 .npc-hair{background:#1e1715}
+.npc-body{left:8px;top:21px;width:27px;height:31px;border-radius:8px 8px 5px 5px;background:linear-gradient(90deg,#6d4b7f,#956ea5);border:2px solid #3d3048}
+.style-1 .npc-body{background:linear-gradient(90deg,#355d6d,#5f8791);border-color:#29434c}.style-2 .npc-body{background:linear-gradient(90deg,#7e5637,#b27a4c);border-color:#593c2a}.style-3 .npc-body{background:linear-gradient(90deg,#4c653e,#78935d);border-color:#33482b}.style-4 .npc-body{background:linear-gradient(90deg,#6b3942,#9d5b62);border-color:#4e2b31}
+.npc-arm{top:25px;width:7px;height:28px;border-radius:5px;background:#c98f68;transform-origin:50% 4px}.style-1 .npc-arm,.style-4 .npc-arm{background:#8f5c3e}.style-2 .npc-arm{background:#e1ad88}.style-3 .npc-arm{background:#6b412e}
+.npc-arm.a1{left:3px;transform:rotate(8deg)}.npc-arm.a2{right:3px;transform:rotate(-8deg)}
+.npc-leg{top:50px;width:9px;height:25px;border-radius:5px;background:#30384a}.npc-leg.l1{left:10px}.npc-leg.l2{right:10px}
+.npc-tool{display:none!important;right:-8px;top:24px;width:14px;height:14px;border-radius:3px;background:#e4be68;box-shadow:0 0 0 2px #745d32}
+.npc-figure.talking .a1{animation:talkArm .48s ease-in-out infinite alternate}.npc-figure.talking .a2{animation:talkArm2 .6s ease-in-out infinite alternate}.npc-figure.talking{animation:talkBob .7s ease-in-out infinite alternate}
+.npc-figure.working .npc-tool{display:block!important}.npc-figure.working .a2{animation:workArm .62s ease-in-out infinite alternate}.npc-figure.working{animation:workBob 1s ease-in-out infinite alternate}
+.npc-figure.reacting{animation:reactPop .38s ease both}.npc-figure.walking .l1{animation:walkLeg .34s ease-in-out infinite alternate}.npc-figure.walking .l2{animation:walkLeg2 .34s ease-in-out infinite alternate}.npc-figure.walking .a1{animation:walkArm .34s ease-in-out infinite alternate}.npc-figure.walking .a2{animation:walkArm2 .34s ease-in-out infinite alternate}
+@keyframes npcBreathe{to{transform:translateY(-2px)}}@keyframes talkBob{to{transform:translateY(-3px) rotate(1deg)}}@keyframes talkArm{to{transform:rotate(-32deg)}}@keyframes talkArm2{to{transform:rotate(25deg)}}@keyframes workArm{to{transform:rotate(-42deg)}}@keyframes workBob{to{transform:translateY(-2px) rotate(-1deg)}}@keyframes reactPop{50%{transform:translateY(-7px) scale(1.04)}100%{transform:none}}@keyframes walkLeg{to{transform:rotate(18deg)}}@keyframes walkLeg2{to{transform:rotate(-18deg)}}@keyframes walkArm{to{transform:rotate(-18deg)}}@keyframes walkArm2{to{transform:rotate(18deg)}}
+.world-object.door{width:50px;height:76px;font-size:0;perspective:300px}
+.door-frame{position:absolute;inset:0;border:6px solid #c59a61;background:#5a4536;border-radius:6px;box-shadow:0 8px 14px #0007,inset 0 0 0 2px #392a23}
+.door-panel{position:absolute;inset:4px;background:linear-gradient(90deg,#794e37,#9c6847 52%,#6a432f);border:2px solid #4d3025;transform-origin:left center;transition:transform .42s cubic-bezier(.2,.78,.2,1)}
+.door-knob{position:absolute;width:6px;height:6px;border-radius:50%;background:#f2d48a;right:8px;top:35px;z-index:2}
+.world-object.door-opening .door-panel{transform:rotateY(-74deg)}.world-object.door-opening{filter:drop-shadow(0 0 16px #ffe49a)}
+.ambient-walker .npc-figure{transform:scale(.8);animation:none}.ambient-walker .npc-figure.walking{animation:npcStreetWalk .5s ease-in-out infinite alternate}
+@keyframes npcStreetWalk{to{transform:scale(.8) translateY(-3px)}}
+@media(max-width:640px){.world-object.npc{width:46px;height:72px}.npc-figure{transform:scale(.86);transform-origin:top center}.world-object.door{width:44px;height:66px}}
+@media(prefers-reduced-motion:reduce){.npc-figure,.npc-figure *,.door-panel,.ambient-walker .npc-figure{animation:none!important;transition:none!important}}
