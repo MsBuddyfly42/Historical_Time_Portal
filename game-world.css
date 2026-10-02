@@ -112,3 +112,16 @@
 .world-label{transition:left .55s ease,top .55s ease,opacity .25s ease}.world-object.npc{transition:left .55s ease,top .55s ease}
 .chain-card.complete:after{content:"✓ Story resolved";display:inline-block;margin-top:9px;padding:5px 8px;border-radius:999px;background:#5f542d;color:#ffedb7;font-size:.72rem;font-weight:900;letter-spacing:.04em}
 @media(prefers-reduced-motion:reduce){.world-object.prop{animation:none!important}.world-label,.world-object.npc{transition:none!important}}
+
+/* === MOVEMENT + TRANSITION POLISH PASS 6 === */
+.scene-transition{position:absolute;inset:0;z-index:40;pointer-events:none;background:
+ radial-gradient(circle at 50% 48%,#fff4b900 0 12%,#cfa7ff55 28%,#0b1024ee 72%);opacity:0;transform:scale(1.08)}
+.scene-transition.active{animation:scenePortalFlash .62s ease both}
+@keyframes scenePortalFlash{0%{opacity:0;transform:scale(1.08)}28%{opacity:1;transform:scale(1)}62%{opacity:.92}100%{opacity:0;transform:scale(.98)}}
+.traveler.walking .traveler-body{animation:travelerStep .28s ease-in-out infinite alternate}
+.traveler.walking .traveler-shadow{animation:shadowStep .28s ease-in-out infinite alternate}
+@keyframes travelerStep{to{transform:translateY(-4px) rotate(-1.5deg)}}@keyframes shadowStep{to{transform:scaleX(.84);opacity:.45}}
+.game-stage{cursor:crosshair}.game-stage:active{cursor:grabbing}
+.world-object.building,.world-object.door,.world-object.npc,.world-object.prop{user-select:none}
+@media(max-width:640px){.game-stage{cursor:default}.control-note:after{content:" • Or tap anywhere in the scene to walk there."}}
+@media(prefers-reduced-motion:reduce){.scene-transition.active,.traveler.walking .traveler-body,.traveler.walking .traveler-shadow{animation:none!important}.scene-transition.active{opacity:.72}}
