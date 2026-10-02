@@ -152,3 +152,19 @@
 @keyframes npcStreetWalk{to{transform:scale(.8) translateY(-3px)}}
 @media(max-width:640px){.world-object.npc{width:46px;height:72px}.npc-figure{transform:scale(.86);transform-origin:top center}.world-object.door{width:44px;height:66px}}
 @media(prefers-reduced-motion:reduce){.npc-figure,.npc-figure *,.door-panel,.ambient-walker .npc-figure{animation:none!important;transition:none!important}}
+
+/* === PLAYER CHARACTER PASS 8 === */
+.traveler{width:52px;height:84px;aspect-ratio:auto}
+.traveler-body{position:absolute;inset:0;display:block;transform-origin:50% 88%}
+.player-head{position:absolute;left:14px;top:2px;width:24px;height:24px;border-radius:50%;background:#b97650;border:2px solid #5b3a2c;z-index:5}
+.player-hair{position:absolute;left:-2px;top:-4px;width:28px;height:12px;border-radius:70% 70% 35% 35%;background:#2b211f}
+.player-eye{position:absolute;top:10px;width:3px;height:3px;border-radius:50%;background:#2d211d}.player-eye.e1{left:6px}.player-eye.e2{right:6px}.player-mouth{position:absolute;left:9px;top:16px;width:7px;height:3px;border-bottom:2px solid #6c382d;border-radius:50%}
+.traveler-coat{position:absolute!important;left:11px;top:24px;width:30px!important;height:34px!important;margin:0!important;background:linear-gradient(90deg,#794f37,#bd8050 50%,#6a432f)!important;border:2px solid #4a3026!important;border-radius:8px 8px 6px 6px!important}
+.player-arm{position:absolute;top:28px;width:7px;height:29px;border-radius:5px;background:#a86c49;transform-origin:50% 3px;z-index:3}.player-arm.pa1{left:6px}.player-arm.pa2{right:6px}
+.player-leg{position:absolute;top:56px;width:9px;height:24px;border-radius:5px;background:#30384a}.player-leg.pl1{left:13px}.player-leg.pl2{right:13px}
+.traveler[data-dir="left"] .traveler-body{transform:scaleX(-1)}.traveler[data-dir="right"] .traveler-body{transform:scaleX(1)}
+.traveler[data-dir="up"] .player-eye,.traveler[data-dir="up"] .player-mouth{opacity:.18}.traveler[data-dir="down"] .player-eye,.traveler[data-dir="down"] .player-mouth{opacity:1}
+.traveler.walking .player-leg.pl1{animation:playerLegA .28s ease-in-out infinite alternate}.traveler.walking .player-leg.pl2{animation:playerLegB .28s ease-in-out infinite alternate}.traveler.walking .player-arm.pa1{animation:playerArmA .28s ease-in-out infinite alternate}.traveler.walking .player-arm.pa2{animation:playerArmB .28s ease-in-out infinite alternate}
+@keyframes playerLegA{to{transform:rotate(17deg)}}@keyframes playerLegB{to{transform:rotate(-17deg)}}@keyframes playerArmA{to{transform:rotate(-20deg)}}@keyframes playerArmB{to{transform:rotate(20deg)}}
+@media(max-width:640px){.traveler{width:44px;height:72px}.traveler-body{transform-origin:50% 88%}.player-head{left:11px;transform:scale(.88)}.traveler-coat{left:8px!important;transform:scale(.88);transform-origin:top center}.player-arm,.player-leg{transform:scale(.88)}}
+@media(prefers-reduced-motion:reduce){.traveler.walking .player-leg,.traveler.walking .player-arm{animation:none!important}}
