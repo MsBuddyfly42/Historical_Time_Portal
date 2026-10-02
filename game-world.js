@@ -353,6 +353,33 @@ function sceneObjectsForTime(sceneKey,s){
  return base.concat(timedExtras[sceneKey+':'+state.timeIndex]||[]);
 }
 
+
+const romeVendor=findObj('rome','vendor');
+if(romeVendor)romeVendor.choices=[
+ {label:'Ask why the fountain line is so long',flag:'romeWaterLead',reply:'The vendor says water pressure seems weaker than usual and sends you toward the baths, where attendants noticed the same change.'}
+];
+const bathAttendant=findObj('romeBaths','attendant');
+if(bathAttendant)bathAttendant.choices=[
+ {label:'Ask about the weak water flow',requires:'romeWaterLead',flag:'romeBathLead',reply:'The attendant says one heated room is receiving water normally, but a nearby channel is running low. The forum has a public notice about maintenance.'}
+];
+const forumCitizen=findObj('romeForum','citizen');
+if(forumCitizen)forumCitizen.choices=[
+ {label:'Ask about the water notice',requires:'romeBathLead',flag:'romeWaterSolved',reply:'The resident points to a maintenance notice explaining that workers are diverting flow while repairing part of the local distribution system. Mystery solved.'}
+];
+
+const renMerchant=findObj('renaissance','merchant');
+if(renMerchant)renMerchant.choices=[
+ {label:'Ask why two broadsides disagree',flag:'renPrintLead',reply:'The merchant has seen two printed notices with different dates and asks which one is correct.'}
+];
+const renApprentice=findObj('renaissancePrint','apprentice');
+if(renApprentice)renApprentice.choices=[
+ {label:'Ask about the mismatched broadsides',requires:'renPrintLead',flag:'renTypeLead',reply:'The apprentice admits an old line of type was reused by mistake before the correction reached the press.'}
+];
+const renMaster=findObj('renaissanceAtelier','master');
+if(renMaster)renMaster.choices=[
+ {label:'Ask how the corrected notice was identified',requires:'renTypeLead',flag:'renPrintSolved',reply:'The workshop master recognizes the newer printer’s mark and paper stock, confirming which broadside is the corrected edition.'}
+];
+
 const westBoard=findObj('westSaloon','board');
 if(westBoard)westBoard.choices=[
  {label:'Search behind the notice board',requires:'westSaloonClue',flag:'westPayrollSolved',reply:'Behind the board you find the missing payroll box wrapped in canvas. Mystery solved.'}
@@ -478,7 +505,7 @@ const achievements={
  firstStep:{title:'First Step Through Time',desc:'Visit your first historical era.',test:()=>state.visited.filter(v=>v!=='hall').length>=1},
  collector:{title:'Keeper of Keepsakes',desc:'Collect 10 historical keepsakes.',test:()=>state.keepsakes.length>=10},
  explorer:{title:'Century Hopper',desc:'Visit 8 major eras.',test:()=>state.visited.filter(v=>scenes[v]?.passport).length>=8},
- storyteller:{title:'Story Solver',desc:'Resolve at least 3 multi-step story threads.',test:()=>['westPayrollSolved','victorianMessageSolved','apolloSignalSolved'].filter(f=>state.flags[f]).length>=3},
+ storyteller:{title:'Story Solver',desc:'Resolve at least 3 multi-step story threads.',test:()=>['westPayrollSolved','victorianMessageSolved','apolloSignalSolved','romeWaterSolved','renPrintSolved'].filter(f=>state.flags[f]).length>=3},
  scholar:{title:'Chronicle Scholar',desc:'Unlock and visit the Chronicle Archive.',test:()=>state.visited.includes('archive')||state.discoveries.some(d=>d.startsWith('archive:'))},
  quester:{title:'Era Specialist',desc:'Complete 10 era objectives.',test:()=>completedQuestCount()>=10},
  master:{title:'Historical Traveler',desc:'Reach 85% overall exploration progress.',test:()=>completionPercent()>=85}
@@ -566,6 +593,26 @@ function updateChain(){
   ];
   const next=steps.find(([flag])=>!state.flags[flag]);
   if(!next){chainProgress.textContent='Solved ✓ The team traced the unusual reading to a sensor circuit.';chainCard.classList.add('complete')}
+  else{const done=steps.filter(([flag])=>state.flags[flag]).length;chainProgress.textContent='Step '+(done+1)+' of '+steps.length+': '+next[1];chainCard.classList.remove('complete')}
+ }else if(state.scene==='rome'||state.scene==='romeBaths'||state.scene==='romeForum'){
+  chainTitle.textContent='The Weak Water Flow';
+  const steps=[
+   ['romeWaterLead','Ask the food vendor about the long fountain line.'],
+   ['romeBathLead','Follow the water clue to the bath attendant.'],
+   ['romeWaterSolved','Check the forum for the maintenance notice.']
+  ];
+  const next=steps.find(([flag])=>!state.flags[flag]);
+  if(!next){chainProgress.textContent='Solved ✓ You traced the weak flow to a temporary maintenance diversion.';chainCard.classList.add('complete')}
+  else{const done=steps.filter(([flag])=>state.flags[flag]).length;chainProgress.textContent='Step '+(done+1)+' of '+steps.length+': '+next[1];chainCard.classList.remove('complete')}
+ }else if(state.scene==='renaissance'||state.scene==='renaissancePrint'||state.scene==='renaissanceAtelier'){
+  chainTitle.textContent='The Conflicting Broadside';
+  const steps=[
+   ['renPrintLead','Ask the cloth merchant about the conflicting notices.'],
+   ['renTypeLead','Investigate the print shop for a typesetting mistake.'],
+   ['renPrintSolved','Confirm the corrected edition with the workshop master.']
+  ];
+  const next=steps.find(([flag])=>!state.flags[flag]);
+  if(!next){chainProgress.textContent='Solved ✓ You identified which broadside carried the corrected information.';chainCard.classList.add('complete')}
   else{const done=steps.filter(([flag])=>state.flags[flag]).length;chainProgress.textContent='Step '+(done+1)+' of '+steps.length+': '+next[1];chainCard.classList.remove('complete')}
  }else{
   chainTitle.textContent='No active story thread';chainProgress.textContent='Explore and talk to people. Some eras contain longer stories that remember your choices.';chainCard.classList.remove('complete')
