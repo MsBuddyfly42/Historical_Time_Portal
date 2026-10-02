@@ -3,8 +3,8 @@ const root=document.getElementById('timeWorld'); if(!root)return;
 const $=s=>root.querySelector(s);
 const stage=$('#gameStage'), traveler=$('#traveler'), objects=$('#worldObjects'), labels=$('#worldLabels'), collectibles=$('#collectibles');
 const exploreBtn=$('#exploreBtn'), nearbyInfo=$('#nearbyInfo'), sceneName=$('#gameSceneName'), journeyTitle=$('#journeyTitle'), journeyText=$('#journeyText');
-const discoveryCount=$('#gameDiscoveryCount'), keepsakeCount=$('#gameKeepsakeCount'), passportList=$('#passportList');
-const dialog=$('#worldDialog'), dialogContent=$('#worldDialogContent'), mapDialog=$('#timeMapDialog'), mapGrid=$('#timeMapGrid'), journalDialog=$('#gameJournalDialog'), journalEntries=$('#gameJournalEntries');
+const discoveryCount=$('#gameDiscoveryCount'), keepsakeCount=$('#gameKeepsakeCount'), passportList=$('#passportList'), progressPercent=$('#gameProgressPercent');
+const dialog=$('#worldDialog'), dialogContent=$('#worldDialogContent'), mapDialog=$('#timeMapDialog'), mapGrid=$('#timeMapGrid'), journalDialog=$('#gameJournalDialog'), journalEntries=$('#gameJournalEntries'), achievementDialog=$('#achievementDialog'), achievementList=$('#achievementList');
 const hint=$('#interactionHint'), toast=$('#sceneToast'), backdrop=$('#sceneBackdrop'), side=$('.game-side');
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n)), distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 const store={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
@@ -473,6 +473,46 @@ function save(){store.set('htp-playable-v2',state)}
 function showToast(msg){toast.textContent=msg;toast.classList.add('show');clearTimeout(showToast.t);showToast.t=setTimeout(()=>toast.classList.remove('show'),1700)}
 function addJournal(title,text){if(!state.journal.some(e=>e.title===title)){state.journal.unshift({title,text,date:new Date().toLocaleDateString()});state.journal=state.journal.slice(0,60);save()}}
 
+
+const achievements={
+ firstStep:{title:'First Step Through Time',desc:'Visit your first historical era.',test:()=>state.visited.filter(v=>v!=='hall').length>=1},
+ collector:{title:'Keeper of Keepsakes',desc:'Collect 10 historical keepsakes.',test:()=>state.keepsakes.length>=10},
+ explorer:{title:'Century Hopper',desc:'Visit 8 major eras.',test:()=>state.visited.filter(v=>scenes[v]?.passport).length>=8},
+ storyteller:{title:'Story Solver',desc:'Resolve at least 3 multi-step story threads.',test:()=>['westPayrollSolved','victorianMessageSolved','apolloSignalSolved'].filter(f=>state.flags[f]).length>=3},
+ scholar:{title:'Chronicle Scholar',desc:'Unlock and visit the Chronicle Archive.',test:()=>state.visited.includes('archive')||state.discoveries.some(d=>d.startsWith('archive:'))},
+ quester:{title:'Era Specialist',desc:'Complete 10 era objectives.',test:()=>completedQuestCount()>=10},
+ master:{title:'Historical Traveler',desc:'Reach 85% overall exploration progress.',test:()=>completionPercent()>=85}
+};
+state.achievements=state.achievements||{};
+function totalDiscoverables(){return Object.values(scenes).reduce((n,s)=>n+s.objects.filter(o=>o.action!=='travel').length+s.items.length,0)}
+function completionPercent(){
+ const visitPart=Math.min(1,state.visited.filter(v=>scenes[v]?.passport).length/11);
+ const questPart=Math.min(1,completedQuestCount()/14);
+ const discoverPart=Math.min(1,(state.discoveries.length+state.keepsakes.length)/Math.max(1,totalDiscoverables()));
+ return Math.round((visitPart*.35+questPart*.35+discoverPart*.30)*100)
+}
+function checkAchievements(){
+ for(const [id,a] of Object.entries(achievements)){if(!state.achievements[id]&&a.test()){state.achievements[id]=true;addJournal('Achievement: '+a.title,a.desc);showToast('Achievement unlocked: '+a.title+' 🏆')}}
+ save()
+}
+function renderAchievements(){
+ const pct=completionPercent();achievementList.innerHTML='<div class="completion-panel"><strong>'+pct+'% Complete</strong><div class="completion-bar"><i style="width:'+pct+'%"></i></div><p>'+ (pct>=85?'You have earned the Historical Traveler milestone. Keep exploring for full completion.':'Explore eras, solve stories, complete objectives, and collect keepsakes to raise your progress.') +'</p></div>'+Object.entries(achievements).map(([id,a])=>'<article class="achievement '+(state.achievements[id]?'earned':'')+'"><span>'+(state.achievements[id]?'🏆':'○')+'</span><div><b>'+a.title+'</b><small>'+a.desc+'</small></div></article>').join('')
+}
+let audioCtx=null,audioMaster=null,audioNodes=[],soundOn=false;
+function stopAmbience(){audioNodes.forEach(n=>{try{n.stop?.()}catch{}try{n.disconnect?.()}catch{}});audioNodes=[]}
+function noiseBuffer(ctx){const b=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*.22;return b}
+function startAmbience(){
+ if(!soundOn)return;stopAmbience();
+ const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+ audioCtx=audioCtx||new AC();audioMaster=audioMaster||audioCtx.createGain();audioMaster.gain.value=.055;audioMaster.connect(audioCtx.destination);
+ const cls=scenes[state.scene]?.class||state.scene;
+ const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();osc.type='sine';osc.frequency.value=cls.includes('apollo')?84:cls.includes('jazz')?110:cls.includes('titanic')?72:cls.includes('medieval')?96:cls.includes('egypt')?88:100;gain.gain.value=.16;osc.connect(gain).connect(audioMaster);osc.start();audioNodes.push(osc,gain);
+ const src=audioCtx.createBufferSource(),ng=audioCtx.createGain(),filter=audioCtx.createBiquadFilter();src.buffer=noiseBuffer(audioCtx);src.loop=true;filter.type='lowpass';filter.frequency.value=cls.includes('titanic')?900:cls.includes('west')?550:cls.includes('apollo')?1300:700;ng.gain.value=.22;src.connect(filter).connect(ng).connect(audioMaster);src.start();audioNodes.push(src,ng,filter);
+}
+function toggleSound(){
+ soundOn=!soundOn;const btn=$('#soundBtnGame');btn.setAttribute('aria-pressed',String(soundOn));btn.textContent=soundOn?'🔊 Ambience':'🔇 Ambience';if(soundOn){audioCtx?.resume?.();startAmbience()}else stopAmbience()
+}
+
 function completedQuestCount(){return Object.values(state.quests).filter(Boolean).length}
 function isUnlocked(obj){return !obj.unlockCount||completedQuestCount()>=obj.unlockCount}
 function applyTime(){
@@ -543,7 +583,7 @@ function renderScene(){
  const activeObjects=sceneObjectsForTime(state.scene,s);activeObjects.forEach((obj,index)=>{const unlocked=isUnlocked(obj);const el=document.createElement('div');el.className='world-object '+obj.type+(unlocked?'':' locked');el.dataset.objectId=obj.id;el.style.left=obj.x+'%';el.style.top=obj.y+'%';if(obj.type==='npc'){const fig=makeNpcSprite(obj,index);if(patrolNpcIds.has(obj.id))fig.classList.add('patrolling');el.appendChild(fig)}else if(obj.type==='door'){el.innerHTML='<span class="door-frame"><i class="door-panel"></i><i class="door-knob"></i></span>'}else if(obj.icon)el.textContent=obj.icon;objects.appendChild(el);const lab=document.createElement('div');lab.className='world-label'+(unlocked?'':' locked-label');lab.style.left=obj.x+'%';lab.style.top=(obj.y-(obj.type==='portal'?13:9))+'%';lab.textContent=unlocked?obj.label:(obj.lockedLabel||'🔒 '+obj.label);labels.appendChild(lab)});
  for(let i=0;i<3;i++){const walker=document.createElement('div');walker.className='ambient-walker w'+i;walker.style.top=(46+i*14)+'%';const fig=makeNpcSprite({id:'ambient'+i},i+2);fig.classList.add('walking');walker.appendChild(fig);objects.appendChild(walker)}\n s.items.forEach(it=>{if(state.keepsakes.includes(it.id))return;const el=document.createElement('div');el.className='collectible';el.style.left=it.x+'%';el.style.top=it.y+'%';el.textContent=it.icon;el.title=it.name;collectibles.appendChild(el)});
  if(s.passport&&!state.visited.includes(state.scene)){state.visited.push(state.scene);addJournal('Arrived: '+s.name,'You entered '+s.name+'.');save()}
- const spawn=s.spawn;moveTo(Number.isFinite(state.x)?state.x:spawn.x,Number.isFinite(state.y)?state.y:spawn.y,false);applyTime();applyNpcWorkStates();renderStatus();updateNearby();updateChain();updateWorldEvent();showToast('Entered '+s.name)
+ const spawn=s.spawn;moveTo(Number.isFinite(state.x)?state.x:spawn.x,Number.isFinite(state.y)?state.y:spawn.y,false);applyTime();applyNpcWorkStates();renderStatus();if(soundOn)startAmbience();updateNearby();updateChain();updateWorldEvent();showToast('Entered '+s.name)
 }
 
 const workersByScene={
@@ -553,7 +593,7 @@ function applyNpcWorkStates(){
  const ids=workersByScene[state.scene]||[];ids.forEach(id=>setNpcState(id,state.timeIndex===3?'idle':'working'))
 }
 
-function renderStatus(){discoveryCount.textContent=state.discoveries.length;keepsakeCount.textContent=state.keepsakes.length;passportList.innerHTML=Object.entries(scenes).filter(([,s])=>s.passport).map(([k,s])=>'<span class="passport-stamp '+(state.visited.includes(k)?'visited':'')+'">'+(state.visited.includes(k)?'✓ ':'')+s.name.split('•')[0].trim()+'</span>').join('');renderMap();updateQuest()}
+function renderStatus(){discoveryCount.textContent=state.discoveries.length;keepsakeCount.textContent=state.keepsakes.length;if(progressPercent)progressPercent.textContent=completionPercent()+'%';checkAchievements();passportList.innerHTML=Object.entries(scenes).filter(([,s])=>s.passport).map(([k,s])=>'<span class="passport-stamp '+(state.visited.includes(k)?'visited':'')+'">'+(state.visited.includes(k)?'✓ ':'')+s.name.split('•')[0].trim()+'</span>').join('');renderMap();updateQuest()}
 function nearest(){const s=scenes[state.scene];let best=null,bestD=999;for(const obj of sceneObjectsForTime(state.scene,s)){const d=distance({x:state.x,y:state.y},obj);if(d<bestD){best=obj;bestD=d}}return best&&bestD<=(best.radius||9)?best:null}
 function collectNearby(){const s=scenes[state.scene];for(const it of s.items){if(state.keepsakes.includes(it.id))continue;if(distance({x:state.x,y:state.y},it)<6){state.keepsakes.push(it.id);addJournal('Keepsake: '+it.name,'Found while exploring '+s.name+'.');save();showToast('Collected '+it.name+' ✨');renderScene();return true}}return false}
 function updateNearby(){objects.querySelectorAll('.world-object.nearby').forEach(el=>el.classList.remove('nearby'));labels.querySelectorAll('.world-label.nearby').forEach(el=>el.classList.remove('nearby'));const n=nearest();if(n){clearNpcBubbles();const objEl=objects.querySelector('[data-object-id="'+n.id+'"]');if(objEl)objEl.classList.add('nearby');if(n.type==='npc'){faceNpcTowardTraveler(n);showNpcBubble(n)}const labEls=[...labels.querySelectorAll('.world-label')];const labEl=labEls.find(el=>el.textContent.includes(n.label));if(labEl)labEl.classList.add('nearby');const unlocked=isUnlocked(n);nearbyInfo.innerHTML='<b>'+(unlocked?n.label:(n.lockedLabel||'🔒 '+n.label))+'</b><br>'+(!unlocked?'Complete '+n.unlockCount+' era objectives to unlock this doorway.':(n.action==='travel'?'A doorway is within reach.':'Move close and explore.'));exploreBtn.disabled=false;hint.classList.remove('hidden');hint.textContent=!unlocked?'Locked — explore more':(n.action==='travel'?'Step through':'Press E or tap Explore')}else{clearNpcBubbles();nearbyInfo.textContent='Keep walking. Look for people, buildings, glowing portals, doors, and keepsakes.';exploreBtn.disabled=true;hint.classList.add('hidden')}}
@@ -570,6 +610,6 @@ const keys=new Set();let raf=0,last=0;function tick(t){if(!keys.size){raf=0;retu
 root.addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(['arrowleft','arrowright','arrowup','arrowdown','w','a','s','d'].includes(k)){e.preventDefault();stopAutoWalk();keys.add(k);if(!raf)raf=requestAnimationFrame(tick)}else if(k==='e'){e.preventDefault();interact()}else if(k==='m'){e.preventDefault();mapDialog.showModal()}else if(k==='j'){e.preventDefault();openJournal()}else if(k==='t'){e.preventDefault();cycleTime()}});
 root.addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
 root.querySelectorAll('[data-move]').forEach(btn=>{let timer;const run=()=>{const d=btn.dataset.move;move(d==='left'?-2:d==='right'?2:0,d==='up'?-2:d==='down'?2:0)};btn.addEventListener('pointerdown',e=>{e.preventDefault();run();timer=setInterval(run,88)});['pointerup','pointercancel','pointerleave'].forEach(ev=>btn.addEventListener(ev,()=>clearInterval(timer)))});
-dialog.addEventListener('close',()=>objects.querySelectorAll('.npc-figure').forEach(el=>el.classList.remove('talking','reacting')));exploreBtn.addEventListener('click',interact);$('#mapBtn').addEventListener('click',()=>mapDialog.showModal());$('#journalGameBtn').addEventListener('click',openJournal);if(timeBtn)timeBtn.addEventListener('click',cycleTime);stage.addEventListener('pointerdown',e=>{stage.focus();if(e.button!==undefined&&e.button!==0)return;if(e.target.closest('.interaction-hint,.world-event'))return;const rect=stage.getBoundingClientRect();const x=(e.clientX-rect.left)/rect.width*100,y=(e.clientY-rect.top)/rect.height*100;if(Number.isFinite(x)&&Number.isFinite(y))walkTo(x,y)});
+dialog.addEventListener('close',()=>objects.querySelectorAll('.npc-figure').forEach(el=>el.classList.remove('talking','reacting')));exploreBtn.addEventListener('click',interact);$('#mapBtn').addEventListener('click',()=>mapDialog.showModal());$('#journalGameBtn').addEventListener('click',openJournal);if(timeBtn)timeBtn.addEventListener('click',cycleTime);$('#soundBtnGame')?.addEventListener('click',toggleSound);$('#achievementsBtn')?.addEventListener('click',()=>{renderAchievements();achievementDialog.showModal()});stage.addEventListener('pointerdown',e=>{stage.focus();if(e.button!==undefined&&e.button!==0)return;if(e.target.closest('.interaction-hint,.world-event'))return;const rect=stage.getBoundingClientRect();const x=(e.clientX-rect.left)/rect.width*100,y=(e.clientY-rect.top)/rect.height*100;if(Number.isFinite(x)&&Number.isFinite(y))walkTo(x,y)});
 renderScene();stage.focus({preventScroll:true});
 })();
