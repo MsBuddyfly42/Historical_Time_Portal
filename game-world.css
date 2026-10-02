@@ -336,3 +336,9 @@
 .world-label.direct-interact-label:not(:disabled):hover{background:#dcefff;color:#18253a;border-color:#9fd5ff;box-shadow:0 0 14px #8dcaff66}
 .click-collectible{border:0;background:transparent;padding:0;line-height:1;z-index:8}
 .click-collectible:hover{filter:drop-shadow(0 0 14px #fff2a3);transform:translate(-50%,-50%) scale(1.08)}
+
+/* === NATURAL APPROACH + DESTINATION MARKER PASS === */
+.destination-marker{position:absolute;z-index:11;width:18px;height:18px;border:2px solid #ffe49b;border-radius:50%;transform:translate(-50%,-50%);opacity:0;pointer-events:none;box-shadow:0 0 0 5px #ffe49b22,0 0 14px #ffe49b88}
+.destination-marker.show{animation:destinationPing 1s ease-out both}
+@keyframes destinationPing{0%{opacity:0;transform:translate(-50%,-50%) scale(.65)}20%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1.7)}}
+@media(prefers-reduced-motion:reduce){.destination-marker.show{animation:none;opacity:.85}}
