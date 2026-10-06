@@ -35,3 +35,49 @@ h1, h2, h3 { text-wrap: balance; }
 .first-run-guide { background:#14343df5; border-color:#b98b5f; color:#edf5f4; }
 .passport-stamp { font-size:.8125rem; }
 @media(max-width:760px) { .game-header { align-items:flex-start; flex-direction:column; } .game-stats { justify-content:flex-start; max-width:none; } .game-shell { grid-template-columns:minmax(0,1fr); } .game-controls { align-items:flex-start; flex-direction:column; } .action-controls { justify-content:flex-start; } .action-controls button { flex:1 1 120px; } }
+
+/* The existing game opens directly: use more of the first screen for its scene. */
+.time-world { padding-top:14px; }
+.game-header { gap:12px; margin-bottom:14px; }
+.game-header h1 { font-size:clamp(1.75rem,3vw,2.8rem); }
+.game-header .game-kicker { margin-bottom:2px; }
+.game-subtitle { margin-top:5px; }
+.game-stats { max-width:none; }
+@media(max-width:760px) {
+ .game-header { gap:9px; }
+ .game-header h1 { font-size:1.9rem; }
+ .game-header .game-kicker { font-size:.75rem; }
+ .game-subtitle { display:none; }
+ .game-stats { gap:5px; }
+ .game-stats span { padding:6px 8px; font-size:.8125rem; }
+}
+
+/* New adventures use existing world geometry and controls. */
+.adventure-track { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 14px; background:#291647; border:1px solid #a37ed1; border-radius:12px; color:#fff1cc; font:700 .875rem/1.4 system-ui,sans-serif; }
+.adventure-track button { background:#ffd35e; color:#291647; border:0; border-radius:8px; padding:8px 12px; font-weight:800; }
+.adventure-marker { position:absolute; z-index:65; transform:translate(-50%,-50%); width:48px; height:48px; min-height:48px; border:2px solid #ffdb79; border-radius:50%; background:#3d2062; color:#ffdc7b; font-size:1.7rem; box-shadow:0 0 0 7px #ffda6b22,0 0 24px #ffda6b66; cursor:pointer; }
+.adventure-marker[data-near="true"] { background:#ffdb79; color:#291647; box-shadow:0 0 0 8px #ffda6b44; }
+.adventure-marker[hidden] { display:none!important; }
+.adventure-dialog { width:min(570px,calc(100vw - 24px)); max-height:85dvh; overflow:auto; border:2px solid #c596ee; border-radius:18px; padding:24px; background:#221239; color:#fff2dd; box-shadow:0 20px 70px #0009; font-family:system-ui,sans-serif; }
+.adventure-dialog::backdrop { background:#10091bbf; }
+.adventure-dialog-head { display:flex; align-items:center; justify-content:space-between; gap:12px; color:#ffdb79; font-size:.8125rem; letter-spacing:.08em; }
+.adventure-dialog-head button { border:1px solid #9670ba; border-radius:8px; background:#3d2062; color:white; font-size:1.5rem; min-width:44px; }
+.adventure-dialog h2 { font:700 clamp(1.7rem,5vw,2.3rem)/1.15 Georgia,serif; color:#ffdb79; margin:18px 0; }
+.adventure-story { white-space:pre-line; font-size:1rem; line-height:1.6; }
+.adventure-choices { display:grid; gap:10px; }
+.adventure-choices button { text-align:left; padding:12px 16px; min-height:48px; border:1px solid #9570bc; border-radius:10px; background:#503077; color:#fff; font-weight:700; }
+.adventure-choices button:hover { background:#684095; }
+.adventure-feedback { color:#ffdb79; margin-bottom:0; }
+.ww-game .adventure-track { flex:0 0 auto; border-radius:0; font-size:.8125rem; padding:7px 10px; }
+@media(max-width:600px) { .adventure-track { gap:8px; padding:8px; } .adventure-track span { max-width:70%; } .adventure-dialog { padding:18px; } }
+
+.adventure-dialog[open] { z-index:100001; }
+.adventure-marker:focus-visible { outline:3px solid #fff; outline-offset:5px; }
+.world-activity-menu { position:relative; }
+.world-activity-menu summary { cursor:pointer; min-height:44px; display:flex; align-items:center; padding:8px 12px; border:1px solid #d8ad67; border-radius:9px; background:#3e281e; color:#fff5d8; font:700 .875rem system-ui,sans-serif; }
+.world-activity-items { display:flex; gap:8px; flex-wrap:wrap; padding:12px 0; }
+.ww-game [hidden] { display:none!important; }
+.ww-game .ww-top { max-height:27dvh; }
+.ww-game .ww-controls { z-index:190; }
+#livingWorld.hud-resting .world-top, #livingWorld.hud-resting .game-shell, #livingWorld.hud-resting .play-hud { opacity:1; pointer-events:auto; filter:none; }
+#livingWorld .play-controls, #livingWorld .play-action-mobile { z-index:100; }
