@@ -3,19 +3,20 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<meta name="theme-color" content="#090f21" />
+<meta name="theme-color" content="#0b242b" />
 <meta name="description" content="A playable browser-based history world with 20 explorable eras, quests, characters, collectibles, time-of-day changes, and connected historical environments." />
 <title>Templar's Historical Time Portal — Playable World</title>
 <link rel="stylesheet" href="game-world.css" />
+  <link rel="stylesheet" href="presentation-refresh.css" />
 </head>
 <body class="playable-mode">
 
 <section id="timeWorld" class="time-world" aria-label="Playable Historical Time Portal">
   <header class="game-header">
     <div>
-      <p class="game-kicker">TEMPLAR'S PLAYABLE HISTORY WORLD</p>
+      <p class="game-kicker">TEMPLAR'S JOURNEY THROUGH HISTORY</p>
       <h1>Historical Time Portal</h1>
-      <p class="game-subtitle">Walk the Time Hall. Step through a portal. Explore the past.</p>
+      <p class="game-subtitle">Every portal opens a different chapter. Pick one and see who you meet.</p>
     </div>
     <div class="game-stats" aria-label="Traveler status">
       <span>🧭 <b id="gameSceneName">Time Hall</b></span>
@@ -43,7 +44,7 @@
         <div id="interactionHint" class="interaction-hint hidden">Press E or tap Explore</div>
         <div id="sceneToast" class="scene-toast" role="status" aria-live="polite"></div>
         <div id="firstRunGuide" class="first-run-guide" role="dialog" aria-label="Quick start guide">
-          <strong>Ready to time-travel?</strong>
+          <strong>Where will you go first?</strong>
           <p>Click a door, person, object, or keepsake and your traveler will walk there automatically. Use the arrows or WASD anytime you want to roam yourself.</p>
           <button type="button" id="dismissGuideBtn">Start Exploring</button>
         </div>
@@ -75,7 +76,7 @@
       <div class="mission-card">
         <p class="mini-kicker">CURRENT JOURNEY</p>
         <h2 id="journeyTitle">The Hall Between Centuries</h2>
-        <p id="journeyText">Walk toward a glowing portal. When you get close, Explore becomes available.</p>
+        <p id="journeyText">Choose a glowing portal to begin. Walk over or tap it, then Explore when you’re close.</p>
       </div>
       <div class="nearby-card">
         <p class="mini-kicker">NEARBY</p>
@@ -117,3 +118,4 @@
 <script src="game-world.js"></script>
 </body>
 </html>
+
